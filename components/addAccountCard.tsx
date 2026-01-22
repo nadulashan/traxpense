@@ -8,7 +8,7 @@ export default function AddAccountCard(){
 
     return (
         <Pressable style={[ AccountSection.AddAccountCard, AccountSection.AccountCardStyles]} onPress={pressed}>
-            <Text style={AccountSection.AddAccountCardText}>+ Add Card</Text>
+            <Text style={AccountSection.AddAccountCardText}>+ Add Account</Text>
         </Pressable>
     )
 }
