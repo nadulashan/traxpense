@@ -1,6 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'react-native';
+import { initDB } from './db/create';
 import TabNavigation from './screens/TabNavigation';
 
 
@@ -16,6 +17,8 @@ export default function App(){
     if (!fontsLoaded && !error) {
         return null;
     }
+
+    initDB()
 
     return (
         <>

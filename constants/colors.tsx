@@ -1,7 +1,7 @@
 const colors = {
     light : {
         primary: '#2E2E2E',
-        primaryLight: '#D9D9D9',
+        primaryLight: '#f5f5f5',
         accent: '#7A7A7A',
         red:'#A84545',
         green: '#0F3D2E',
