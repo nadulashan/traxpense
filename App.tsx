@@ -1,8 +1,11 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'react-native';
+import 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { initDB } from './db/create';
 import TabNavigation from './screens/TabNavigation';
+
 
 
 export default function App(){
@@ -21,11 +24,11 @@ export default function App(){
     initDB()
 
     return (
-        <>
+        <GestureHandlerRootView>
             <StatusBar />
             <NavigationContainer>
                 <TabNavigation />
             </NavigationContainer>
-        </>
+        </GestureHandlerRootView>
     )
 }

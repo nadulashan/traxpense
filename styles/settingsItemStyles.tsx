@@ -25,7 +25,7 @@ const SettingsItemStyles = StyleSheet.create({
 
     itemName : {
         fontSize:14,
-        fontFamily:fonts.regular
+        fontFamily:fonts.regular,
     }
 })
 

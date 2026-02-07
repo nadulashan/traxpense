@@ -1,9 +1,9 @@
 import { Text, View } from 'react-native';
 
-export default function ExpenseCategory(){
+export default function Currency(){
     return (
         <View>
-            <Text>ExpenseCategory</Text>
+            <Text>Currency</Text>
         </View>
     )
 }
