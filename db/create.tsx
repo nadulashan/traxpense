@@ -10,12 +10,14 @@ export async function initDB(){
                 name TEXT NOT NULL,
                 badge TEXT NOT NULL,
                 initialBalance INTEGER NOT NULL,
-                isCredit BOOL NOT NULL 
+                isCredit BOOL NOT NULL,
+                isActive BOOL NOT NULL
             );
             CREATE TABLE IF NOT EXISTS expensesCategories(
                 expenseCategoryId INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
-                badge TEXT NOT NULL 
+                badge TEXT NOT NULL,
+                isActive BOOL NOT NULL
             );
             CREATE TABLE IF NOT EXISTS expenses(
                 expenseId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,7 +36,8 @@ export async function initDB(){
             CREATE TABLE IF NOT EXISTS incomeCategories(
                 incomeCategoryId INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
-                badge TEXT NOT NULL 
+                badge TEXT NOT NULL,
+                isActive BOOL NOT NULL
             );
             CREATE TABLE IF NOT EXISTS income(
                 incomeId INTEGER PRIMARY KEY AUTOINCREMENT,

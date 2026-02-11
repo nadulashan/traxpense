@@ -1,9 +1,12 @@
+import BottomSheetWrapper from '@/components/bottomSheet';
 import FundCreditAddButton from '@/components/fundCreditAddButton';
-import BottomSheet from '@gorhom/bottom-sheet';
+import Notification from '@/components/notification';
+import { getAccountBadges } from '@/db/select';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SettingsStackParamList } from './SettingsStackNavigation';
 
@@ -11,37 +14,84 @@ type Props = StackScreenProps<SettingsStackParamList, 'FundCreditAccounts'>
 
 export default function FundCreditAccounts({route}:Props){
 
+
+    // Bottom Sheet things including backdrop
+    const sheetRef = useRef<BottomSheet>(null);
+    const backDrop = useCallback(( props:BottomSheetBackdropProps) => (
+        <BottomSheetBackdrop
+            {...props}
+            disappearsOnIndex={-1}
+            appearsOnIndex={0}
+            opacity={0.5}
+        />
+    ),[])
+
+    // Get the screen name from navigation cus the same screen is used for credit accounts and fund accounts
     const navigation = useNavigation();
     const { screen } = route.params;
-    const [ focusedIndex, setFocusedIndex ] = useState<number | null>(null);
-    const [ modalActive, setModalActive ] = useState<boolean>(false)
-
     useEffect(() => {
         navigation.setOptions({title:screen})
     },[])
-    const sheetRef = useRef<BottomSheet>(null);
-    const snapPoints = useMemo(() => [280], []);
 
-    // TEMP
-    // const badge = colors.light.badge;
-    // const recent = [
-    //     {
-    //         type:'spend',
-    //         amount:800,
-    //         category:'Fees'
-    //     },
-    //     {
-    //         type:'spend',
-    //         amount:50,
-    //         category:'Transport'
-    //     },
-    //     {
-    //         type:'income',
-    //         amount:1200,
-    //         category:'Bank'
-    //     }
-    // ]
-    // TEMP END
+
+    // Handles valiedBadges array for Accounts - by filtering out the used badges from available 9 badges and updates the state of valiedBades
+    interface usedBadgesProps {
+        badge:String
+    }
+    const [ valiedBadges, setValiedBadges ] = useState<{label:null; badge:string}[]>([
+        {label:null, badge:'#0F3D2E'},
+        {label:null, badge:'#4A6FA5'},
+        {label:null, badge:'#A84545'},
+        {label:null, badge:'#C9A227'},
+        {label:null, badge:'#6B5C8A'},
+        {label:null, badge:'#3F6E8C'},
+        {label:null, badge:'#C56A2D'},
+        {label:null, badge:'#2F3E4E'},
+        {label:null, badge:'#B55A5A'}
+    ])
+    async function refreashBadges(){
+        console.log("Badges Refreashed")
+        const usedBadges= await getAccountBadges()
+        const valied = valiedBadges.filter( valiedBadge => {
+            let isValied = true
+            usedBadges.map(usedBadge => {
+                if (usedBadge.badge == valiedBadge.badge){
+                    isValied = false
+                }
+            })
+            return isValied
+        })
+        setValiedBadges(valied)
+    }
+    
+    // Handles Notification under error and success of account creation 
+    const [ notificationType, setNotificationType ] = useState<null | 'success' | 'error' | 'info'>(null)
+    const [ notificationMessage, setNotificationMessage ] = useState<string>('')
+    let notification
+    switch (notificationType) {
+        case 'success':
+            notification = <Notification message={notificationMessage} type={notificationType}/>
+            notificationTimeout()
+            break;
+        case 'error':
+            notification = <Notification message={notificationMessage} type={notificationType}/>
+            notificationTimeout()
+            break;
+        case 'info':
+            notification = <Notification message={notificationMessage} type={notificationType}/>
+            notificationTimeout()
+            break;
+        default:
+            break;
+    }
+
+    function notificationTimeout(){
+        console.log('timeout started')
+        setTimeout(()=> {
+            setNotificationMessage('')
+            setNotificationType(null)
+        }, 5000)
+    }
 
     // let handlePress: () => void;
 
@@ -57,41 +107,36 @@ export default function FundCreditAccounts({route}:Props){
     
     return (
         <>
-            <SafeAreaView style={{backgroundColor:'#ffffff'}} edges={['top', 'left', 'right']}>
+            <SafeAreaView style={{backgroundColor:'#ffffff', flex:1}} edges={['top', 'left', 'right']}>
                 <ScrollView showsVerticalScrollIndicator={false}>
 
+                {notification}
 
-                    <FundCreditAddButton handlePress={() =>{
+            
+                <FundCreditAddButton 
+                    handlePress={() =>{
                         sheetRef.current?.expand()
-                        console.log('Button Clicked')
-                        console.log(sheetRef.current)
-                        console.log(snapPoints)
-                        }} />
-                    {/* <Text>someting</Text>
-                    <AccountCard name='Wallet' color={badge.blue} balance="Rs. 3,745.00" category={recent}/>
-                    <AccountCard name='Bank' color={badge.yellow} balance="Rs. 45,600.00" category={recent} />
-                    <AccountCard name='Payoneer' color={badge.red} balance="Rs. 185,600.00" category={recent} />
-                    <AccountCard name='Wallet' color={badge.blue} balance="Rs. 3,745.00" category={recent}/>
-                    <AccountCard name='Bank' color={badge.yellow} balance="Rs. 45,600.00" category={recent} />
-                    <AccountCard name='Payoneer' color={badge.red} balance="Rs. 185,600.00" category={recent} /> */}
-
-
-
+                        refreashBadges()
+                    }} />
 
                 </ScrollView>
-                <BottomSheet snapPoints={[300]} index={0}>
-                    <View style={{backgroundColor:'red'}}>
-                        <Text>VISIBLE</Text>
-                        <Text>VISIBLE</Text>
-                        <Text>VISIBLE</Text>
-                        <Text>VISIBLE</Text>
-                        <Text>VISIBLE</Text>
-                        <Text>VISIBLE</Text>
-                        <Text>VISIBLE</Text>
-                        <Text>VISIBLE</Text>
-                        <Text>VISIBLE</Text>
-                        <Text>VISIBLE</Text>
-                    </View>
+
+                <BottomSheet 
+                    index={-1} 
+                    enableDynamicSizing={true}
+                    enablePanDownToClose={true}
+                    ref={sheetRef}
+                    backdropComponent={backDrop}
+                    >
+                    <BottomSheetView>
+                        <BottomSheetWrapper 
+                            ref={sheetRef} 
+                            badges={valiedBadges} 
+                            refreashBadges={refreashBadges} 
+                            setNotificationMessage={setNotificationMessage} 
+                            setNotificationType={setNotificationType}
+                            />
+                    </BottomSheetView>
                 </BottomSheet>
 
             </SafeAreaView>

@@ -1,3 +1,5 @@
+import 'react-native-gesture-handler';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'react-native';
@@ -24,7 +26,7 @@ export default function App(){
     initDB()
 
     return (
-        <GestureHandlerRootView>
+        <GestureHandlerRootView style={{ flex: 1, backgroundColor: 'grey' }}>
             <StatusBar />
             <NavigationContainer>
                 <TabNavigation />
