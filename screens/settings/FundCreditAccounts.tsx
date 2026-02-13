@@ -127,17 +127,7 @@ export default function FundCreditAccounts({route}:Props){
                 {notification}
 
             
-                <FundCreditAccountsContentWrapper
-                    accounts={accounts}
-                    setBadge={setBadge}
-                    setAccountName={setAccountName}
-                    setBalance={setBalance}
-                    openBottomSheet={() =>{
-                        sheetRef.current?.expand()
-                    }} 
-                    refreashFields={refreashFields}
-                    setIsNew={setIsNew}
-                    setFocusedAccount={setFocusedAccount}/>
+                <FundCreditAccountsContentWrapper/>
 
                 </ScrollView>
 
@@ -149,22 +139,7 @@ export default function FundCreditAccounts({route}:Props){
                     backdropComponent={backDrop}
                     >
                     <BottomSheetView>
-                        <BottomSheetWrapper 
-                            ref={sheetRef} 
-                            badges={valiedBadges} 
-                            refreashFields={refreashFields} 
-                            setNotificationMessage={setNotificationMessage} 
-                            setNotificationType={setNotificationType}
-                            badge={badge}
-                            setBadge={setBadge}
-                            accountName={accountName}
-                            setAccountName={setAccountName}
-                            balance={balance}
-                            setBalance={setBalance}
-                            fetchAccounts={fetchAccounts}
-                            isNew={isNew}
-                            focusedAccount={focusedAccount}
-                            />
+                        <BottomSheetWrapper />
                     </BottomSheetView>
                 </BottomSheet>
 
