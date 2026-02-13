@@ -8,7 +8,7 @@ export async function initDB(){
             CREATE TABLE IF NOT EXISTS accounts(
                 accountId INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
-                badge TEXT NOT NULL,
+                badge TEXT DEFAULT NULL,
                 initialBalance INTEGER NOT NULL,
                 isCredit BOOL NOT NULL,
                 isActive BOOL NOT NULL

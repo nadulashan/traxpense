@@ -4,27 +4,36 @@ import { StyleSheet } from "react-native";
 
 const FundCreditAccountsStyles = StyleSheet.create({
     AddButtonContainer : {
-        position:'absolute',
-        bottom:16,
-        right:16,
-        // backgroundColor:colors.light.white,
-        paddingTop:8,
-        paddingBottom:8,
-        paddingLeft:24,
-        paddingRight:24,
-        borderRadius:8,
-        // borderColor:colors.light.primary
+        // position:'absolute',
+        // bottom:16,
+        // right:16,
+        // // backgroundColor:colors.light.white,
+        // paddingTop:8,
+        // paddingBottom:8,
+        // paddingLeft:24,
+        // paddingRight:24,
+        // borderRadius:8,
+        // // borderColor:colors.light.primary
+        marginLeft:24,
+        marginRight:24,
        
     },
 
     AddButton : {
-        width:'90%',
+        width:360,
         backgroundColor:colors.light.primary,
+        alignItems:'center',
+        justifyContent:'center',
+        paddingTop:12,
+        paddingBottom:12,
+        borderRadius:8,
     },
 
     AddButtonText : {
         color:colors.light.white,
-        fontFamily:fonts.regular
+        fontFamily:fonts.medium,
+        fontSize:16,
+        lineHeight:16
     },
 
     BottomSheetWrapper: {
@@ -84,8 +93,8 @@ const FundCreditAccountsStyles = StyleSheet.create({
         fontFamily:fonts.semiBold
     },
 
-    BottomSheetCancel : {   
-        backgroundColor:colors.light.primaryLight
+    BottomSheetSuspend : {   
+        backgroundColor:colors.light.red
     },
 
     BottomSheetSave : {   
@@ -101,6 +110,41 @@ const FundCreditAccountsStyles = StyleSheet.create({
         marginTop:64,
         marginBottom:64,
         textAlign:'center'
+    },
+
+    ContentWrapper : {
+        marginLeft:24,
+        marginRight:24,
+        marginTop:24,
+        alignItems:'center'
+    },
+
+    CardManageButtonWrapper : {
+        marginBottom:36,
+        gap:16,
+    },
+
+    ManageButton : {
+        paddingTop:8,
+        paddingBottom:8,
+        width:360,
+        borderWidth:1,
+        borderColor:colors.light.primary,
+        alignItems:'center',
+        borderRadius:8
+    },
+
+    ManageButtonText : {
+        fontFamily:fonts.medium,
+        textAlign:'center'
+    },
+
+    ConditionalText : {
+        fontFamily:fonts.regular,
+        textAlign:'center',
+        paddingTop:24,
+        paddingBottom:36,
+        color:colors.light.accent
     }
 })
 

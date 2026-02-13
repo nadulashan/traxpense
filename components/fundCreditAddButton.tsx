@@ -1,18 +1,22 @@
 import FundCreditAccountsStyles from '@/styles/fundCreditAccountsStyles';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+// import FontAwesome6 from '@expo/vector-icons/FontAwesome6';<FontAwesome6 name="add" size={16} color={colors.light.white} />
 import { Pressable, Text, View } from 'react-native';
 
 type ButtonProps = {
-    handlePress: () => void
+    handlePress: () => void;
+    refreashFields:() => Promise<void>;
 }
 
-export default function FundCreditAddButton({ handlePress }: ButtonProps){
+export default function FundCreditAddButton({ handlePress,refreashFields }: ButtonProps){
     return(
-        <View>
+        <View style={FundCreditAccountsStyles.AddButtonContainer}>
             <Pressable 
-                onPress={handlePress}
+                onPress={() => {
+                    handlePress()
+                    refreashFields()
+                }}
                 style={FundCreditAccountsStyles.AddButton}>
-                <Text><FontAwesome6 name="add" size={24} color="black" /></Text>
+                <Text style ={FundCreditAccountsStyles.AddButtonText}> ADD NEW ACCOUNT</Text>
             </Pressable>
         </View>
         )

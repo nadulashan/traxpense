@@ -1,14 +1,44 @@
 import colors from '@/constants/colors';
 import { addNewFundAccount } from '@/db/insert';
+import { suspendAccount, updateAccount } from '@/db/update';
 import FundCreditAccountsStyles from '@/styles/fundCreditAccountsStyles';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 
-export default function BottomSheetWrapepr({ref, badges, refreashBadges, setNotificationMessage, setNotificationType}:any){
-    const [ badge, setBadge] = useState<string>('')
-    const [ accountName, setAccountName ] = useState<string>('')
-    const [ balance, setBalance ] = useState<string>('')
+type BottomSheetWrapperProps = {
+    ref:any;
+    badges:{label:null; badge:string}[];
+    refreashFields:() => Promise<void>;
+    setNotificationMessage:React.Dispatch<React.SetStateAction<string>>;
+    setNotificationType:React.Dispatch<React.SetStateAction<"success" | "error" | "info" | null>>;
+    badge:string;
+    setBadge:React.Dispatch<React.SetStateAction<string>>;
+    accountName:string;
+    setAccountName:React.Dispatch<React.SetStateAction<string>>;
+    balance: string;
+    setBalance:React.Dispatch<React.SetStateAction<string>>;
+    fetchAccounts:() => void;
+    isNew:boolean;
+    focusedAccount:any;
+}
+
+export default function BottomSheetWrapepr({
+    ref, 
+    badges, 
+    refreashFields, 
+    setNotificationMessage, 
+    setNotificationType, 
+    badge, 
+    setBadge, 
+    accountName, 
+    setAccountName,
+    balance,
+    setBalance,
+    fetchAccounts,
+    isNew,
+    focusedAccount
+    }:BottomSheetWrapperProps){
 
     useEffect(()=> {
         if (badges.length !== 0) {
@@ -16,19 +46,32 @@ export default function BottomSheetWrapepr({ref, badges, refreashBadges, setNoti
         }
     }, [badges])
 
-    function addAccount(){
-        console.log('addAccount function is runnning')
+    function addAccountCaller(){
         if (accountName !== '' && balance !==''){
             const number = Number(balance)
             addNewFundAccount(accountName,badge,number)
             setNotificationMessage('Account Successfully Added')
             setNotificationType('success')
+            return
         }
+        hideBottomSheet()
+        setNotificationMessage('Invalied Inputs')
+        setNotificationType('error')
+
     }
 
-    function clearFields(){
-        setAccountName('')
-        setBalance('')
+    async function suspendAccountCaller(id:number){
+        const result = await suspendAccount(id)
+        refreashFields()
+    }
+
+    async function updateAccountCaller(
+        id:number, 
+        accountName:string, 
+        accountBalance:number, 
+        accountBadge:string){
+        const result = await updateAccount(id,accountName,accountBalance,accountBadge)
+        refreashFields()
     }
 
     function hideBottomSheet(){
@@ -40,11 +83,18 @@ export default function BottomSheetWrapepr({ref, badges, refreashBadges, setNoti
         return Number.isFinite(Number(input));
     }
 
-
+    function isDisabled(){
+        if (focusedAccount && focusedAccount.isActive == 0 && !isNew){
+            return true
+        } else {
+            return false
+        }
+    }
+   
     return(
         <View style={FundCreditAccountsStyles.BottomSheetWrapper}>
-            {badges.length == 0? 
-                <Text style={FundCreditAccountsStyles.MaxAccountText}>You already have maximum allowed active fund accounts</Text>:
+            {badges.length == 0 && focusedAccount == undefined? 
+                <Text style={FundCreditAccountsStyles.MaxAccountText}>You already have maximum allowed active accounts</Text>:
                 <>
                     <View style={FundCreditAccountsStyles.BottomSheetNameBadgeWrapper}>
                     <TextInput
@@ -53,6 +103,7 @@ export default function BottomSheetWrapepr({ref, badges, refreashBadges, setNoti
                         placeholderTextColor={colors.light.primary}
                         onChangeText={text => setAccountName(text)}
                         value={accountName}
+                        readOnly={isDisabled()}
                     />
                     <Dropdown 
                         style={FundCreditAccountsStyles.BottomSheetDropdown}
@@ -66,7 +117,7 @@ export default function BottomSheetWrapepr({ref, badges, refreashBadges, setNoti
                             <View style={{width:24, height:24, borderRadius:12, margin:8, backgroundColor:item.badge}}></View>
                         )}
                         renderLeftIcon={() => (
-                            <View style={{width:24, height:24, borderRadius:12, margin:8, backgroundColor:badge}}></View>
+                            <View style={{width:24, height:24, borderRadius:100, margin:8, backgroundColor:badge}}></View>
                         )}
                     />
                     </View>
@@ -86,19 +137,56 @@ export default function BottomSheetWrapepr({ref, badges, refreashBadges, setNoti
                             }
                         }}
                         value={balance}
+                        readOnly={isDisabled()}
                     />
                     <View style={FundCreditAccountsStyles.BottomSheetButtonWrapper}>
+                        {isNew?
                         <Pressable 
                             style={[FundCreditAccountsStyles.BottomSheetButtons, FundCreditAccountsStyles.BottomSheetSave]}
                             onPress={() => {
-                                addAccount()
-                                refreashBadges()
-                                clearFields()
+                                addAccountCaller()
+                                refreashFields()
                                 hideBottomSheet()
+                                fetchAccounts()
                             }}
                             >
                                 <Text style={[FundCreditAccountsStyles.BottomSheetButtonText,  FundCreditAccountsStyles.BottomSheetSaveText]}>Save</Text>
                         </Pressable>
+                         :
+                        <>
+                            {isDisabled()?
+                                <View>
+                                    <Text style={FundCreditAccountsStyles.ConditionalText}>This account is suspended</Text>
+                                </View>
+                            :
+                            <>
+                            <Pressable 
+                                style={[FundCreditAccountsStyles.BottomSheetButtons, FundCreditAccountsStyles.BottomSheetSuspend]}
+                                onPress={() => {
+                                    refreashFields()
+                                    hideBottomSheet()
+                                    fetchAccounts()
+                                    suspendAccountCaller(focusedAccount.accountId)
+                                }}
+                                >
+                                    <Text style={[FundCreditAccountsStyles.BottomSheetButtonText,  FundCreditAccountsStyles.BottomSheetSaveText]}>Suspend</Text>
+                            </Pressable>
+                            <Pressable 
+                                style={[FundCreditAccountsStyles.BottomSheetButtons, FundCreditAccountsStyles.BottomSheetSave]}
+                                onPress={() => {
+                                    updateAccountCaller(focusedAccount.accountId,focusedAccount.name,focusedAccount.initialBalance,focusedAccount.badge)
+                                    refreashFields()
+                                    hideBottomSheet()
+                                    fetchAccounts()
+                                }}
+                                >
+                                    <Text style={[FundCreditAccountsStyles.BottomSheetButtonText,  FundCreditAccountsStyles.BottomSheetSaveText]}>Update</Text>
+                            </Pressable>
+                            </>
+                        }
+                            
+                        </>
+                        }
                     </View> 
                 </>    
             }

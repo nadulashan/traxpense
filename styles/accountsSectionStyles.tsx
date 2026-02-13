@@ -6,7 +6,7 @@ const AccountsSection = StyleSheet.create({
     AccountCardStyles: {
         height:224,
         width:360,
-        marginLeft:24,
+        // marginLeft:24,
         overflow:'hidden', // To ensure android respect borderRadius
         marginTop:2,
         marginBottom:2,
@@ -79,7 +79,7 @@ const AccountsSection = StyleSheet.create({
         fontSize:24,
         fontFamily:fonts.semiBold,
         color:colors.light.primary
-    }
+    },
 })
 
 
