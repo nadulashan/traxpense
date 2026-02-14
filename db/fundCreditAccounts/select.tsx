@@ -29,15 +29,31 @@ export async function getCreditAccountBadges(){
     }
 };
 
-export async function getAccounts() {
+export async function getFundAccounts() {
     try{
         const db = await getDB();
         const accounts = await db.getAllAsync<{accountId: number;name:string; badge:string;initialBalance:number;isActive:number;}>(`
-                            SELECT accountId,name,badge,initialBalance,isActive FROM accounts;
+                            SELECT accountId,name,badge,initialBalance,isActive 
+                            FROM accounts
+                            WHERE isCredit=0;
                         `)
         return await accounts
     } catch (e){
-        handleDBError(e,'Fetching accounts failed')
+        handleDBError(e,'Fetching fund accounts failed')
+    }
+};
+
+export async function getCreditAccounts() {
+    try{
+        const db = await getDB();
+        const accounts = await db.getAllAsync<{accountId: number;name:string; badge:string;initialBalance:number;isActive:number;}>(`
+                            SELECT accountId,name,badge,initialBalance,isActive 
+                            FROM accounts
+                            WHERE isCredit=1;
+                        `)
+        return await accounts
+    } catch (e){
+        handleDBError(e,'Fetching credit accounts failed')
     }
 };
 

@@ -1,8 +1,9 @@
+import AddAccountButton from '@/components/addaccountbutton';
 import BottomSheetWrapper from '@/components/bottomSheet';
 import FundCreditAccountsContentWrapper from '@/components/fundCreditAccountsContentWrapper';
-import Notification from '@/components/notification';
 import { addNewCreditAccount, addNewFundAccount } from '@/db/fundCreditAccounts/insert';
-import { getCreditAccountBadges, getFundAccountBadges } from '@/db/fundCreditAccounts/select';
+import { getCreditAccountBadges, getCreditAccounts, getFundAccountBadges, getFundAccounts } from '@/db/fundCreditAccounts/select';
+import { suspendAccount, updateAccount } from '@/db/fundCreditAccounts/update';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
@@ -16,30 +17,32 @@ type Props = StackScreenProps<SettingsStackParamList, 'FundCreditAccounts'>
 export default function FundCreditAccounts({route}:Props){
 
     // useState variables for child components access
-    const [ fetchedAccounts, setFetchedAccounts ] = useState();
-    const [ focusedAccount, setFocusedAccount ] = useState();
+    const [ fetchedAccounts, setFetchedAccounts ] = useState<{ accountId: number; name: string; badge: string; initialBalance: number; isActive: number; }[]>([]);
+    const [ focusedAccount, setFocusedAccount ] = useState<{ accountId: number; name: string; badge: string; initialBalance: number; isActive: number; } | null>(null);
+    const [ isAccountsReady, setIsAccountsReady ] = useState<boolean>(false)
     const [ inputName, setInputName ] = useState<string>('');
     const [ inputBalance, setInputBalance ] = useState<string>('');
     const [ inputBadge, setInputBadge ] = useState<string>('');
     const [ renderBottomSheet, setRenderBottomSheet ] = useState<boolean>(false);
     const [ inputNameError, setInputNameError ] = useState<boolean>(false)
     const [ inputBalanceError, setInputBalanceError ] = useState<boolean>(false)
+    const [ suspendNotification, setSuspendNotification ] = useState<boolean>(false)
     const valiedFundBadges = [
         {label:null, badge:'#4A6FA5'},
         {label:null, badge:'#5E8C61'},
         {label:null, badge:'#C9A227'},
         {label:null, badge:'#6B5C8A'},
-        // {label:null, badge:'#3F6E8C'},
-        // {label:null, badge:'#C56A2D'},
-        // {label:null, badge:'#2F3E4E'},
-        // {label:null, badge:'#8C4F5A'},
-        // {label:null, badge:'#4F7C82'},
-        // {label:null, badge:'#A05C7B'},
-        // {label:null, badge:'#7A8C3B'},
-        // {label:null, badge:'#B05E3C'},
-        // {label:null, badge:'#4C6A5A'},
-        // {label:null, badge:'#7C5A4F'},
-        // {label:null, badge:'#3E5C76'}
+        {label:null, badge:'#3F6E8C'},
+        {label:null, badge:'#C56A2D'},
+        {label:null, badge:'#2F3E4E'},
+        {label:null, badge:'#8C4F5A'},
+        {label:null, badge:'#4F7C82'},
+        {label:null, badge:'#A05C7B'},
+        {label:null, badge:'#7A8C3B'},
+        {label:null, badge:'#B05E3C'},
+        {label:null, badge:'#4C6A5A'},
+        {label:null, badge:'#7C5A4F'},
+        {label:null, badge:'#3E5C76'}
     ];
     const valiedCreditBadges= [
         {label:null, badge:'#B04A4A'},
@@ -67,6 +70,7 @@ export default function FundCreditAccounts({route}:Props){
     useEffect(() => {
         navigation.setOptions({title:screen})
         refreshValiedBadges()
+        refreshAccounts()
     },[])
 
     // Functions
@@ -88,6 +92,16 @@ export default function FundCreditAccounts({route}:Props){
         return Number.isFinite(Number(input));
     }
 
+    function resetRenderBottomSheet() {
+        setRenderBottomSheet(false)
+    }
+
+    function resetIsAccountsReady() {
+        setIsAccountsReady(false)
+    }
+
+
+    // Database actions callers
     function addAccountCaller(name:string, badge:string, balance:number){
         if ( type == 'fund' ){
             addNewFundAccount(name, badge, balance)
@@ -96,12 +110,16 @@ export default function FundCreditAccounts({route}:Props){
         }
     }
 
-    function resetRenderBottomSheet() {
-        setRenderBottomSheet(false)
+    function suspendAccountCaller(id:number){
+        suspendAccount(id)
     }
 
+    function updateAccountCaller(id:number, name:string, balance:number, badge:string){
+        updateAccount(id,name,balance, badge)
+    }
+
+    // Database fetch action callers
     async function refreshValiedBadges(){
-        // setRenderBottomSheet(false)
         let fetchedBadges;
         let correctTypeValiedBadges;
         if (type === 'fund'){
@@ -125,6 +143,17 @@ export default function FundCreditAccounts({route}:Props){
         setRenderBottomSheet(true)
     }
 
+    async function refreshAccounts() {
+        let accounts;
+        if ( type == 'fund'){
+            accounts = await getFundAccounts()
+        } else {
+            accounts = await getCreditAccounts()
+        }
+        setFetchedAccounts(accounts)
+        setIsAccountsReady(true)
+    }
+
     // Bottom Sheet things including backdrop
     const sheetRef = useRef<BottomSheet>(null);
     const backDrop = useCallback(( props:BottomSheetBackdropProps) => (
@@ -135,48 +164,63 @@ export default function FundCreditAccounts({route}:Props){
             opacity={0.5}
         />
     ),[])
+
+    // To reset suspend notification state when bottom sheet is closed
+    const handleSuspendNotificationState = useCallback(() => {
+        setSuspendNotification(false);
+    }, []);
     
     // Handles Notification under error and success of account creation 
-    const [ notificationType, setNotificationType ] = useState<null | 'success' | 'error' | 'info'>(null)
-    const [ notificationMessage, setNotificationMessage ] = useState<string>('')
-    let notification
-    switch (notificationType) {
-        case 'success':
-            notification = <Notification message={notificationMessage} type={notificationType}/>
-            notificationTimeout()
-            break;
-        case 'error':
-            notification = <Notification message={notificationMessage} type={notificationType}/>
-            notificationTimeout()
-            break;
-        case 'info':
-            notification = <Notification message={notificationMessage} type={notificationType}/>
-            notificationTimeout()
-            break;
-        default:
-            break;
-    }
+    // const [ notificationType, setNotificationType ] = useState<null | 'success' | 'error' | 'info'>(null)
+    // const [ notificationMessage, setNotificationMessage ] = useState<string>('')
+    // let notification
+    // switch (notificationType) {
+    //     case 'success':
+    //         notification = <Notification message={notificationMessage} type={notificationType}/>
+    //         notificationTimeout()
+    //         break;
+    //     case 'error':
+    //         notification = <Notification message={notificationMessage} type={notificationType}/>
+    //         notificationTimeout()
+    //         break;
+    //     case 'info':
+    //         notification = <Notification message={notificationMessage} type={notificationType}/>
+    //         notificationTimeout()
+    //         break;
+    //     default:
+    //         break;
+    // }
 
-    function notificationTimeout(){
-        setTimeout(()=> {
-            setNotificationMessage('')
-            setNotificationType(null)
-        }, 5000)
-    }
+    // function notificationTimeout(){
+    //     setTimeout(()=> {
+    //         setNotificationMessage('')
+    //         setNotificationType(null)
+    //     }, 5000)
+    // }
     
     return (
         <>
             <SafeAreaView style={{backgroundColor:'#ffffff', flex:1}} edges={['top', 'left', 'right']}>
                 <ScrollView showsVerticalScrollIndicator={false}>
 
-                {notification}
+                {/* {notification} */}
 
             
                 <FundCreditAccountsContentWrapper
                     openBottomSheet = {openBottomSheet}
+                    isAccountsReady = {isAccountsReady}
+                    fetchedAccounts = {fetchedAccounts}
+                    setFocusedAccount = {setFocusedAccount}
+                    setInputName={setInputName}
+                    setInputBalance={setInputBalance}
+                    setInputBadge={setInputBadge}
+                    focusedAccount={focusedAccount}
+                    setRenderBottomSheet={setRenderBottomSheet}
                 />
 
                 </ScrollView>
+                
+                <AddAccountButton openBottomSheet={openBottomSheet} setFocusedAccount={setFocusedAccount} setRenderBottomSheet={setRenderBottomSheet}/>
 
                 <BottomSheet 
                     index={-1} 
@@ -184,6 +228,7 @@ export default function FundCreditAccounts({route}:Props){
                     enablePanDownToClose={true}
                     ref={sheetRef}
                     backdropComponent={backDrop}
+                    onChange={handleSuspendNotificationState}
                     >
                     <BottomSheetView>
                         <BottomSheetWrapper
@@ -206,6 +251,13 @@ export default function FundCreditAccounts({route}:Props){
                             setInputBalanceError={setInputBalanceError}
                             resetRenderBottomSheet={resetRenderBottomSheet}
                             type={type}
+                            resetIsAccountsReady={resetIsAccountsReady}
+                            refreshAccounts={refreshAccounts}
+                            focusedAccount={focusedAccount}
+                            suspendAccountCaller={suspendAccountCaller}
+                            updateAccountCaller={updateAccountCaller}                            
+                            suspendNotification={suspendNotification}
+                            setSuspendNotification={setSuspendNotification}
                         />
                     </BottomSheetView>
                 </BottomSheet>

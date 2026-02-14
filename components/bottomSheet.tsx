@@ -23,6 +23,13 @@ type BottomSheetWrapperProps = {
     setInputBalanceError:React.Dispatch<React.SetStateAction<boolean>>;
     resetRenderBottomSheet:() => void;
     type:string;
+    resetIsAccountsReady:() => void;
+    refreshAccounts:() => void;
+    focusedAccount:{ accountId: number; name: string; badge: string; initialBalance: number; isActive: number; } | null;
+    suspendAccountCaller:(id:number) => void;
+    updateAccountCaller:(id:number, name:string, balance:number, badge:string) => void;
+    suspendNotification:boolean;
+    setSuspendNotification:React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function BottomSheetWrapper({
@@ -44,14 +51,22 @@ export default function BottomSheetWrapper({
     inputBalanceError,
     setInputBalanceError,
     resetRenderBottomSheet,
-    type
+    type,
+    resetIsAccountsReady,
+    refreshAccounts,
+    focusedAccount,
+    suspendAccountCaller,
+    updateAccountCaller,
+    suspendNotification,
+    setSuspendNotification
     }:BottomSheetWrapperProps){
+
 
     useEffect(() => {
         if (renderBottomSheet && valiedBadges.length !== 0) {
             setInputBadge(valiedBadges[0].badge)
         }
-    },[renderBottomSheet])
+    },[renderBottomSheet, focusedAccount])
 
     const renderIcon = useCallback(() => (
         <View style= {{height:24, width:24,borderWidth:1, borderRadius:12, backgroundColor:inputBadge, borderColor:inputBadge}}></View>
@@ -61,13 +76,14 @@ export default function BottomSheetWrapper({
         <View style={FundCreditAccountsStyles.BottomSheetWrapper}>
             {renderBottomSheet?
             <>
-                {valiedBadges.length == 0?
+                {valiedBadges.length == 0 && !focusedAccount?
                 <View>
-                    <Text style={FundCreditAccountsStyles.MaximumWariningText}>You already have the maximum allowed Active Accounts</Text>
+                    <Text style={FundCreditAccountsStyles.NoActionText}>You already have the maximum allowed Active Accounts</Text>
                 </View>
                 :
                 <>
-                    <View>
+                    <View>                        
+                        {suspendNotification? <Text style={FundCreditAccountsStyles.NoActionDangerText}>This action is IRREVERSIBLE. Long Press on the button to continue</Text>:null}
                         <Text style={FundCreditAccountsStyles.BottomSheetFieldText}>Account Name:</Text>
                         <TextInput
                             value={inputName}
@@ -80,6 +96,7 @@ export default function BottomSheetWrapper({
                                 setInputName(name)
                             }}
                             style={FundCreditAccountsStyles.BottomSheetInput}
+                            readOnly={focusedAccount?.isActive == 0}
                         />
                         {
                             inputNameError?<Text style={FundCreditAccountsStyles.InvalidResponse}>Invalid response</Text> : null
@@ -100,6 +117,7 @@ export default function BottomSheetWrapper({
                             }}
                             style={FundCreditAccountsStyles.BottomSheetInput}
                             keyboardType='numeric'
+                            readOnly={focusedAccount?.isActive == 0}
                         />
                         {
                             inputBalanceError?
@@ -108,6 +126,9 @@ export default function BottomSheetWrapper({
                                 null
                         }
                     </View>
+                    {focusedAccount?.isActive == 0? 
+                        null
+                    :                    
                     <View style={FundCreditAccountsStyles.BottomSheetBadgeWrapper}>
                         <Text  style={FundCreditAccountsStyles.BottomSheetFieldText}>Account Badge:</Text>
                         <Dropdown
@@ -123,8 +144,52 @@ export default function BottomSheetWrapper({
                                 <View style={{width:24, height:24, borderRadius:12, margin:8, backgroundColor:item.badge}}></View>
                             )}
                         />
-                    </View>
+                    </View>}
                     <View style={FundCreditAccountsStyles.BottomSheetButtonWrapper}>
+                        {focusedAccount?
+                        <>               
+                            { focusedAccount.isActive == 0? 
+                            <Text style={FundCreditAccountsStyles.NoActionText}>This Account is suspended</Text>
+                            :
+                            <>
+                                <Pressable 
+                                    style={[FundCreditAccountsStyles.BottomSheetSuspendButton, FundCreditAccountsStyles.BottomSheetButton]}
+                                    onPress={() => setSuspendNotification(true)}
+                                    onLongPress={() => {
+                                        if (!inputNameError && !inputBalanceError){
+                                            suspendAccountCaller(focusedAccount.accountId)
+                                            resetInputs()
+                                            refreshValiedBadges()
+                                            refreshAccounts()
+                                            closeBottomSheet()
+                                            resetRenderBottomSheet()
+                                            resetIsAccountsReady()
+                                        }
+                                    }}
+                                >
+                                    <Text style={FundCreditAccountsStyles.BottomSheetButtonText}>Suspend</Text>
+                                </Pressable>
+                                <Pressable 
+                                    style={[FundCreditAccountsStyles.BottomSheetUpdateButton, FundCreditAccountsStyles.BottomSheetButton]}
+                                    onPress={() => {
+                                        if (!inputNameError && !inputBalanceError){
+                                            updateAccountCaller(focusedAccount.accountId, inputName,Number(inputBalance), inputBadge)
+                                            resetInputs()
+                                            refreshValiedBadges()
+                                            refreshAccounts()
+                                            closeBottomSheet()
+                                            resetRenderBottomSheet()
+                                            resetIsAccountsReady()
+                                        }
+                                    }}
+                                >
+                                    <Text style={FundCreditAccountsStyles.BottomSheetButtonText}>Update</Text>
+                                </Pressable>
+                            </>
+                            }        
+                            
+                        </>
+                        :                        
                         <Pressable 
                             style={[FundCreditAccountsStyles.BottomSheetSaveButton, FundCreditAccountsStyles.BottomSheetButton]}
                             onPress={() => {
@@ -132,13 +197,17 @@ export default function BottomSheetWrapper({
                                     addAccountCaller(inputName,inputBadge,Number(inputBalance))
                                     resetInputs()
                                     refreshValiedBadges()
+                                    refreshAccounts()
                                     closeBottomSheet()
                                     resetRenderBottomSheet()
+                                    resetIsAccountsReady()
                                 }
                             }}
                         >
                             <Text style={FundCreditAccountsStyles.BottomSheetButtonText}>Save</Text>
                         </Pressable>
+                        
+                        }
                     </View>
                 </>
                 }

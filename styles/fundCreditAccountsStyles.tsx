@@ -6,18 +6,66 @@ const FundCreditAccountsStyles = StyleSheet.create({
 
     AddAccountButtonWrapper : {
         position:'absolute',
-        width:36,
-        height:36,
-        bottom:360,
-        left:36,
-        backgroundColor:'black'
+        // width:44,
+        // height:44,
+        borderRadius:8,
+        bottom:24,
+        right:24,
+        backgroundColor:colors.light.primary,
+        alignItems:'center',
+        justifyContent:'center',
+        paddingTop:8,
+        paddingBottom:8,
+        paddingLeft:16,
+        paddingRight:16,
     },
 
-    ContentWrapper : {
+    AddAccountButtonText : {
+        color:colors.light.white,
+        fontSize:16,
+        fontFamily:fonts.semiBold
+    },
+
+    ActivityIndicatorWrapper : {
         marginLeft:24,
         marginRight:24,
         marginTop:24,
-        alignItems:'center'
+        alignItems:'center',
+        // backgroundColor:'pink',
+        minHeight:'100%',
+        justifyContent:'center',
+        flex:1
+    },
+
+    AccountContentWrapper : {
+        marginLeft:24,
+        marginRight:24,
+        marginTop:24,
+        alignItems:'center',
+    },
+
+    AccountButtonWrapper:{
+        width:'100%',
+        alignItems:'center',
+        gap:16,
+        marginBottom:36
+    },
+
+    ManageButtonWrapper : {
+        width:'100%',
+        paddingTop:8,
+        paddingBottom:8,
+        backgroundColor:colors.light.white,
+        borderRadius:8,
+        borderWidth:2,
+        borderColor:colors.light.primary
+    },
+
+    ManageButtonText : {
+        fontFamily:fonts.medium,
+        color:colors.light.primary,
+        fontSize:16,
+        textAlign:'center'
     },
     
     BottomSheetWrapper: {
@@ -35,7 +83,8 @@ const FundCreditAccountsStyles = StyleSheet.create({
         borderRadius:8,
         fontFamily:fonts.regular,
         fontSize:16,
-        lineHeight:18
+        height:50,
+        alignItems:'center'
     },
 
     BottomSheetBadgeWrapper : {
@@ -49,12 +98,14 @@ const FundCreditAccountsStyles = StyleSheet.create({
         flex:1,
         flexDirection:'row',
         justifyContent:'space-between',
-
+        gap:16
     },
 
     BottomSheetButton:{
         flex:1,
-        borderRadius:8
+        borderRadius:8,
+        paddingTop:16,
+        paddingBottom:16,
     },
 
     BottomSheetButtonText:{
@@ -65,8 +116,14 @@ const FundCreditAccountsStyles = StyleSheet.create({
 
     BottomSheetSaveButton : {
         backgroundColor: colors.light.primary,
-        paddingTop:16,
-        paddingBottom:16,
+    },
+
+    BottomSheetSuspendButton : {
+        backgroundColor: colors.light.red,
+    },
+
+    BottomSheetUpdateButton : {
+        backgroundColor: colors.light.primary,
     },
 
     InvalidResponse : {
@@ -75,11 +132,19 @@ const FundCreditAccountsStyles = StyleSheet.create({
         fontFamily:fonts.semiBold
     },
 
-    MaximumWariningText  : {
+    NoActionText  : {
         color:colors.light.accent,
         fontFamily:fonts.regular,
         textAlign:'center'
-    }
+    },
+
+    NoActionDangerText  : {
+        color:colors.light.red,
+        fontFamily:fonts.regular,
+        textAlign:'center'
+    },
+
+
 })
 
 
