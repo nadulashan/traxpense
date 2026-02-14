@@ -1,5 +1,5 @@
 import handleDBError from "./dbError";
-import getDB from "./opendb";
+import getDB from "./fundCreditAccounts/opendb";
 
 export async function initDB(){
     try{

@@ -1,4 +1,4 @@
-import handleDBError from "./dbError";
+import handleDBError from "../dbError";
 import getDB from "./opendb";
 
 export async function suspendAccount(id:number){
