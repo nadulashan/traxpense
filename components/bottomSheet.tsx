@@ -25,7 +25,7 @@ type BottomSheetWrapperProps = {
     type:string;
     resetIsAccountsReady:() => void;
     refreshAccounts:() => void;
-    focusedAccount:{ accountId: number; name: string; badge: string; initialBalance: number; isActive: number; } | null;
+    focusedAccount:{ accountId: number; name: string; badge: string; amount: number; isActive: number; } | null;
     suspendAccountCaller:(id:number) => void;
     updateAccountCaller:(id:number, name:string, balance:number, badge:string) => void;
     suspendNotification:boolean;
@@ -63,7 +63,7 @@ export default function BottomSheetWrapper({
 
 
     useEffect(() => {
-        if (renderBottomSheet && valiedBadges.length !== 0) {
+        if (!focusedAccount && renderBottomSheet && valiedBadges.length !== 0) {
             setInputBadge(valiedBadges[0].badge)
         }
     },[renderBottomSheet, focusedAccount])
@@ -193,7 +193,7 @@ export default function BottomSheetWrapper({
                         <Pressable 
                             style={[FundCreditAccountsStyles.BottomSheetSaveButton, FundCreditAccountsStyles.BottomSheetButton]}
                             onPress={() => {
-                                if (!inputNameError && !inputBalanceError){
+                                if (inputName != '' && inputBalance != '' && !inputNameError && !inputBalanceError){
                                     addAccountCaller(inputName,inputBadge,Number(inputBalance))
                                     resetInputs()
                                     refreshValiedBadges()

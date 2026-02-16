@@ -32,8 +32,8 @@ export async function getCreditAccountBadges(){
 export async function getFundAccounts() {
     try{
         const db = await getDB();
-        const accounts = await db.getAllAsync<{accountId: number;name:string; badge:string;initialBalance:number;isActive:number;}>(`
-                            SELECT accountId,name,badge,initialBalance,isActive 
+        const accounts = await db.getAllAsync<{accountId: number;name:string; badge:string;amount:number;isActive:number;}>(`
+                            SELECT accountId,name,badge,amount,isActive 
                             FROM accounts
                             WHERE isCredit=0;
                         `)
@@ -46,8 +46,8 @@ export async function getFundAccounts() {
 export async function getCreditAccounts() {
     try{
         const db = await getDB();
-        const accounts = await db.getAllAsync<{accountId: number;name:string; badge:string;initialBalance:number;isActive:number;}>(`
-                            SELECT accountId,name,badge,initialBalance,isActive 
+        const accounts = await db.getAllAsync<{accountId: number;name:string; badge:string;amount:number;isActive:number;}>(`
+                            SELECT accountId,name,badge,amount,isActive 
                             FROM accounts
                             WHERE isCredit=1;
                         `)
@@ -60,10 +60,11 @@ export async function getCreditAccounts() {
 export async function getAccount(id:number){
     try{
         const db = await getDB();
-        const accounts = await db.getFirstAsync<{accountId: number;name:string; badge:string;initialBalance:number;isActive:number;}>(`
-                            SELECT accountId,name,badge,initialBalance,isActive FROM accounts WHERE accountId=?;
+        const accountJson = await db.getFirstAsync<{accountId: number;name:string; badge:string;amount:number;isActive:number;}>(`
+                            SELECT accountId,name,badge,amount,isActive FROM accounts WHERE accountId=?;
                         `,id)
-        return await accounts
+        console.log(accountJson)
+        return await accountJson
     } catch (e){
         handleDBError(e,'Fetching account(1) details failed')
     }

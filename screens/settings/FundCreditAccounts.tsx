@@ -8,7 +8,7 @@ import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheet
 import { StackScreenProps } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView } from 'react-native';
+import { Keyboard, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SettingsStackParamList } from './SettingsStackNavigation';
 
@@ -17,8 +17,8 @@ type Props = StackScreenProps<SettingsStackParamList, 'FundCreditAccounts'>
 export default function FundCreditAccounts({route}:Props){
 
     // useState variables for child components access
-    const [ fetchedAccounts, setFetchedAccounts ] = useState<{ accountId: number; name: string; badge: string; initialBalance: number; isActive: number; }[]>([]);
-    const [ focusedAccount, setFocusedAccount ] = useState<{ accountId: number; name: string; badge: string; initialBalance: number; isActive: number; } | null>(null);
+    const [ fetchedAccounts, setFetchedAccounts ] = useState<{ accountId: number; name: string; badge: string; amount: number; isActive: number; }[]>([]);
+    const [ focusedAccount, setFocusedAccount ] = useState<{ accountId: number; name: string; badge: string; amount: number; isActive: number; } | null>(null);
     const [ isAccountsReady, setIsAccountsReady ] = useState<boolean>(false)
     const [ inputName, setInputName ] = useState<string>('');
     const [ inputBalance, setInputBalance ] = useState<string>('');
@@ -78,7 +78,11 @@ export default function FundCreditAccounts({route}:Props){
         sheetRef.current?.expand()
     }
     function closeBottomSheet(){
+        Keyboard.dismiss()
+        setSuspendNotification(false);
+        setTimeout(() => {
         sheetRef.current?.close()
+        },350)
     }
 
     function resetInputs(){
@@ -162,13 +166,19 @@ export default function FundCreditAccounts({route}:Props){
             disappearsOnIndex={-1}
             appearsOnIndex={0}
             opacity={0.5}
+            onPress={() => {
+                closeBottomSheet()
+            }}  
         />
     ),[])
 
     // To reset suspend notification state when bottom sheet is closed
-    const handleSuspendNotificationState = useCallback(() => {
-        setSuspendNotification(false);
-    }, []);
+    // const handleSuspendNotificationState = useCallback(() => {
+    //     setSuspendNotification(false);
+    //     Keyboard.dismiss()
+    //     closeBottomSheet()
+    // }, []);
+
     
     // Handles Notification under error and success of account creation 
     // const [ notificationType, setNotificationType ] = useState<null | 'success' | 'error' | 'info'>(null)
@@ -228,7 +238,7 @@ export default function FundCreditAccounts({route}:Props){
                     enablePanDownToClose={true}
                     ref={sheetRef}
                     backdropComponent={backDrop}
-                    onChange={handleSuspendNotificationState}
+                    // onChange={handleSuspendNotificationState}
                     >
                     <BottomSheetView>
                         <BottomSheetWrapper

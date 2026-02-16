@@ -1,4 +1,5 @@
 import colors from '@/constants/colors';
+import { priceWithComma } from '@/func/general';
 import FundCreditAccountsStyles from '@/styles/fundCreditAccountsStyles';
 import { useEffect } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
@@ -7,9 +8,9 @@ import AccountCard from './accountCard';
 type ContentWrapperProps = {
     openBottomSheet: () => void;
     isAccountsReady:boolean;
-    fetchedAccounts:{ accountId: number; name: string; badge: string; initialBalance: number; isActive: number; }[];
-    focusedAccount:{ accountId: number; name: string; badge: string; initialBalance: number; isActive: number; } | null;
-    setFocusedAccount:React.Dispatch<React.SetStateAction<{ accountId: number; name: string; badge: string; initialBalance: number; isActive: number; } | null>>;
+    fetchedAccounts:{ accountId: number; name: string; badge: string; amount: number; isActive: number; }[];
+    focusedAccount:{ accountId: number; name: string; badge: string; amount: number; isActive: number; } | null;
+    setFocusedAccount:React.Dispatch<React.SetStateAction<{ accountId: number; name: string; badge: string; amount: number; isActive: number; } | null>>;
     setInputName:React.Dispatch<React.SetStateAction<string>>;
     setInputBalance:React.Dispatch<React.SetStateAction<string>>;
     setInputBadge:React.Dispatch<React.SetStateAction<string>>;
@@ -28,10 +29,11 @@ export default function FundCreditAccountsContentWrapper({
     setRenderBottomSheet,
     }:ContentWrapperProps) {
 
+    // Update the states of the inputs when focused accout is updated
     useEffect(() => {
         if(focusedAccount){
             setInputName(focusedAccount.name)
-            setInputBalance(focusedAccount.initialBalance.toString())
+            setInputBalance((focusedAccount.amount/100).toString())
             setInputBadge(focusedAccount.badge)
         } else {
             setInputName('')
@@ -39,6 +41,7 @@ export default function FundCreditAccountsContentWrapper({
             setInputBadge('')
         }
     }, [focusedAccount])
+
     return(
         <>
         {isAccountsReady? 
@@ -48,7 +51,7 @@ export default function FundCreditAccountsContentWrapper({
                 {
                     fetchedAccounts.map(account => (
                         <View key={account.accountId} style={FundCreditAccountsStyles.AccountButtonWrapper}>
-                            <AccountCard name={account.name} color={account.badge? account.badge:'grey'} balance={account.initialBalance.toString()} category={null}/>
+                            <AccountCard name={account.name} color={account.badge? account.badge:'grey'} balance={priceWithComma(account.amount)} category={null}/>
                             <Pressable 
                                 style={FundCreditAccountsStyles.ManageButtonWrapper}
                                 onPress={() => {

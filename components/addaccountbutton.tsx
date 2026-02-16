@@ -3,7 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 
 type AddAccountButtonProps = {
     openBottomSheet: () => void;
-    setFocusedAccount:React.Dispatch<React.SetStateAction<{ accountId: number; name: string; badge: string; initialBalance: number; isActive: number; } | null>>;
+    setFocusedAccount:React.Dispatch<React.SetStateAction<{ accountId: number; name: string; badge: string; amount: number; isActive: number; } | null>>;
     setRenderBottomSheet:React.Dispatch<React.SetStateAction<boolean>>
 }
 

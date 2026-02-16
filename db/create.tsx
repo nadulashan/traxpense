@@ -9,7 +9,7 @@ export async function initDB(){
                 accountId INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 badge TEXT DEFAULT NULL,
-                initialBalance INTEGER NOT NULL,
+                amount INTEGER NOT NULL,
                 isCredit BOOL NOT NULL,
                 isActive BOOL NOT NULL
             );
@@ -24,7 +24,10 @@ export async function initDB(){
                 expenseCategoryId INTEGER NOT NULL  REFERENCES expensesCategories(expenseCategoryId),
                 accountId INTEGER DEFAULT NULL  REFERENCES accounts(accountId),
                 date INTEGER NOT NULL,
-                amount INTEGER NOT NULL
+                amount INTEGER NOT NULL,
+                isRecurring BOOL NOT NULL,
+                recurringInterval TEXT DEFAULT NULL,
+                recurringTime INTEGER DEFUALT NULL
             );
             CREATE TABLE IF NOT EXISTS customExpenses(
                 customExpenseId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,7 +40,10 @@ export async function initDB(){
                 incomeCategoryId INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 badge TEXT NOT NULL,
-                isActive BOOL NOT NULL
+                isActive BOOL NOT NULL,
+                isRecurring BOOL NOT NULL,
+                recurringInterval TEXT DEFAULT NULL,
+                recurringTime INTEGER DEFUALT NULL
             );
             CREATE TABLE IF NOT EXISTS income(
                 incomeId INTEGER PRIMARY KEY AUTOINCREMENT,
