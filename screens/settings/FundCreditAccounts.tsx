@@ -171,42 +171,6 @@ export default function FundCreditAccounts({route}:Props){
             }}  
         />
     ),[])
-
-    // To reset suspend notification state when bottom sheet is closed
-    // const handleSuspendNotificationState = useCallback(() => {
-    //     setSuspendNotification(false);
-    //     Keyboard.dismiss()
-    //     closeBottomSheet()
-    // }, []);
-
-    
-    // Handles Notification under error and success of account creation 
-    // const [ notificationType, setNotificationType ] = useState<null | 'success' | 'error' | 'info'>(null)
-    // const [ notificationMessage, setNotificationMessage ] = useState<string>('')
-    // let notification
-    // switch (notificationType) {
-    //     case 'success':
-    //         notification = <Notification message={notificationMessage} type={notificationType}/>
-    //         notificationTimeout()
-    //         break;
-    //     case 'error':
-    //         notification = <Notification message={notificationMessage} type={notificationType}/>
-    //         notificationTimeout()
-    //         break;
-    //     case 'info':
-    //         notification = <Notification message={notificationMessage} type={notificationType}/>
-    //         notificationTimeout()
-    //         break;
-    //     default:
-    //         break;
-    // }
-
-    // function notificationTimeout(){
-    //     setTimeout(()=> {
-    //         setNotificationMessage('')
-    //         setNotificationType(null)
-    //     }, 5000)
-    // }
     
     return (
         <>
