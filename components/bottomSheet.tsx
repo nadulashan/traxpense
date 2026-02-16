@@ -83,7 +83,7 @@ export default function BottomSheetWrapper({
                 :
                 <>
                     <View>                        
-                        {suspendNotification? <Text style={FundCreditAccountsStyles.NoActionDangerText}>This action is IRREVERSIBLE. Long Press on the button to continue</Text>:null}
+                        {suspendNotification? <Text style={FundCreditAccountsStyles.NoActionDangerText}>This action is irreversable. Long Press on the button to continue</Text>:null}
                         <Text style={FundCreditAccountsStyles.BottomSheetFieldText}>Account Name:</Text>
                         <TextInput
                             value={inputName}

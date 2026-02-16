@@ -4,11 +4,12 @@ import FundCreditAccountsContentWrapper from '@/components/fundCreditAccountsCon
 import { addNewCreditAccount, addNewFundAccount } from '@/db/fundCreditAccounts/insert';
 import { getCreditAccountBadges, getCreditAccounts, getFundAccountBadges, getFundAccounts } from '@/db/fundCreditAccounts/select';
 import { suspendAccount, updateAccount } from '@/db/fundCreditAccounts/update';
+import { closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Keyboard, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SettingsStackParamList } from './SettingsStackNavigation';
 
@@ -74,15 +75,13 @@ export default function FundCreditAccounts({route}:Props){
     },[])
 
     // Functions
-    function openBottomSheet(){
-        sheetRef.current?.expand()
+    function openSheetCaller(){
+        openBottomSheet(sheetRef)
     }
-    function closeBottomSheet(){
-        Keyboard.dismiss()
+
+    function closeSheetCaller(){
+        closeBottomSheet(sheetRef)
         setSuspendNotification(false);
-        setTimeout(() => {
-        sheetRef.current?.close()
-        },350)
     }
 
     function resetInputs(){
@@ -167,7 +166,7 @@ export default function FundCreditAccounts({route}:Props){
             appearsOnIndex={0}
             opacity={0.5}
             onPress={() => {
-                closeBottomSheet()
+                closeSheetCaller()
             }}  
         />
     ),[])
@@ -181,7 +180,7 @@ export default function FundCreditAccounts({route}:Props){
 
             
                 <FundCreditAccountsContentWrapper
-                    openBottomSheet = {openBottomSheet}
+                    openBottomSheet = {openSheetCaller}
                     isAccountsReady = {isAccountsReady}
                     fetchedAccounts = {fetchedAccounts}
                     setFocusedAccount = {setFocusedAccount}
@@ -194,7 +193,7 @@ export default function FundCreditAccounts({route}:Props){
 
                 </ScrollView>
                 
-                <AddAccountButton openBottomSheet={openBottomSheet} setFocusedAccount={setFocusedAccount} setRenderBottomSheet={setRenderBottomSheet}/>
+                <AddAccountButton openBottomSheet={openSheetCaller} setFocusedAccount={setFocusedAccount} setRenderBottomSheet={setRenderBottomSheet}/>
 
                 <BottomSheet 
                     index={-1} 
@@ -217,7 +216,7 @@ export default function FundCreditAccounts({route}:Props){
                             checkTypes={checkTypes}
                             addAccountCaller={addAccountCaller}
                             resetInputs={resetInputs}
-                            closeBottomSheet={closeBottomSheet}
+                            closeBottomSheet={closeSheetCaller}
                             refreshValiedBadges={refreshValiedBadges}
                             inputNameError={inputNameError}
                             setInputNameError={setInputNameError}

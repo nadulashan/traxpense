@@ -140,7 +140,7 @@ const FundCreditAccountsStyles = StyleSheet.create({
 
     NoActionDangerText  : {
         color:colors.light.red,
-        fontFamily:fonts.regular,
+        fontFamily:fonts.semiBold,
         textAlign:'center'
     },
 
