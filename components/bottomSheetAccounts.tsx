@@ -1,4 +1,4 @@
-import FundCreditAccountsStyles from '@/styles/fundCreditAccountsStyles';
+import CommonStyles from '@/styles/commonStyles';
 import { useCallback, useEffect } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -73,18 +73,18 @@ export default function BottomSheetWrapper({
     ),[inputBadge])
 
     return(
-        <View style={FundCreditAccountsStyles.BottomSheetWrapper}>
+        <View style={CommonStyles.BottomSheetWrapper}>
             {renderBottomSheet?
             <>
                 {valiedBadges.length == 0 && !focusedAccount?
                 <View>
-                    <Text style={FundCreditAccountsStyles.NoActionText}>You already have the maximum allowed Active Accounts</Text>
+                    <Text style={CommonStyles.NoActionText}>You already have the maximum allowed Active Accounts</Text>
                 </View>
                 :
                 <>
                     <View>                        
-                        {suspendNotification? <Text style={FundCreditAccountsStyles.NoActionDangerText}>This action is irreversable. Long Press on the button to continue</Text>:null}
-                        <Text style={FundCreditAccountsStyles.BottomSheetFieldText}>Account Name:</Text>
+                        {suspendNotification? <Text style={CommonStyles.NoActionDangerText}>This action is irreversable. Long Press on the button to continue</Text>:null}
+                        <Text style={CommonStyles.BottomSheetFieldText}>Account Name:</Text>
                         <TextInput
                             value={inputName}
                             onChangeText={name => {
@@ -95,15 +95,15 @@ export default function BottomSheetWrapper({
                                 }
                                 setInputName(name)
                             }}
-                            style={FundCreditAccountsStyles.BottomSheetInput}
+                            style={CommonStyles.BottomSheetInput}
                             readOnly={focusedAccount?.isActive == 0}
                         />
                         {
-                            inputNameError?<Text style={FundCreditAccountsStyles.InvalidResponse}>Invalid response</Text> : null
+                            inputNameError?<Text style={CommonStyles.InvalidResponse}>Invalid response</Text> : null
                         }
                     </View>
                     <View>
-                        {type == 'fund'? <Text  style={FundCreditAccountsStyles.BottomSheetFieldText}>Initial Balance:</Text>: <Text  style={FundCreditAccountsStyles.BottomSheetFieldText}>Credit limit</Text>}
+                        {type == 'fund'? <Text  style={CommonStyles.BottomSheetFieldText}>Initial Balance:</Text>: <Text  style={CommonStyles.BottomSheetFieldText}>Credit limit</Text>}
                         
                         <TextInput
                             value={inputBalance}
@@ -115,13 +115,13 @@ export default function BottomSheetWrapper({
                                 }
                                 setInputBalance(balance)
                             }}
-                            style={FundCreditAccountsStyles.BottomSheetInput}
+                            style={CommonStyles.BottomSheetInput}
                             keyboardType='numeric'
                             readOnly={focusedAccount?.isActive == 0}
                         />
                         {
                             inputBalanceError?
-                                <Text style={FundCreditAccountsStyles.InvalidResponse}>Invalid response</Text> 
+                                <Text style={CommonStyles.InvalidResponse}>Invalid response</Text> 
                             :
                                 null
                         }
@@ -129,8 +129,8 @@ export default function BottomSheetWrapper({
                     {focusedAccount?.isActive == 0? 
                         null
                     :                    
-                    <View style={FundCreditAccountsStyles.BottomSheetBadgeWrapper}>
-                        <Text  style={FundCreditAccountsStyles.BottomSheetFieldText}>Account Badge:</Text>
+                    <View style={CommonStyles.BottomSheetBadgeWrapper}>
+                        <Text  style={CommonStyles.BottomSheetFieldText}>Account Badge:</Text>
                         <Dropdown
                             data= {valiedBadges}
                             labelField={'label'}
@@ -145,15 +145,15 @@ export default function BottomSheetWrapper({
                             )}
                         />
                     </View>}
-                    <View style={FundCreditAccountsStyles.BottomSheetButtonWrapper}>
+                    <View style={CommonStyles.BottomSheetButtonWrapper}>
                         {focusedAccount?
                         <>               
                             { focusedAccount.isActive == 0? 
-                            <Text style={FundCreditAccountsStyles.NoActionText}>This Account is suspended</Text>
+                            <Text style={CommonStyles.NoActionText}>This Account is suspended</Text>
                             :
                             <>
                                 <Pressable 
-                                    style={[FundCreditAccountsStyles.BottomSheetSuspendButton, FundCreditAccountsStyles.BottomSheetButton]}
+                                    style={[CommonStyles.BottomSheetSecondaryButton, CommonStyles.BottomSheetButton]}
                                     onPress={() => setSuspendNotification(true)}
                                     onLongPress={() => {
                                         if (!inputNameError && !inputBalanceError){
@@ -167,10 +167,10 @@ export default function BottomSheetWrapper({
                                         }
                                     }}
                                 >
-                                    <Text style={FundCreditAccountsStyles.BottomSheetButtonText}>Suspend</Text>
+                                    <Text style={CommonStyles.BottomSheetButtonText}>Suspend</Text>
                                 </Pressable>
                                 <Pressable 
-                                    style={[FundCreditAccountsStyles.BottomSheetUpdateButton, FundCreditAccountsStyles.BottomSheetButton]}
+                                    style={[CommonStyles.BottomSheetPrimaryButton, CommonStyles.BottomSheetButton]}
                                     onPress={() => {
                                         if (!inputNameError && !inputBalanceError){
                                             updateAccountCaller(focusedAccount.accountId, inputName,Number(inputBalance), inputBadge)
@@ -183,7 +183,7 @@ export default function BottomSheetWrapper({
                                         }
                                     }}
                                 >
-                                    <Text style={FundCreditAccountsStyles.BottomSheetButtonText}>Update</Text>
+                                    <Text style={CommonStyles.BottomSheetButtonText}>Update</Text>
                                 </Pressable>
                             </>
                             }        
@@ -191,7 +191,7 @@ export default function BottomSheetWrapper({
                         </>
                         :                        
                         <Pressable 
-                            style={[FundCreditAccountsStyles.BottomSheetSaveButton, FundCreditAccountsStyles.BottomSheetButton]}
+                            style={[CommonStyles.BottomSheetPrimaryButton, CommonStyles.BottomSheetButton]}
                             onPress={() => {
                                 if (inputName != '' && inputBalance != '' && !inputNameError && !inputBalanceError){
                                     addAccountCaller(inputName,inputBadge,Number(inputBalance))
@@ -204,7 +204,7 @@ export default function BottomSheetWrapper({
                                 }
                             }}
                         >
-                            <Text style={FundCreditAccountsStyles.BottomSheetButtonText}>Save</Text>
+                            <Text style={CommonStyles.BottomSheetButtonText}>Save</Text>
                         </Pressable>
                         
                         }

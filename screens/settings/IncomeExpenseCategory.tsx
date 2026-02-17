@@ -38,28 +38,28 @@ export default function IncomeExpenseCategory({route}:Props){
 
     return (
         <>
-                    <SafeAreaView style={{backgroundColor:'#ffffff', flex:1}} edges={['top', 'left', 'right']}>
-                        <ScrollView showsVerticalScrollIndicator={false}>
-        
-                        </ScrollView>
-                        
-                        <AddCategoryButton openSheetCaller={openSheetCaller}/>
-        
-                        <BottomSheet 
-                            index={-1} 
-                            enableDynamicSizing={true}
-                            enablePanDownToClose={true}
-                            ref={sheetRef}
-                            backdropComponent={backDrop}
-                            // onChange={handleSuspendNotificationState}
-                            >
-                            <BottomSheetView>
-                                <Text>some</Text>
-                            </BottomSheetView>
-                        </BottomSheet>
-        
-                    </SafeAreaView>
-                </>
+            <SafeAreaView style={{backgroundColor:'#ffffff', flex:1}} edges={['top', 'left', 'right']}>
+                <ScrollView showsVerticalScrollIndicator={false}>
+
+                </ScrollView>
+                
+                <AddCategoryButton openSheetCaller={openSheetCaller}/>
+
+                <BottomSheet 
+                    index={-1} 
+                    enableDynamicSizing={true}
+                    enablePanDownToClose={true}
+                    ref={sheetRef}
+                    backdropComponent={backDrop}
+                    // onChange={handleSuspendNotificationState}
+                    >
+                    <BottomSheetView>
+                        <Text>some</Text>
+                    </BottomSheetView>
+                </BottomSheet>
+
+            </SafeAreaView>
+        </>
         
     )
 }

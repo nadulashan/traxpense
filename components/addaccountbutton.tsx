@@ -1,4 +1,4 @@
-import FundCreditAccountsStyles from '@/styles/fundCreditAccountsStyles';
+import CommonStyles from '@/styles/commonStyles';
 import { Pressable, Text, View } from 'react-native';
 
 type AddAccountButtonProps = {
@@ -10,7 +10,7 @@ type AddAccountButtonProps = {
 export default function AddAccountButton({openBottomSheet, setFocusedAccount,setRenderBottomSheet}:AddAccountButtonProps){
     return (        
 
-        <View style={FundCreditAccountsStyles.AddAccountButtonWrapper}>
+        <View style={CommonStyles.FloatingActionButtonWrapper}>
             <Pressable
                 onPress={() => {
                     setRenderBottomSheet(false)
@@ -19,7 +19,7 @@ export default function AddAccountButton({openBottomSheet, setFocusedAccount,set
                     setRenderBottomSheet(true)
                 }}
             >
-                    <Text style={FundCreditAccountsStyles.AddAccountButtonText}>+ New</Text>
+                    <Text style={CommonStyles.FloatingActionButtonText}>+ New</Text>
             </Pressable>
         </View>
     )

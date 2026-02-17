@@ -1,4 +1,4 @@
-import FundCreditAccountsStyles from '@/styles/fundCreditAccountsStyles';
+import CommonStyles from '@/styles/commonStyles';
 import { Pressable, Text, View } from 'react-native';
 
 type AddCategoryProps = {
@@ -8,13 +8,13 @@ type AddCategoryProps = {
 export default function AddCategoryButton({openSheetCaller}: AddCategoryProps){
     return (        
 
-        <View style={FundCreditAccountsStyles.AddAccountButtonWrapper}>
+        <View style={CommonStyles.FloatingActionButtonWrapper}>
             <Pressable
                 onPress={() => {
                     openSheetCaller()
                 }}
             >
-                    <Text style={FundCreditAccountsStyles.AddAccountButtonText}>+ New</Text>
+                    <Text style={CommonStyles.FloatingActionButtonText}>+ New</Text>
             </Pressable>
         </View>
     )

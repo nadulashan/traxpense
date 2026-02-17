@@ -1,5 +1,6 @@
 import colors from '@/constants/colors';
 import { priceWithComma } from '@/func/general';
+import CommonStyles from '@/styles/commonStyles';
 import FundCreditAccountsStyles from '@/styles/fundCreditAccountsStyles';
 import { useEffect } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
@@ -68,11 +69,11 @@ export default function FundCreditAccountsContentWrapper({
                 }
             </>
             :
-            <Text style={FundCreditAccountsStyles.NoActionText}>Looks like you don't have any accounts. Create one to start spending on expenses</Text>
+            <Text style={CommonStyles.NoActionText}>Looks like you don't have any accounts. Create one to start spending on expenses</Text>
             }
         </View>
         :
-        <View style={FundCreditAccountsStyles.ActivityIndicatorWrapper}>
+        <View style={CommonStyles.ActivityIndicatorWrapper}>
                 <ActivityIndicator 
                     size='large'
                     color={colors.light.primary}

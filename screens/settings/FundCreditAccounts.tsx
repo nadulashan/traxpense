@@ -1,5 +1,5 @@
-import AddAccountButton from '@/components/addaccountbutton';
-import BottomSheetWrapper from '@/components/bottomSheet';
+import AddAccountButton from '@/components/addAccountButton';
+import BottomSheetWrapper from '@/components/bottomSheetAccounts';
 import FundCreditAccountsContentWrapper from '@/components/fundCreditAccountsContentWrapper';
 import { addNewCreditAccount, addNewFundAccount } from '@/db/fundCreditAccounts/insert';
 import { getCreditAccountBadges, getCreditAccounts, getFundAccountBadges, getFundAccounts } from '@/db/fundCreditAccounts/select';
@@ -82,6 +82,8 @@ export default function FundCreditAccounts({route}:Props){
     function closeSheetCaller(){
         closeBottomSheet(sheetRef)
         setSuspendNotification(false);
+        setInputNameError(false)
+        setInputBalanceError(false)
     }
 
     function resetInputs(){
