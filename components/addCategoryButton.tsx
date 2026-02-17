@@ -1,19 +1,17 @@
 import FundCreditAccountsStyles from '@/styles/fundCreditAccountsStyles';
 import { Pressable, Text, View } from 'react-native';
 
-type AddAccountButtonProps = {
-    openBottomSheet: () => void;
-    setFocusedAccount:React.Dispatch<React.SetStateAction<{ accountId: number; name: string; badge: string; amount: number; isActive: number; } | null>>;
-    setRenderBottomSheet:React.Dispatch<React.SetStateAction<boolean>>
+type AddCategoryProps = {
+    openSheetCaller: () => void;
 }
 
-export default function AddCategoryButton(){
+export default function AddCategoryButton({openSheetCaller}: AddCategoryProps){
     return (        
 
         <View style={FundCreditAccountsStyles.AddAccountButtonWrapper}>
             <Pressable
                 onPress={() => {
-                    
+                    openSheetCaller()
                 }}
             >
                     <Text style={FundCreditAccountsStyles.AddAccountButtonText}>+ New</Text>

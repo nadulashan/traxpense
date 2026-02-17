@@ -1,4 +1,5 @@
 import AddCategoryButton from '@/components/addCategoryButton';
+import { openBottomSheet } from '@/func/bottomSheetfunc';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -13,6 +14,11 @@ export default function IncomeExpenseCategory({route}:Props){
 
     const navigation = useNavigation()
     const { screen } = route.params
+
+    // Callers
+    function openSheetCaller(){
+        openBottomSheet(sheetRef)
+    }
     
     const sheetRef = useRef<BottomSheet>(null);
     const backDrop = useCallback(( props:BottomSheetBackdropProps) => (
@@ -37,7 +43,7 @@ export default function IncomeExpenseCategory({route}:Props){
         
                         </ScrollView>
                         
-                        <AddCategoryButton/>
+                        <AddCategoryButton openSheetCaller={openSheetCaller}/>
         
                         <BottomSheet 
                             index={-1} 
