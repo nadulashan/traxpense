@@ -4,7 +4,7 @@ import FundCreditAccountsContentWrapper from '@/components/fundCreditAccountsCon
 import { addNewCreditAccount, addNewFundAccount } from '@/db/fundCreditAccounts/insert';
 import { getCreditAccountBadges, getCreditAccounts, getFundAccountBadges, getFundAccounts } from '@/db/fundCreditAccounts/select';
 import { suspendAccount, updateAccount } from '@/db/fundCreditAccounts/update';
-import { closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
+import { badgeSorter, closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
@@ -135,15 +135,7 @@ export default function FundCreditAccounts({route}:Props){
             correctTypeValiedBadges = valiedCreditBadges;
         }
 
-        const valiedFetchedBadges = correctTypeValiedBadges.filter(badge => {
-                                let isValied = true;
-                                fetchedBadges.forEach(fetchedBadge => {
-                                    if ( fetchedBadge.badge == badge.badge )  {
-                                        isValied = false;
-                                    }
-                                })
-                                return isValied;
-                            })
+        const valiedFetchedBadges = badgeSorter(correctTypeValiedBadges, fetchedBadges)
         setValiedBadges(valiedFetchedBadges)
         setRenderBottomSheet(true)
     }
