@@ -14,14 +14,17 @@ export async function initDB(){
                 isActive BOOL NOT NULL
             );
             CREATE TABLE IF NOT EXISTS expensesCategories(
-                expenseCategoryId INTEGER PRIMARY KEY AUTOINCREMENT,
+                categoryId INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 badge TEXT NOT NULL,
-                isActive BOOL NOT NULL
+                isActive BOOL NOT NULL,
+                isRecurring BOOL NOT NULL,
+                recurringInterval TEXT DEFAULT NULL,
+                recurringTime INTEGER DEFUALT NULL
             );
             CREATE TABLE IF NOT EXISTS expenses(
                 expenseId INTEGER PRIMARY KEY AUTOINCREMENT,
-                expenseCategoryId INTEGER NOT NULL  REFERENCES expensesCategories(expenseCategoryId),
+                categoryId INTEGER NOT NULL  REFERENCES expensesCategories(categoryId),
                 accountId INTEGER DEFAULT NULL  REFERENCES accounts(accountId),
                 date INTEGER NOT NULL,
                 amount INTEGER NOT NULL,
@@ -37,7 +40,7 @@ export async function initDB(){
                 accountId INTEGER NOT NULL REFERENCES accounts(accountId)
             );
             CREATE TABLE IF NOT EXISTS incomeCategories(
-                incomeCategoryId INTEGER PRIMARY KEY AUTOINCREMENT,
+                categoryId INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 badge TEXT NOT NULL,
                 isActive BOOL NOT NULL,
@@ -47,7 +50,7 @@ export async function initDB(){
             );
             CREATE TABLE IF NOT EXISTS income(
                 incomeId INTEGER PRIMARY KEY AUTOINCREMENT,
-                incomeCategoryId INTEGER NOT NULL REFERENCES incomeCategories(incomeCategoryId),
+                categoryId INTEGER NOT NULL REFERENCES incomeCategories(categoryId),
                 accountId INTEGER DEFAULT NULL REFERENCES accounts(accountId),
                 date INTEGER NOT NULL,
                 amount INTEGER NOT NULL
