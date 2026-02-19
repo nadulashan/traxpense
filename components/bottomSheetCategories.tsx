@@ -17,6 +17,8 @@ type BottomSheetCategoriesProps = {
     focusedCategory:{categoryId:number, name:string; badge:string; isActive:number} | undefined;
     suspendHandler:() => void;
     updateHandler:() => void;
+    showDangerText : boolean;
+    setShowDangerText:React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function BottomSheetCategories({
@@ -32,7 +34,9 @@ export default function BottomSheetCategories({
     isSheetReady,
     focusedCategory,
     suspendHandler,
-    updateHandler
+    updateHandler,
+    showDangerText,
+    setShowDangerText
 }:BottomSheetCategoriesProps){
     
     
@@ -46,6 +50,7 @@ export default function BottomSheetCategories({
                 isSheetReady?
                     valiedBadges.length != 0 || focusedCategory?
                     <>
+                        {showDangerText? <Text style={CommonStyles.NoActionDangerText}>This action is irreversable. Long Press on the button to continue</Text>:null}
                         <View>
                             <Text style={CommonStyles.BottomSheetFieldText}>Category Name:</Text>
                             <TextInput 
@@ -94,7 +99,8 @@ export default function BottomSheetCategories({
                                 <Pressable 
                                     style={[CommonStyles.BottomSheetSecondaryButton, CommonStyles.BottomSheetButton]}
                                     disabled={asyncDisabled}
-                                    onPress={() => {
+                                    onPress={() => setShowDangerText(true)}
+                                    onLongPress={() => {
                                         if (inputName == '') {
                                             setInputNameError(true)
                                         }

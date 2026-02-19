@@ -63,10 +63,13 @@ export default function FundCreditAccounts({route}:Props){
     const navigation = useNavigation()
     const { screen } = route.params;
     let type: 'fund' | 'credit';
+    let addNewTypeAccount:(name: string, badge: string, amount: number) => Promise<void>;
     if (screen == 'Fund Accounts'){
         type = 'fund' ;
+        addNewTypeAccount = addNewFundAccount
     } else {
         type = 'credit';
+        addNewTypeAccount = addNewCreditAccount
     }
     useEffect(() => {
         navigation.setOptions({title:screen})
@@ -89,7 +92,6 @@ export default function FundCreditAccounts({route}:Props){
     function resetInputs(){
         setInputName('')
         setInputBalance('')
-        setInputBadge('')
     }
 
     function checkTypes(input: string): boolean {
@@ -105,22 +107,46 @@ export default function FundCreditAccounts({route}:Props){
         setIsAccountsReady(false)
     }
 
-
     // Database actions callers
     function addAccountCaller(name:string, badge:string, balance:number){
-        if ( type == 'fund' ){
-            addNewFundAccount(name, badge, balance)
-        } else {
-            addNewCreditAccount(name,badge,balance)
+    }
+
+    async function suspendAccountHandler(){
+        if (focusedAccount){
+            suspendAccount(focusedAccount.accountId)
+            await refreshAccountBadges()
+            resetInputs()
+            closeSheetCaller()
+            resetRenderBottomSheet()
+            resetIsAccountsReady()
         }
     }
 
-    function suspendAccountCaller(id:number){
-        suspendAccount(id)
+    // Handlers
+    async function refreshAccountBadges(){
+        await refreshValiedBadges()
+        await refreshAccounts()
     }
 
-    function updateAccountCaller(id:number, name:string, balance:number, badge:string){
-        updateAccount(id,name,balance, badge)
+    async function updateAccountHandler(){
+        if (focusedAccount){
+            updateAccount(focusedAccount.accountId,inputName,Number(inputBalance), inputBadge)
+            await refreshAccountBadges()
+            resetInputs()
+            closeSheetCaller()
+            resetRenderBottomSheet()
+            resetIsAccountsReady()
+        }
+    }
+
+    async function saveAccountHandler(){
+        await addNewTypeAccount(inputName, inputBadge, Number(inputBalance))
+        await refreshAccountBadges()
+        resetInputs()
+        closeSheetCaller()
+        resetRenderBottomSheet()
+        resetIsAccountsReady()
+        
     }
 
     // Database fetch action callers
@@ -208,23 +234,17 @@ export default function FundCreditAccounts({route}:Props){
                             setInputBadge = {setInputBadge}
                             renderBottomSheet = {renderBottomSheet}
                             checkTypes={checkTypes}
-                            addAccountCaller={addAccountCaller}
-                            resetInputs={resetInputs}
-                            closeBottomSheet={closeSheetCaller}
-                            refreshValiedBadges={refreshValiedBadges}
                             inputNameError={inputNameError}
                             setInputNameError={setInputNameError}
                             inputBalanceError={inputBalanceError}
                             setInputBalanceError={setInputBalanceError}
-                            resetRenderBottomSheet={resetRenderBottomSheet}
                             type={type}
-                            resetIsAccountsReady={resetIsAccountsReady}
-                            refreshAccounts={refreshAccounts}
                             focusedAccount={focusedAccount}
-                            suspendAccountCaller={suspendAccountCaller}
-                            updateAccountCaller={updateAccountCaller}                            
+                            suspendAccountHandler={suspendAccountHandler}
+                            updateAccountHandler={updateAccountHandler}                            
                             suspendNotification={suspendNotification}
                             setSuspendNotification={setSuspendNotification}
+                            saveAccountHandler = {saveAccountHandler}
                         />
                     </BottomSheetView>
                 </BottomSheet>

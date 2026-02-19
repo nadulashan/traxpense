@@ -13,23 +13,17 @@ type BottomSheetWrapperProps = {
     setInputBadge:React.Dispatch<React.SetStateAction<string>>;
     renderBottomSheet:boolean;
     checkTypes:(balance:string) => boolean;
-    addAccountCaller:(name:string, badge:string, balance:number) => void;
-    resetInputs:() => void;
-    closeBottomSheet:() => void;
-    refreshValiedBadges:() => void;
     inputNameError:boolean;
     setInputNameError:React.Dispatch<React.SetStateAction<boolean>>;
     inputBalanceError:boolean;
     setInputBalanceError:React.Dispatch<React.SetStateAction<boolean>>;
-    resetRenderBottomSheet:() => void;
     type:string;
-    resetIsAccountsReady:() => void;
-    refreshAccounts:() => void;
     focusedAccount:{ accountId: number; name: string; badge: string; amount: number; isActive: number; } | null;
-    suspendAccountCaller:(id:number) => void;
-    updateAccountCaller:(id:number, name:string, balance:number, badge:string) => void;
+    updateAccountHandler:() => void;
     suspendNotification:boolean;
     setSuspendNotification:React.Dispatch<React.SetStateAction<boolean>>;
+    saveAccountHandler:() => void;
+    suspendAccountHandler:() => void;
 }
 
 export default function BottomSheetWrapper({
@@ -42,23 +36,17 @@ export default function BottomSheetWrapper({
     setInputBadge,
     renderBottomSheet,
     checkTypes,
-    addAccountCaller,
-    resetInputs,
-    closeBottomSheet,
-    refreshValiedBadges,
     inputNameError,
     setInputNameError,
     inputBalanceError,
     setInputBalanceError,
-    resetRenderBottomSheet,
     type,
-    resetIsAccountsReady,
-    refreshAccounts,
     focusedAccount,
-    suspendAccountCaller,
-    updateAccountCaller,
+    updateAccountHandler,
     suspendNotification,
-    setSuspendNotification
+    setSuspendNotification,
+    saveAccountHandler,
+    suspendAccountHandler
     }:BottomSheetWrapperProps){
 
 
@@ -157,13 +145,7 @@ export default function BottomSheetWrapper({
                                     onPress={() => setSuspendNotification(true)}
                                     onLongPress={() => {
                                         if (!inputNameError && !inputBalanceError){
-                                            suspendAccountCaller(focusedAccount.accountId)
-                                            resetInputs()
-                                            refreshValiedBadges()
-                                            refreshAccounts()
-                                            closeBottomSheet()
-                                            resetRenderBottomSheet()
-                                            resetIsAccountsReady()
+                                            suspendAccountHandler()
                                         }
                                     }}
                                 >
@@ -173,13 +155,7 @@ export default function BottomSheetWrapper({
                                     style={[CommonStyles.BottomSheetPrimaryButton, CommonStyles.BottomSheetButton]}
                                     onPress={() => {
                                         if (!inputNameError && !inputBalanceError){
-                                            updateAccountCaller(focusedAccount.accountId, inputName,Number(inputBalance), inputBadge)
-                                            resetInputs()
-                                            refreshValiedBadges()
-                                            refreshAccounts()
-                                            closeBottomSheet()
-                                            resetRenderBottomSheet()
-                                            resetIsAccountsReady()
+                                            updateAccountHandler()
                                         }
                                     }}
                                 >
@@ -194,13 +170,7 @@ export default function BottomSheetWrapper({
                             style={[CommonStyles.BottomSheetPrimaryButton, CommonStyles.BottomSheetButton]}
                             onPress={() => {
                                 if (inputName != '' && inputBalance != '' && !inputNameError && !inputBalanceError){
-                                    addAccountCaller(inputName,inputBadge,Number(inputBalance))
-                                    resetInputs()
-                                    refreshValiedBadges()
-                                    refreshAccounts()
-                                    closeBottomSheet()
-                                    resetRenderBottomSheet()
-                                    resetIsAccountsReady()
+                                    saveAccountHandler()
                                 }
                             }}
                         >

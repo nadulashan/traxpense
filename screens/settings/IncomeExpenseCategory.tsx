@@ -30,6 +30,7 @@ export default function IncomeExpenseCategory({route}:Props){
     const [ asyncDisabled, setAsyncDisabled ] = useState(false)
     const [ isSheetReady, setIsSheetReady ] = useState(false)
     const [ focusedCategory, setFocusedCategory ] = useState<undefined | {categoryId:number, name:string; badge:string; isActive:number}>()
+    const [ showDangerText, setShowDangerText ] = useState(false)
     const incomeBadges = [
         {label:null, badge:'#1F3A5F'},
         {label:null, badge:'#274C77'},
@@ -139,6 +140,7 @@ export default function IncomeExpenseCategory({route}:Props){
         closeBottomSheet(sheetRef)
         setInputNameError(false)
         setFocusedCategory(undefined)
+        setShowDangerText(false)
     }
 
     // Button handlers
@@ -249,6 +251,8 @@ export default function IncomeExpenseCategory({route}:Props){
                             focusedCategory={focusedCategory}
                             suspendHandler = {suspendHandler}
                             updateHandler = {updateHandler}
+                            showDangerText = {showDangerText}
+                            setShowDangerText = {setShowDangerText}
                         />
                     </BottomSheetView>
                 </BottomSheet>

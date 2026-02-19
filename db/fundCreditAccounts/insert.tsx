@@ -1,9 +1,9 @@
 import handleDBError from '../dbError';
 import getDB from "./opendb";
 
-export async function addNewFundAccount(name:string,badge:string,initialBalance:number){
+export async function addNewFundAccount(name:string,badge:string,amount:number){
     try {
-        const toBeStored = initialBalance*100
+        const toBeStored = amount*100
         const db = await getDB();
         await db.runAsync(`
                 INSERT INTO accounts(name,badge,amount, isCredit, isActive) VALUES (?,?,?,?,?)    
@@ -13,9 +13,9 @@ export async function addNewFundAccount(name:string,badge:string,initialBalance:
     }
 }
 
-export async function addNewCreditAccount(name:string,badge:string,initialBalance:number){
+export async function addNewCreditAccount(name:string,badge:string,amount:number){
     try {
-        const toBeStored = initialBalance*100
+        const toBeStored = amount*100
         const db = await getDB();
         await db.runAsync(`
                 INSERT INTO accounts(name,badge,amount, isCredit, isActive) VALUES (?,?,?,?,?)    
