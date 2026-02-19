@@ -12,8 +12,11 @@ type BottomSheetCategoriesProps = {
     inputNameError:boolean;
     setInputNameError:React.Dispatch<React.SetStateAction<boolean>>;
     saveHandler:() => void;
-    saveDisabled:boolean;
+    asyncDisabled:boolean;
     isSheetReady:boolean;
+    focusedCategory:{categoryId:number, name:string; badge:string; isActive:number} | undefined;
+    suspendHandler:() => void;
+    updateHandler:() => void;
 }
 
 export default function BottomSheetCategories({
@@ -25,8 +28,11 @@ export default function BottomSheetCategories({
     inputNameError,
     setInputNameError,
     saveHandler,
-    saveDisabled,
-    isSheetReady
+    asyncDisabled,
+    isSheetReady,
+    focusedCategory,
+    suspendHandler,
+    updateHandler
 }:BottomSheetCategoriesProps){
     
     
@@ -38,13 +44,14 @@ export default function BottomSheetCategories({
         <View style={CommonStyles.BottomSheetWrapper}>
             {
                 isSheetReady?
-                    valiedBadges.length != 0?
+                    valiedBadges.length != 0 || focusedCategory?
                     <>
                         <View>
                             <Text style={CommonStyles.BottomSheetFieldText}>Category Name:</Text>
                             <TextInput 
                                 style={CommonStyles.BottomSheetInput}
                                 value={inputName}
+                                readOnly={ focusedCategory?.isActive == 0? true : false}
                                 onChangeText={name => {
                                     if (name == '') {
                                         setInputNameError(true)
@@ -58,9 +65,12 @@ export default function BottomSheetCategories({
                                 inputNameError?<Text style={CommonStyles.InvalidResponse}>Invalid response</Text> : null
                             }
                         </View>
-
+                        {focusedCategory && focusedCategory.isActive === 0?
+                        null    
+                        :
                         <View style={CommonStyles.BottomSheetBadgeWrapper}>
                             <Text style={CommonStyles.BottomSheetFieldText}>Category Badge</Text>
+                            
                             <Dropdown
                                 data={valiedBadges}
                                 labelField={'label'}
@@ -75,10 +85,47 @@ export default function BottomSheetCategories({
                                 )}
                             />
                         </View>
-                                            
+                        }
+                        
+                        <View style={CommonStyles.BottomSheetButtonWrapper}>
+                        {focusedCategory?
+                            focusedCategory.isActive == 1 ?
+                            <>
+                                <Pressable 
+                                    style={[CommonStyles.BottomSheetSecondaryButton, CommonStyles.BottomSheetButton]}
+                                    disabled={asyncDisabled}
+                                    onPress={() => {
+                                        if (inputName == '') {
+                                            setInputNameError(true)
+                                        }
+                                        if (!inputNameError && inputName !=='' && inputBadge !== ''){
+                                            suspendHandler()
+                                        }
+                                    }}
+                                >
+                                    <Text style={CommonStyles.BottomSheetButtonText}>Suspend</Text>
+                                </Pressable>
+                                <Pressable 
+                                    style={[CommonStyles.BottomSheetPrimaryButton, CommonStyles.BottomSheetButton]}
+                                    disabled={asyncDisabled}
+                                    onPress={() => {
+                                        if (inputName == '') {
+                                            setInputNameError(true)
+                                        }
+                                        if (!inputNameError && inputName !=='' && inputBadge !== ''){
+                                            updateHandler()
+                                        }
+                                    }}
+                                >
+                                    <Text style={CommonStyles.BottomSheetButtonText}>Update</Text>
+                                </Pressable>
+                            </>
+                            :
+                            <Text style={CommonStyles.NoActionText}>This Category is suspended</Text>
+                        :
                         <Pressable 
                             style={[CommonStyles.BottomSheetPrimaryButton, CommonStyles.BottomSheetButton]}
-                            disabled={saveDisabled}
+                            disabled={asyncDisabled}
                             onPress={() => {
                                 if (inputName == '') {
                                     setInputNameError(true)
@@ -90,6 +137,8 @@ export default function BottomSheetCategories({
                         >
                             <Text style={CommonStyles.BottomSheetButtonText}>Save</Text>
                         </Pressable>
+                        }
+                        </View>
                     </>
                 :
                 <View>

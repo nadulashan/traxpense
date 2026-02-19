@@ -1,34 +1,64 @@
 import handleDBError from "../dbError";
 import getDB from "./opendb";
 
-export async function suspendAccount(id:number){
+export async function suspendIncomeCategory(id:number){
     try{
         const db = await getDB();
         const badges = await db.runAsync(`
-                                UPDATE accounts 
+                                UPDATE incomeCategories 
                                 SET isActive=0, badge=NULL 
-                                WHERE accountId=?
+                                WHERE categoryId=?
                         `, id)
         return await badges.changes
     } catch (e){
-        handleDBError(e,'Updating account failed - suspend')
+        handleDBError(e,'Updating income category failed - suspend')
     }
 };
 
-export async function updateAccount(
+export async function suspendExpenseCategory(id:number){
+    try{
+        const db = await getDB();
+        const badges = await db.runAsync(`
+                                UPDATE expensesCategories 
+                                SET isActive=0, badge=NULL 
+                                WHERE categoryId=?
+                        `, id)
+        return await badges.changes
+    } catch (e){
+        handleDBError(e,'Updating expense category failed - suspend')
+    }
+};
+
+export async function updateIncomeCategory(
     id:number,
     name:string,
-    balance:number,
     badge:string){
     try{
         const db = await getDB();
         const badges = await db.runAsync(`
-                                UPDATE accounts 
-                                SET name=?, badge=?, amount=? 
-                                WHERE accountId=?
-                        `,name,badge,balance,id)
+                                UPDATE incomeCategories
+                                SET name=?, badge=?
+                                WHERE categoryId=?;
+                        `,name,badge,id)
         return await badges.changes
     } catch (e){
-        handleDBError(e,'Updating account failed - update')
+        handleDBError(e,'Updating income category failed - update')
+    }
+};
+
+export async function updateExpenseCategory(
+    id:number,
+    name:string,
+    badge:string){
+    try{
+        const db = await getDB();
+        const badges = await db.runAsync(`
+                                UPDATE expensesCategories 
+                                SET name=?, badge=?
+                                WHERE categoryId=?
+                        `,name,badge,id)
+        return await badges.changes
+    } catch (e){
+        handleDBError(e,'Updating expense category failed - update')
     }
 };

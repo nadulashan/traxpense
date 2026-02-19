@@ -3,6 +3,7 @@ import BottomSheetCategories from '@/components/bottomSheetCategories';
 import CategoryContentWrapper from '@/components/categoryContentWrapper';
 import { addNewExpenseCategory, addNewIncomeCategory } from '@/db/incomeExpenseCategories/insert';
 import { getExpenseBadges, getExpenseCategories, getIncomeBadges, getIncomeCategories } from '@/db/incomeExpenseCategories/select';
+import { suspendExpenseCategory, suspendIncomeCategory, updateExpenseCategory, updateIncomeCategory } from '@/db/incomeExpenseCategories/update';
 import { badgeSorter, closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
@@ -26,8 +27,9 @@ export default function IncomeExpenseCategory({route}:Props){
     const [ inputName, setInputName ] = useState('')
     const [ inputNameError, setInputNameError ] = useState(false)
     const [ categories, setCategories ] = useState<any>()
-    const [ saveDisabled, setSaveDisabled ] = useState(false)
+    const [ asyncDisabled, setAsyncDisabled ] = useState(false)
     const [ isSheetReady, setIsSheetReady ] = useState(false)
+    const [ focusedCategory, setFocusedCategory ] = useState<undefined | {categoryId:number, name:string; badge:string; isActive:number}>()
     const incomeBadges = [
         {label:null, badge:'#1F3A5F'},
         {label:null, badge:'#274C77'},
@@ -79,18 +81,24 @@ export default function IncomeExpenseCategory({route}:Props){
     let fetchTypeBadges:() => Promise<{ badge: string; }[]>;
     let addTypeCategory:(name: string, badge: string) => Promise<void>;
     let fetchTypeCategories:() => Promise<{ categoryId: number; name: string; badge: string; isActive: number; }[]>;
+    let suspendTypeCategory:(id:number) => void;
+    let updateTypeCategory:(id:number, name:string, badge:string) => void;
     if ( screen == 'Income Categories' ){
         type = 'income'
         valiedTypeBadges = incomeBadges;
         fetchTypeBadges = getIncomeBadges;
         addTypeCategory = addNewIncomeCategory
         fetchTypeCategories = getIncomeCategories;
+        suspendTypeCategory = suspendIncomeCategory;
+        updateTypeCategory = updateIncomeCategory;
     } else {
         type = 'expense'
         valiedTypeBadges = expenseBadges;
         fetchTypeBadges = getExpenseBadges;
         addTypeCategory = addNewExpenseCategory
         fetchTypeCategories = getExpenseCategories;
+        suspendTypeCategory = suspendExpenseCategory;
+        updateTypeCategory = updateExpenseCategory
     }
 
     // func
@@ -119,6 +127,7 @@ export default function IncomeExpenseCategory({route}:Props){
         await refreshBadges()
         await refreshCategories()
         setIsSheetReady(true)
+        console.log(categories)
     }
 
     // Callers
@@ -129,18 +138,44 @@ export default function IncomeExpenseCategory({route}:Props){
     function closeSheetCaller(){
         closeBottomSheet(sheetRef)
         setInputNameError(false)
+        setFocusedCategory(undefined)
     }
 
     // Button handlers
     async function saveHandler(){
         setIsSheetReady(false)
-        setSaveDisabled(true)
+        setAsyncDisabled(true)
         await addTypeCategory(inputName,inputBadge)
         await refreashBadgesCategories()
-        setSaveDisabled(false)
+        setAsyncDisabled(false)
         resetFields()
         closeSheetCaller()
         setIsSheetReady(true)
+    }
+
+    async function suspendHandler(){
+        setAsyncDisabled(true)
+        if (focusedCategory){
+            suspendTypeCategory(focusedCategory.categoryId)
+            await refreashBadgesCategories()
+            closeSheetCaller()
+            resetFields()
+        }
+        setAsyncDisabled(false)
+    }
+
+    async function updateHandler(){
+        setAsyncDisabled(true)
+        
+        if (focusedCategory){
+            updateTypeCategory(focusedCategory.categoryId, inputName, inputBadge)
+            console.log('we are updated')
+            await refreashBadgesCategories()
+            console.log('we are refreshed')
+            closeSheetCaller()
+            resetFields()
+        }
+        setAsyncDisabled(false)
     }
     
     const sheetRef = useRef<BottomSheet>(null);
@@ -166,6 +201,17 @@ export default function IncomeExpenseCategory({route}:Props){
             setInputBadge(valiedBadges[0].badge)
         }
     },[valiedBadges])
+
+    useEffect(() => {
+        if (focusedCategory){
+            setInputName(focusedCategory.name)
+            setInputBadge(focusedCategory.badge)
+            openSheetCaller()
+        } else {
+            setInputName('')
+        }
+    },[focusedCategory])
+
     return (
         <>
             <SafeAreaView style={{backgroundColor:'#ffffff', flex:1}} edges={['top', 'left', 'right']}>
@@ -173,6 +219,7 @@ export default function IncomeExpenseCategory({route}:Props){
 
                     <CategoryContentWrapper 
                         categories = {categories}
+                        setFocusedCategory = {setFocusedCategory}
                     />
 
                 </ScrollView>
@@ -197,8 +244,11 @@ export default function IncomeExpenseCategory({route}:Props){
                             inputNameError = {inputNameError}
                             setInputNameError = {setInputNameError}
                             saveHandler = {saveHandler}
-                            saveDisabled = {saveDisabled}
+                            asyncDisabled = {asyncDisabled}
                             isSheetReady= {isSheetReady}
+                            focusedCategory={focusedCategory}
+                            suspendHandler = {suspendHandler}
+                            updateHandler = {updateHandler}
                         />
                     </BottomSheetView>
                 </BottomSheet>

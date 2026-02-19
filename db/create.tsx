@@ -16,7 +16,7 @@ export async function initDB(){
             CREATE TABLE IF NOT EXISTS expensesCategories(
                 categoryId INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
-                badge TEXT NOT NULL,
+                badge TEXT DEFAULT NULL,
                 isActive BOOL NOT NULL,
                 isRecurring BOOL NOT NULL,
                 recurringInterval TEXT DEFAULT NULL,
@@ -42,7 +42,7 @@ export async function initDB(){
             CREATE TABLE IF NOT EXISTS incomeCategories(
                 categoryId INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
-                badge TEXT NOT NULL,
+                badge TEXT DEFAULT NULL,
                 isActive BOOL NOT NULL,
                 isRecurring BOOL NOT NULL,
                 recurringInterval TEXT DEFAULT NULL,

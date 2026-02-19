@@ -1,14 +1,16 @@
+import colors from '@/constants/colors';
 import CommonStyles from '@/styles/commonStyles';
-import { Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import CategoriesContent from './categoriesContent';
 
 type CategoryContentWrapperProps = {
     categories:{categoryId:number, name:string; badge:string; isActive:number}[];
+    setFocusedCategory:React.Dispatch<React.SetStateAction<undefined | {categoryId:number, name:string; badge:string; isActive:number}>>;
 }
 
-export default function CategoryContentWrapper({categories}:CategoryContentWrapperProps){
+export default function CategoryContentWrapper({categories,setFocusedCategory}:CategoryContentWrapperProps){
     return (
-        <View style={{marginLeft:24, marginRight:24}}>
+        <View style={{marginLeft:24, marginRight:24, minHeight:'100%'}}>
             {categories?
                 categories.length == 0?
                 <View>
@@ -16,10 +18,15 @@ export default function CategoryContentWrapper({categories}:CategoryContentWrapp
                 </View>
                 :
                 categories.map(category => (
-                    <CategoriesContent key= {category.categoryId} categoryName={category.name} categoryBadge={category.badge} />
+                    <CategoriesContent key= {category.categoryId} categoryName={category.name} categoryBadge={category.badge} category={category} setFocusedCategory={setFocusedCategory} />
                 ))
             :
-            <Text>Loading</Text>
+            <View style={CommonStyles.ActivityIndicatorWrapper}>
+                    <ActivityIndicator 
+                        size='large'
+                        color={colors.light.primary}
+                    />
+            </View>
             }
         </View>
     )
