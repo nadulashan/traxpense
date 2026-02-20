@@ -128,7 +128,6 @@ export default function IncomeExpenseCategory({route}:Props){
         await refreshBadges()
         await refreshCategories()
         setIsSheetReady(true)
-        console.log(categories)
     }
 
     // Callers
@@ -171,9 +170,7 @@ export default function IncomeExpenseCategory({route}:Props){
         
         if (focusedCategory){
             updateTypeCategory(focusedCategory.categoryId, inputName, inputBadge)
-            console.log('we are updated')
             await refreashBadgesCategories()
-            console.log('we are refreshed')
             closeSheetCaller()
             resetFields()
         }

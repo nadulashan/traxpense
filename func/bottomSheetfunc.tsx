@@ -24,3 +24,9 @@ export function badgeSorter(valiedBadges:{ label: null; badge: string; }[], fetc
                         })
     return sortedBadges
 }
+
+
+export function checkTypes(input: string): boolean {
+    if (input.trim() === "") return false;
+    return Number.isFinite(Number(input));
+}

@@ -19,18 +19,18 @@ export async function initDB(){
                 badge TEXT DEFAULT NULL,
                 isActive BOOL NOT NULL,
                 isRecurring BOOL NOT NULL,
-                recurringInterval TEXT DEFAULT NULL,
-                recurringTime INTEGER DEFUALT NULL
+                recurringFrequency TEXT DEFAULT NULL,
+                amount INTEGER DEFAULT NULL,
+                recurringTime TEXT DEFUALT NULL,
+                lastOccurrence TEXT DEFAULT NULL,
+                nextOccurrence TEXT DEFAULT NULL
             );
             CREATE TABLE IF NOT EXISTS expenses(
                 expenseId INTEGER PRIMARY KEY AUTOINCREMENT,
                 categoryId INTEGER NOT NULL  REFERENCES expensesCategories(categoryId),
                 accountId INTEGER DEFAULT NULL  REFERENCES accounts(accountId),
-                date INTEGER NOT NULL,
-                amount INTEGER NOT NULL,
-                isRecurring BOOL NOT NULL,
-                recurringInterval TEXT DEFAULT NULL,
-                recurringTime INTEGER DEFUALT NULL
+                date TEXT NOT NULL,
+                amount INTEGER NOT NULL
             );
             CREATE TABLE IF NOT EXISTS customExpenses(
                 customExpenseId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,14 +45,17 @@ export async function initDB(){
                 badge TEXT DEFAULT NULL,
                 isActive BOOL NOT NULL,
                 isRecurring BOOL NOT NULL,
-                recurringInterval TEXT DEFAULT NULL,
-                recurringTime INTEGER DEFUALT NULL
+                recurringFrequency TEXT DEFAULT NULL,
+                amount INTEGER DEFAULT NULL,
+                recurringTime TEXT DEFUALT NULL,
+                lastOccurrence TEXT DEFAULT NULL,
+                nextOccurrence TEXT DEFAULT NULL
             );
             CREATE TABLE IF NOT EXISTS income(
                 incomeId INTEGER PRIMARY KEY AUTOINCREMENT,
                 categoryId INTEGER NOT NULL REFERENCES incomeCategories(categoryId),
                 accountId INTEGER DEFAULT NULL REFERENCES accounts(accountId),
-                date INTEGER NOT NULL,
+                date TEXT NOT NULL,
                 amount INTEGER NOT NULL
             );
             CREATE TABLE IF NOT EXISTS customincome(

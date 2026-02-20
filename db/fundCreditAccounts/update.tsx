@@ -20,13 +20,14 @@ export async function updateAccount(
     name:string,
     balance:number,
     badge:string){
+    const store = balance*100; 
     try{
         const db = await getDB();
         const badges = await db.runAsync(`
                                 UPDATE accounts 
                                 SET name=?, badge=?, amount=? 
                                 WHERE accountId=?
-                        `,name,badge,balance,id)
+                        `,name,badge,store,id)
         return await badges.changes
     } catch (e){
         handleDBError(e,'Updating account failed - update')
