@@ -32,7 +32,7 @@ export async function getExpenseRecurringBadges(){
 export async function getActiveAccounts(){
     try{
         const db = await getDB();
-        const accounts = await db.getAllAsync<{badge:string}>(`
+        const accounts = await db.getAllAsync<{accountId:number,name:string}>(`
                             SELECT accountId, name 
                             FROM accounts
                             WHERE isActive=1;
@@ -43,30 +43,30 @@ export async function getActiveAccounts(){
     }
 };
 
-export async function getIncomeCategories(){
+export async function getIncomeRecurringCategories(){
     try{
         const db = await getDB();
-        const badges = await db.getAllAsync<{categoryId:number, name:string; badge:string; isActive:number}>(`
-                            SELECT categoryId, name, badge, isActive
+        const categories = await db.getAllAsync<{categoryId:number, name:string; badge:string; isActive:number, recurringFrequency:string, amount:number, lastOccurrence:string, nextOccurrence:string}>(`
+                            SELECT categoryId, name, badge, isActive, recurringFrequency, amount, lastOccurrence, nextOccurrence
                             FROM incomeCategories
-                            WHERE isRecurring=0;
+                            WHERE isRecurring=1;
                         `)
-        return badges
+        return categories
     } catch (e){
-        handleDBError(e,'Fetching income categories failed')
+        handleDBError(e,'Fetching income recurring categories failed')
     }
 };
 
-export async function getExpenseCategories(){
+export async function getExpenseRecurringCategories(){
     try{
         const db = await getDB();
-        const badges = await db.getAllAsync<{categoryId:number, name:string; badge:string; isActive:number}>(`
-                            SELECT categoryId, name, badge, isActive
+        const categories = await db.getAllAsync<{categoryId:number, name:string; badge:string; isActive:number, recurringFrequency:string, amount:number, lastOccurrence:string, nextOccurrence:string}>(`
+                            SELECT categoryId, name, badge, isActive, recurringFrequency, amount, lastOccurrence, nextOccurrence
                             FROM expensesCategories
-                            WHERE isRecurring=0;
+                            WHERE isRecurring=1;
                         `)
-        return badges
+        return categories
     } catch (e){
-        handleDBError(e,'Fetching expense categories failed')
+        handleDBError(e,'Fetching income recurring categories failed')
     }
 };

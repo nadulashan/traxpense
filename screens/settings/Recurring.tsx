@@ -1,7 +1,9 @@
 import AddCategoryButton from '@/components/addCategoryButton';
 import BottomSheetRecurring from '@/components/bottomSheetRecurring';
-import { getExpenseRecurringBadges, getIncomeReccuringBadges } from '@/db/recurring/select';
+import { addNewExpenseRecurringCategory, addNewIncomeRecurringCategory } from '@/db/recurring/insert';
+import { getActiveAccounts, getExpenseRecurringBadges, getIncomeReccuringBadges } from '@/db/recurring/select';
 import { badgeSorter, checkTypes, closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
+import { addFourMonths, addOneDay, addOneMonth, addOneYear, addSevenDays, addSixMonths, addThreeMonths, getLocalTime } from '@/func/time';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -22,48 +24,44 @@ export default function Recurring({route}:Props){
     const [ inputName, setInputName ] = useState('')
     const [ inputAmount, setInputAmount ] = useState('')
     const [ inputBadge, setInputBadge ] = useState('')
-    const [ inputFrequency, setInputFrequency ] = useState('')
-    const [ inputFrequencyMonth, setInputFrequencyMonth ] = useState('')
-    const [ inputFrequencyDate, setInputFrequencyDate ] = useState<number | undefined>()
-    const [ inputFrequencyDay, setInputFrequencyDay ] = useState('')
-    const [ inputFrequencyTime, setInputFrequencyTime ] = useState('')
     const [ allowedDates, setAllowedDates ] = useState<31 | 30 | 28>(31)
-    const [ activeAccounts, setActiveAccounts ] = useState([])
+    const [ inputNameError, setInputNameError ] = useState(false)
+    const [ inputAmountError , setInputAmountError ] = useState(false)
     const frequency = [
-        {label:'Yearly', value:'yearly'},
-        {label:'6 Months', value:'6months'},
-        {label:'4 Months', value:'4months'},
-        {label:'3 Months', value:'3months'},
-        {label:'Monthly', value:'monthly'},
-        {label:'Weekly', value:'weekly'},
-        {label:'Daily', value:'daily'}
+        {label:'Yearly', value:'Yearly'},
+        {label:'06 Months', value:'6 Months'},
+        {label:'04 Months', value:'4 Months'},
+        {label:'03 Months', value:'3 Months'},
+        {label:'Monthly', value:'Monthly'},
+        {label:'Weekly', value:'Weekly'},
+        {label:'Daily', value:'Daily'}
     ]
     const frequencyMonth = [
-        {label:'January', value:'january'},
-        {label:'February', value:'february'},
-        {label:'March', value:'march'},
-        {label:'April', value:'april'},
-        {label:'May', value:'may'},
-        {label:'June', value:'june'},
-        {label:'July', value:'July'},
-        {label:'August', value:'august'},
-        {label:'September', value:'september'},
-        {label:'October', value:'october'},
-        {label:'November', value:'november'},
-        {label:'December', value:'december'},
+        {label:'January', value:0},
+        {label:'February', value:1},
+        {label:'March', value:2},
+        {label:'April', value:3},
+        {label:'May', value:4},
+        {label:'June', value:5},
+        {label:'July', value:6},
+        {label:'August', value:7},
+        {label:'September', value:8},
+        {label:'October', value:9},
+        {label:'November', value:10},
+        {label:'December', value:11},
     ]
     const frequencyDate = Array.from({ length: allowedDates }, (_, i) => ({
         label: (i + 1).toString(),
         value: i + 1
         }));
     const frequencyDay = [
-        { label: 'Monday', value: 'monday' },
-        { label: 'Tuesday', value: 'tuesday' },
-        { label: 'Wednesday', value: 'wednesday' },
-        { label: 'Thursday', value: 'thursday' },
-        { label: 'Friday', value: 'friday' },
-        { label: 'Saturday', value: 'saturday' },
-        { label: 'Sunday', value: 'sunday' }
+        { label: 'Monday', value: 1 },
+        { label: 'Tuesday', value: 2 },
+        { label: 'Wednesday', value: 3 },
+        { label: 'Thursday', value: 4 },
+        { label: 'Friday', value: 5 },
+        { label: 'Saturday', value: 6 },
+        { label: 'Sunday', value: 0 }
     ]
     const frequencyTime = [
         { label: '00:00', value: '00:00' },
@@ -109,18 +107,28 @@ export default function Recurring({route}:Props){
         {label:null, badge:'#FF7A2F'},
         {label:null, badge:'#FF944D'}
     ]
+    const [ accountsArray, setAccountsArray ] = useState<{ label: string; value: number; }[]>([])
+    const [ inputFrequency, setInputFrequency ] = useState(frequency[0].value)
+    const [ inputFrequencyMonth, setInputFrequencyMonth ] = useState<number>(frequencyMonth[0].value)
+    const [ inputFrequencyDate, setInputFrequencyDate ] = useState<number>(frequencyDate[0].value)
+    const [ inputFrequencyDay, setInputFrequencyDay ] = useState(frequencyDay[0].value)
+    const [ inputFrequencyTime, setInputFrequencyTime ] = useState(frequencyTime[0].value)
+    const [ inputAccount, setInputAccount ] = useState<number | undefined>()
     
     let type:'income' | 'expense';
     let getTypeRecurringBadges:() => Promise<{badge:string}[]>
     let recurringTypeBadges:{label:null, badge:string}[]
+    let addNewTypeRecurringCategory:(name:string,badge:string,recurringFrequency:string,amount:number,nextOccurrence:string) => void;
     if( screen === 'Recurring Income'){
         type = 'income'
         getTypeRecurringBadges = getIncomeReccuringBadges
         recurringTypeBadges = recurringIncomeBadges
+        addNewTypeRecurringCategory = addNewIncomeRecurringCategory
     } else {
         type = 'expense'
         getTypeRecurringBadges = getExpenseRecurringBadges
         recurringTypeBadges = recurringExpenseBadges
+        addNewTypeRecurringCategory = addNewExpenseRecurringCategory
     }
 
     // functions
@@ -128,6 +136,91 @@ export default function Recurring({route}:Props){
         const fetchedBadges = await getTypeRecurringBadges()
         const valiedBadges = badgeSorter(recurringTypeBadges, fetchedBadges)
         setBadges(valiedBadges)
+    }
+
+    async function fetchActiveAccounts(){
+        const accounts = await getActiveAccounts()
+        const array = Array.from({ length:accounts.length }, (_, i) => ({
+            label:accounts[i].name,
+            value:accounts[i].accountId
+        }))
+        setAccountsArray(array)
+        setInputAccount(array[0].value)
+    }
+
+    async function initialDBFetch() {
+        await refreshBadges()
+        await fetchActiveAccounts()
+    }
+
+    function createNextOccurance(){
+        const now = getLocalTime()
+
+        const [ hours, minutes ] = inputFrequencyTime.split(':').map(Number)
+        const year = new Date().getFullYear()
+
+        let nextOccurrence:any
+        let month;
+        let date;
+        let day;
+        let addition:(time:any) => void;
+
+        switch (inputFrequency) {
+            case frequency[0].value:     
+                date = inputFrequencyDate
+                month = inputFrequencyMonth           
+                addition = addOneYear
+                break;
+            case frequency[1].value:
+                date = inputFrequencyDate
+                month = inputFrequencyMonth           
+                addition = addSixMonths
+                break;
+            case frequency[2].value:
+                date = inputFrequencyDate
+                month = inputFrequencyMonth           
+                addition = addFourMonths                
+                break;
+            case frequency[3].value:
+                date = inputFrequencyDate
+                month = inputFrequencyMonth           
+                addition = addThreeMonths
+                break;
+            case frequency[4].value:
+                date = inputFrequencyDate
+                month = new Date().getMonth()           
+                addition = addOneMonth
+                break;
+            case frequency[5].value:
+                date = new Date().getDate()
+                month = new Date().getMonth()  
+                addition = addSevenDays
+                const todayDay = now.getUTCDay()
+                const difference = inputFrequencyDay - todayDay
+                date = date + difference
+                break;
+            case frequency[6].value:
+                date = new Date().getDate()
+                month = new Date().getMonth()  
+                addition = addOneDay
+                break;
+        
+            default:
+                addition = addOneDay
+                break;
+        }
+        nextOccurrence = new Date(Date.UTC(year, month, date, hours, minutes))
+
+        while ( now > nextOccurrence){
+            addition(nextOccurrence)
+        }
+        
+        return nextOccurrence.toISOString()
+    }
+
+    function resetFields() {
+        setInputName('')
+        setInputAmount('')
     }
     
     // Callers
@@ -137,11 +230,17 @@ export default function Recurring({route}:Props){
     
     function closeSheetCaller(){
         closeBottomSheet(sheetRef)
+        setInputNameError(false)
+        setInputAmountError(false)
     }
 
     // Handlers
     async function saveHandler(){
-        console.log(inputName, inputAmount, inputBadge)
+        const nextOccurrence = createNextOccurance()
+        addNewTypeRecurringCategory(inputName,inputBadge,inputFrequency, Number(inputAmount), nextOccurrence)
+        await refreshBadges()
+        resetFields()
+        closeSheetCaller()        
     }
 
     // BottomSheet
@@ -160,13 +259,8 @@ export default function Recurring({route}:Props){
 
     useEffect(() => {
         navigation.setOptions({title:screen})
-        refreshBadges()
+        initialDBFetch()
 
-        setInputFrequency(frequency[4].value)
-        setInputFrequencyDate(frequencyDate[0].value)
-        setInputFrequencyDay(frequencyDay[0].value)
-        setInputFrequencyMonth(frequencyMonth[0].value)
-        setInputFrequencyTime(frequencyTime[0].value)
     },[])
 
     useEffect(() => {
@@ -174,6 +268,10 @@ export default function Recurring({route}:Props){
             setInputBadge(badges[0].badge)
         }
     },[badges])
+
+    useEffect(() => {
+        setInputFrequencyDate(frequencyDate[0].value)
+    },[inputFrequencyMonth])
 
     return (
         <>
@@ -221,6 +319,13 @@ export default function Recurring({route}:Props){
                             setAllowedDates= {setAllowedDates}
                             saveHandler = {saveHandler}
                             checkTypes = {checkTypes}
+                            accountsArray = {accountsArray}
+                            inputAccount = {inputAccount}
+                            setInputAccount = {setInputAccount}
+                            inputNameError = {inputNameError}
+                            setInputNameError = {setInputNameError}
+                            inputAmountError = {inputAmountError}
+                            setInputAmountError = {setInputAmountError}
                         />
                     </BottomSheetView>
                 </BottomSheet>

@@ -21,7 +21,6 @@ export async function initDB(){
                 isRecurring BOOL NOT NULL,
                 recurringFrequency TEXT DEFAULT NULL,
                 amount INTEGER DEFAULT NULL,
-                recurringTime TEXT DEFUALT NULL,
                 lastOccurrence TEXT DEFAULT NULL,
                 nextOccurrence TEXT DEFAULT NULL
             );
@@ -47,7 +46,6 @@ export async function initDB(){
                 isRecurring BOOL NOT NULL,
                 recurringFrequency TEXT DEFAULT NULL,
                 amount INTEGER DEFAULT NULL,
-                recurringTime TEXT DEFUALT NULL,
                 lastOccurrence TEXT DEFAULT NULL,
                 nextOccurrence TEXT DEFAULT NULL
             );
@@ -64,6 +62,11 @@ export async function initDB(){
                 name TEXT NOT NULL,
                 amount INTEGER NOT NULL,
                 accountId INTEGER NOT NULL REFERENCES accounts(accountId)
+            );
+            CREATE TABLE IF NOT EXISTS general(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                key TEXT NOT NULL,
+                value TEXT NOT NULL
             );
         `)
     } catch (e){
