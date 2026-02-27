@@ -25,7 +25,7 @@ export default function TabNavigation(){
                 tabBarInactiveTintColor:colors.light.accent,
                 tabBarActiveTintColor:colors.light.primary,
                 tabBarStyle: {height:80, paddingTop:12},                
-                tabBarHideOnKeyboard:true
+                tabBarHideOnKeyboard:false
             }}
             >
             <Tab.Screen 

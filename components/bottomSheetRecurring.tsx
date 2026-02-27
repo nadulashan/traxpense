@@ -1,5 +1,6 @@
 import CommonStyles from '@/styles/commonStyles';
 import RecurringStyles from '@/styles/recurringStyles';
+import { RecurringCategory } from '@/types/recurring.schema';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 
@@ -31,11 +32,16 @@ type BottomSheetRecurringProps = {
     checkTypes:(input:string) => boolean;
     accountsArray: {label:string, value:number}[];
     inputAccount:number | undefined;
-    setInputAccount:React.Dispatch<React.SetStateAction<number | undefined>>
+    setInputAccount:React.Dispatch<React.SetStateAction<number>>
     inputNameError:boolean;
     setInputNameError:React.Dispatch<React.SetStateAction<boolean>>
     inputAmountError:boolean;
-    setInputAmountError:React.Dispatch<React.SetStateAction<boolean>>
+    setInputAmountError:React.Dispatch<React.SetStateAction<boolean>>;
+    focusedCategory: RecurringCategory | null;
+    updateHandler: () => void;
+    suspendHandler: () => void;
+    suspendNotification: boolean;
+    setSuspendNotification:React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function BottomSheetRecurring({
@@ -70,7 +76,12 @@ export default function BottomSheetRecurring({
     inputNameError,
     setInputNameError,
     inputAmountError,
-    setInputAmountError
+    setInputAmountError,
+    focusedCategory,
+    updateHandler,
+    suspendHandler,
+    suspendNotification,
+    setSuspendNotification
 }:BottomSheetRecurringProps ) {
     return (
         <View style={CommonStyles.BottomSheetWrapper}>
@@ -81,11 +92,14 @@ export default function BottomSheetRecurring({
                 </View>
                 : accountsArray.length === 0?
                 <View>
-                    <Text style={CommonStyles.NoActionText}>Unable to fetch any Active Account to create a recurring category</Text>
+                    <Text style={CommonStyles.NoActionText}>Unable to fetch Active Accounts to create a recurring category</Text>
                 </View>
                 :    
                 <>
                 <View>
+                    {
+                        suspendNotification ? <Text style={CommonStyles.NoActionDangerText}>This action is irreversable. Long Press on the button to continue</Text> : null
+                    }
                 <Text style={CommonStyles.BottomSheetFieldText}>Name: </Text>
                 <TextInput
                     style={CommonStyles.BottomSheetInput}
@@ -94,6 +108,8 @@ export default function BottomSheetRecurring({
                         setInputName(value)
                         if ( value === '' ) {
                             setInputNameError(true)
+                        } else {
+                            setInputNameError(false)
                         }
                     }}
                 />
@@ -250,22 +266,62 @@ export default function BottomSheetRecurring({
                     />
                 </View>
                 <View style={CommonStyles.BottomSheetButtonWrapper}>
-                    <Pressable
-                        style={[CommonStyles.BottomSheetButton, CommonStyles.BottomSheetPrimaryButton]}
-                        onPress={() => {
-                            if ( inputName === '' ) {
-                                setInputNameError(true)
-                            }
-                            if ( inputAmount === '' ) {
-                                setInputAmountError(true)
-                            }
-                            if ( inputName !== '' && checkTypes(inputAmount)){
-                                saveHandler()
-                            }
-                        }}
-                    >
-                        <Text style={CommonStyles.BottomSheetButtonText}>Save</Text>
-                    </Pressable>
+                    {
+                        focusedCategory ?
+                        <>
+                            <Pressable
+                                style={[CommonStyles.BottomSheetButton, CommonStyles.BottomSheetSecondaryButton]}
+                                onPress={() => setSuspendNotification(true)}
+                                onLongPress={() => {
+                                    if ( inputName === '' ) {
+                                        setInputNameError(true)
+                                    }
+                                    if ( inputAmount === '' ) {
+                                        setInputAmountError(true)
+                                    }
+                                    if ( inputName !== '' && checkTypes(inputAmount)){
+                                        suspendHandler()
+                                    }
+                                }}
+                            >
+                                <Text style={CommonStyles.BottomSheetButtonText}>Suspend</Text>
+                            </Pressable>
+                            <Pressable
+                                style={[CommonStyles.BottomSheetButton, CommonStyles.BottomSheetPrimaryButton]}
+                                onPress={() => {
+                                    if ( inputName === '' ) {
+                                        setInputNameError(true)
+                                    }
+                                    if ( inputAmount === '' ) {
+                                        setInputAmountError(true)
+                                    }
+                                    if ( inputName !== '' && checkTypes(inputAmount)){
+                                        updateHandler()
+                                    }
+                                }}
+                            >
+                                <Text style={CommonStyles.BottomSheetButtonText}>Update</Text>
+                            </Pressable>
+                        </>
+                        :
+                        
+                            <Pressable
+                                style={[CommonStyles.BottomSheetButton, CommonStyles.BottomSheetPrimaryButton]}
+                                onPress={() => {
+                                    if ( inputName === '' ) {
+                                        setInputNameError(true)
+                                    }
+                                    if ( inputAmount === '' ) {
+                                        setInputAmountError(true)
+                                    }
+                                    if ( inputName !== '' && checkTypes(inputAmount)){
+                                        saveHandler()
+                                    }
+                                }}
+                            >
+                                <Text style={CommonStyles.BottomSheetButtonText}>Save</Text>
+                            </Pressable>
+                    }
                 </View>
                 </>
         }

@@ -18,7 +18,7 @@ type BottomSheetWrapperProps = {
     inputBalanceError:boolean;
     setInputBalanceError:React.Dispatch<React.SetStateAction<boolean>>;
     type:string;
-    focusedAccount:{ accountId: number; name: string; badge: string; amount: number; isActive: number; } | null;
+    focusedAccount:{ accountId: number; accountName: string; accountBadge: string; amount: number; isActive: number; } | null;
     updateAccountHandler:() => void;
     suspendNotification:boolean;
     setSuspendNotification:React.Dispatch<React.SetStateAction<boolean>>;

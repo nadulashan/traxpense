@@ -4,8 +4,8 @@ import getDB from "./opendb";
 export async function getFundAccountBadges(){
     try{
         const db = await getDB();
-        const badges = await db.getAllAsync<{badge:string}>(`
-                            SELECT badge 
+        const badges = await db.getAllAsync<{accountBadge:string}>(`
+                            SELECT accountBadge 
                             FROM accounts
                             WHERE isActive=1 AND isCredit=0;
                         `)
@@ -18,8 +18,8 @@ export async function getFundAccountBadges(){
 export async function getCreditAccountBadges(){
     try{
         const db = await getDB();
-        const badges = await db.getAllAsync<{badge:string}>(`
-                            SELECT badge
+        const badges = await db.getAllAsync<{accountBadge:string}>(`
+                            SELECT accountBadge
                             FROM accounts
                             WHERE isActive=1 AND isCredit=1;
                         `)
@@ -32,8 +32,8 @@ export async function getCreditAccountBadges(){
 export async function getFundAccounts() {
     try{
         const db = await getDB();
-        const accounts = await db.getAllAsync<{accountId: number;name:string; badge:string;amount:number;isActive:number;}>(`
-                            SELECT accountId,name,badge,amount,isActive 
+        const accounts = await db.getAllAsync<{accountId: number;accountName:string; accountBadge:string;amount:number;isActive:number;}>(`
+                            SELECT accountId,accountName,accountBadge,amount,isActive 
                             FROM accounts
                             WHERE isCredit=0;
                         `)
@@ -46,8 +46,8 @@ export async function getFundAccounts() {
 export async function getCreditAccounts() {
     try{
         const db = await getDB();
-        const accounts = await db.getAllAsync<{accountId: number;name:string; badge:string;amount:number;isActive:number;}>(`
-                            SELECT accountId,name,badge,amount,isActive 
+        const accounts = await db.getAllAsync<{accountId: number;accountName:string; accountBadge:string;amount:number;isActive:number;}>(`
+                            SELECT accountId,accountName,accountBadge,amount,isActive 
                             FROM accounts
                             WHERE isCredit=1;
                         `)
@@ -60,8 +60,8 @@ export async function getCreditAccounts() {
 export async function getAccount(id:number){
     try{
         const db = await getDB();
-        const accountJson = await db.getFirstAsync<{accountId: number;name:string; badge:string;amount:number;isActive:number;}>(`
-                            SELECT accountId,name,badge,amount,isActive FROM accounts WHERE accountId=?;
+        const accountJson = await db.getFirstAsync<{accountId: number;name:string; accountBadge:string;amount:number;isActive:number;}>(`
+                            SELECT accountId,name,accountBadge,amount,isActive FROM accounts WHERE accountId=?;
                         `,id)
         console.log(accountJson)
         return await accountJson

@@ -25,7 +25,7 @@ export async function updateAccount(
         const db = await getDB();
         const badges = await db.runAsync(`
                                 UPDATE accounts 
-                                SET name=?, badge=?, amount=? 
+                                SET accountName=?, accountBadge=?, amount=? 
                                 WHERE accountId=?
                         `,name,badge,store,id)
         return await badges.changes

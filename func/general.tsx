@@ -22,3 +22,7 @@ export function priceWithComma(amount:number):string{
     const commaNum = commaNumberArr.join('')
     return `Rs. ${commaNum}`
 }
+
+export function displayTimes(time:string){
+    return time.split('T').join(' @ ').split('.')[0]
+}

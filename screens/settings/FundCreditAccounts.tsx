@@ -4,7 +4,7 @@ import FundCreditAccountsContentWrapper from '@/components/fundCreditAccountsCon
 import { addNewCreditAccount, addNewFundAccount } from '@/db/fundCreditAccounts/insert';
 import { getCreditAccountBadges, getCreditAccounts, getFundAccountBadges, getFundAccounts } from '@/db/fundCreditAccounts/select';
 import { suspendAccount, updateAccount } from '@/db/fundCreditAccounts/update';
-import { badgeSorter, checkTypes, closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
+import { badgeSorterAcc, checkTypes, closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
@@ -18,8 +18,8 @@ type Props = StackScreenProps<SettingsStackParamList, 'FundCreditAccounts'>
 export default function FundCreditAccounts({route}:Props){
 
     // useState variables for child components access
-    const [ fetchedAccounts, setFetchedAccounts ] = useState<{ accountId: number; name: string; badge: string; amount: number; isActive: number; }[]>([]);
-    const [ focusedAccount, setFocusedAccount ] = useState<{ accountId: number; name: string; badge: string; amount: number; isActive: number; } | null>(null);
+    const [ fetchedAccounts, setFetchedAccounts ] = useState<{ accountId: number; accountName: string; accountBadge: string; amount: number; isActive: number; }[]>([]);
+    const [ focusedAccount, setFocusedAccount ] = useState<{ accountId: number; accountName: string; accountBadge: string; amount: number; isActive: number; } | null>(null);
     const [ isAccountsReady, setIsAccountsReady ] = useState<boolean>(false)
     const [ inputName, setInputName ] = useState<string>('');
     const [ inputBalance, setInputBalance ] = useState<string>('');
@@ -156,7 +156,7 @@ export default function FundCreditAccounts({route}:Props){
             correctTypeValiedBadges = valiedCreditBadges;
         }
 
-        const valiedFetchedBadges = badgeSorter(correctTypeValiedBadges, fetchedBadges)
+        const valiedFetchedBadges = badgeSorterAcc(correctTypeValiedBadges, fetchedBadges)
         setValiedBadges(valiedFetchedBadges)
         setRenderBottomSheet(true)
     }

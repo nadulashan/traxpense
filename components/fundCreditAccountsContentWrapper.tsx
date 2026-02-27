@@ -9,9 +9,9 @@ import AccountCard from './accountCard';
 type ContentWrapperProps = {
     openBottomSheet: () => void;
     isAccountsReady:boolean;
-    fetchedAccounts:{ accountId: number; name: string; badge: string; amount: number; isActive: number; }[];
-    focusedAccount:{ accountId: number; name: string; badge: string; amount: number; isActive: number; } | null;
-    setFocusedAccount:React.Dispatch<React.SetStateAction<{ accountId: number; name: string; badge: string; amount: number; isActive: number; } | null>>;
+    fetchedAccounts:{ accountId: number; accountName: string; accountBadge: string; amount: number; isActive: number; }[];
+    focusedAccount:{ accountId: number; accountName: string; accountBadge: string; amount: number; isActive: number; } | null;
+    setFocusedAccount:React.Dispatch<React.SetStateAction<{ accountId: number; accountName: string; accountBadge: string; amount: number; isActive: number; } | null>>;
     setInputName:React.Dispatch<React.SetStateAction<string>>;
     setInputBalance:React.Dispatch<React.SetStateAction<string>>;
     setInputBadge:React.Dispatch<React.SetStateAction<string>>;
@@ -33,9 +33,9 @@ export default function FundCreditAccountsContentWrapper({
     // Update the states of the inputs when focused accout is updated
     useEffect(() => {
         if(focusedAccount){
-            setInputName(focusedAccount.name)
+            setInputName(focusedAccount.accountName)
             setInputBalance((focusedAccount.amount/100).toString())
-            setInputBadge(focusedAccount.badge)
+            setInputBadge(focusedAccount.accountBadge)
         } else {
             setInputName('')
             setInputBalance('')
@@ -52,7 +52,7 @@ export default function FundCreditAccountsContentWrapper({
                 {
                     fetchedAccounts.map(account => (
                         <View key={account.accountId} style={FundCreditAccountsStyles.AccountButtonWrapper}>
-                            <AccountCard name={account.name} color={account.badge? account.badge:'grey'} balance={priceWithComma(account.amount)} category={null}/>
+                            <AccountCard name={account.accountName} color={account.accountBadge? account.accountBadge:'grey'} balance={priceWithComma(account.amount)} category={null}/>
                             <Pressable 
                                 style={FundCreditAccountsStyles.ManageButtonWrapper}
                                 onPress={() => {

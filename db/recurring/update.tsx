@@ -1,64 +1,78 @@
 import handleDBError from "../dbError";
 import getDB from "./opendb";
 
-export async function suspendIncomeCategory(id:number){
+export async function suspendRecurringIncomeCategory(id:number){
     try{
         const db = await getDB();
         const badges = await db.runAsync(`
                                 UPDATE incomeCategories 
-                                SET isActive=0, badge=NULL 
+                                SET isActive=0, 
+                                    badge=NULL, 
+                                    nextOccurrence=NULL
                                 WHERE categoryId=?
                         `, id)
-        return await badges.changes
+        return badges.changes
     } catch (e){
-        handleDBError(e,'Updating income category failed - suspend')
+        handleDBError(e,'Updating income recurring category failed - suspend')
     }
 };
 
-export async function suspendExpenseCategory(id:number){
+export async function suspendRecurringExpenseCategory(id:number){
     try{
         const db = await getDB();
         const badges = await db.runAsync(`
                                 UPDATE expensesCategories 
-                                SET isActive=0, badge=NULL 
+                                SET isActive=0, 
+                                    badge=NULL, 
+                                    nextOccurrence=NULL
                                 WHERE categoryId=?
                         `, id)
-        return await badges.changes
+        return badges.changes
     } catch (e){
-        handleDBError(e,'Updating expense category failed - suspend')
+        handleDBError(e,'Updating expense recurring category failed - suspend')
     }
 };
 
-export async function updateIncomeCategory(
+export async function updateRecurringIncomeCategory(
     id:number,
     name:string,
-    badge:string){
+    badge:string,
+    amount:number,
+    recurringFrequency:string,
+    accountId:number,
+    nextOccurance:string){
     try{
+        const store = amount*100
         const db = await getDB();
         const badges = await db.runAsync(`
                                 UPDATE incomeCategories
-                                SET name=?, badge=?
+                                SET name=?, badge=?, amount=?, recurringFrequency=?, accountId=?, nextOccurrence=?
                                 WHERE categoryId=?;
-                        `,name,badge,id)
+                        `,name,badge,store,recurringFrequency,accountId,nextOccurance,id)
         return await badges.changes
     } catch (e){
-        handleDBError(e,'Updating income category failed - update')
+        handleDBError(e,'Updating recurring income category failed - update')
     }
 };
 
-export async function updateExpenseCategory(
+export async function updateRecurringExpenseCategory(
     id:number,
     name:string,
-    badge:string){
+    badge:string,
+    amount:number,
+    recurringFrequency:string,
+    accountId:number,
+    nextOccurance:string){
     try{
+        const store = amount*100
         const db = await getDB();
         const badges = await db.runAsync(`
                                 UPDATE expensesCategories 
-                                SET name=?, badge=?
-                                WHERE categoryId=?
-                        `,name,badge,id)
+                                SET name=?, badge=?, amount=?, recurringFrequency=?, accountId=?, nextOccurrence=?
+                                WHERE categoryId=?;
+                        `,name,badge,store,recurringFrequency,accountId,nextOccurance,id)
         return await badges.changes
     } catch (e){
-        handleDBError(e,'Updating expense category failed - update')
+        handleDBError(e,'Updating recurring expense category failed - update')
     }
 };

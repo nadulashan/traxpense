@@ -1,9 +1,13 @@
 import AddCategoryButton from '@/components/addCategoryButton';
 import BottomSheetRecurring from '@/components/bottomSheetRecurring';
+import RecurringContentWrapper from '@/components/recurringContentWrapper';
+import { ItemContext } from '@/context/recurringContext';
 import { addNewExpenseRecurringCategory, addNewIncomeRecurringCategory } from '@/db/recurring/insert';
-import { getActiveAccounts, getExpenseRecurringBadges, getIncomeReccuringBadges } from '@/db/recurring/select';
+import { getActiveAccounts, getExpenseRecurringBadges, getExpenseRecurringCategories, getIncomeReccuringBadges, getIncomeRecurringCategories } from '@/db/recurring/select';
+import { suspendRecurringExpenseCategory, suspendRecurringIncomeCategory, updateRecurringExpenseCategory, updateRecurringIncomeCategory } from '@/db/recurring/update';
 import { badgeSorter, checkTypes, closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
 import { addFourMonths, addOneDay, addOneMonth, addOneYear, addSevenDays, addSixMonths, addThreeMonths, getLocalTime } from '@/func/time';
+import { RecurringCategory } from '@/types/recurring.schema';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -13,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { SettingsStackParamList } from './SettingsStackNavigation';
 
 type Props = StackScreenProps<SettingsStackParamList, 'Recurring'>
+
 
 export default function Recurring({route}:Props){
 
@@ -113,22 +118,42 @@ export default function Recurring({route}:Props){
     const [ inputFrequencyDate, setInputFrequencyDate ] = useState<number>(frequencyDate[0].value)
     const [ inputFrequencyDay, setInputFrequencyDay ] = useState(frequencyDay[0].value)
     const [ inputFrequencyTime, setInputFrequencyTime ] = useState(frequencyTime[0].value)
-    const [ inputAccount, setInputAccount ] = useState<number | undefined>()
+    const [ inputAccount, setInputAccount ] = useState<number>(0)
+    const [ categories, setCategories ] = useState<RecurringCategory[]>([]);
+    const [ isCategoriesReady, setIsCategoriesReady ] = useState(false)
+    const [ focusedCategory, setFocusedCategory ] = useState<RecurringCategory | null>(null)
+    const [ suspendNotification, setSuspendNotification ] = useState(false)
     
     let type:'income' | 'expense';
     let getTypeRecurringBadges:() => Promise<{badge:string}[]>
     let recurringTypeBadges:{label:null, badge:string}[]
-    let addNewTypeRecurringCategory:(name:string,badge:string,recurringFrequency:string,amount:number,nextOccurrence:string) => void;
+    let addNewTypeRecurringCategory:(name:string,badge:string,recurringFrequency:string,amount:number,accountId:number,nextOccurrence:string) => void;
+    let getTypeRecurringCategories: () => Promise<any>;
+    let suspendRecurringTypeCategory: (id: number) => Promise<number>;
+    let updateRecurringTypeCategory: (id:number,
+                                        name:string,
+                                        badge:string,
+                                        amount:number,
+                                        recurringFrequency:string,
+                                        accountId:number,
+                                        nextOccurance:string) => void;
+
     if( screen === 'Recurring Income'){
         type = 'income'
         getTypeRecurringBadges = getIncomeReccuringBadges
         recurringTypeBadges = recurringIncomeBadges
         addNewTypeRecurringCategory = addNewIncomeRecurringCategory
+        getTypeRecurringCategories = getIncomeRecurringCategories
+        suspendRecurringTypeCategory = suspendRecurringIncomeCategory
+        updateRecurringTypeCategory = updateRecurringIncomeCategory
     } else {
         type = 'expense'
         getTypeRecurringBadges = getExpenseRecurringBadges
         recurringTypeBadges = recurringExpenseBadges
         addNewTypeRecurringCategory = addNewExpenseRecurringCategory
+        getTypeRecurringCategories = getExpenseRecurringCategories
+        suspendRecurringTypeCategory = suspendRecurringExpenseCategory
+        updateRecurringTypeCategory = updateRecurringExpenseCategory
     }
 
     // functions
@@ -140,17 +165,25 @@ export default function Recurring({route}:Props){
 
     async function fetchActiveAccounts(){
         const accounts = await getActiveAccounts()
-        const array = Array.from({ length:accounts.length }, (_, i) => ({
-            label:accounts[i].name,
-            value:accounts[i].accountId
-        }))
-        setAccountsArray(array)
-        setInputAccount(array[0].value)
+        if ( accounts.length !== 0 ) {
+            const array = Array.from({ length:accounts.length }, (_, i) => ({
+                label:accounts[i].accountName,
+                value:accounts[i].accountId
+            }))
+            setAccountsArray(array)
+            setInputAccount(array[0].value)
+        }
     }
 
     async function initialDBFetch() {
         await refreshBadges()
         await fetchActiveAccounts()
+        await getCategories()
+    }
+
+    async function eventDBFetch() {
+        await refreshBadges()
+        await getCategories()
     }
 
     function createNextOccurance(){
@@ -222,7 +255,14 @@ export default function Recurring({route}:Props){
         setInputName('')
         setInputAmount('')
     }
-    
+
+    async function getCategories() {
+        setIsCategoriesReady(false)
+        const fetchedCategories = await getTypeRecurringCategories()
+        setCategories(fetchedCategories)
+        setIsCategoriesReady(true)
+    }
+        
     // Callers
     function openSheetCaller(){
         openBottomSheet(sheetRef)
@@ -232,15 +272,46 @@ export default function Recurring({route}:Props){
         closeBottomSheet(sheetRef)
         setInputNameError(false)
         setInputAmountError(false)
+        resetFields()
+        setFocusedCategory(null)
+        setSuspendNotification(false)
     }
 
     // Handlers
-    async function saveHandler(){
+    async function saveHandler(){        
         const nextOccurrence = createNextOccurance()
-        addNewTypeRecurringCategory(inputName,inputBadge,inputFrequency, Number(inputAmount), nextOccurrence)
+        addNewTypeRecurringCategory(inputName,inputBadge,inputFrequency, Number(inputAmount), inputAccount, nextOccurrence)
         await refreshBadges()
-        resetFields()
-        closeSheetCaller()        
+        await getCategories()
+        closeSheetCaller()              
+    }
+
+    function editStart(category:RecurringCategory){
+        setFocusedCategory(category)
+        openSheetCaller()
+    }
+
+    async function updateHandler(){
+        if ( focusedCategory ) {
+            updateRecurringTypeCategory(focusedCategory.categoryId, 
+                                        inputName,
+                                        inputBadge,
+                                        Number(inputAmount),
+                                        inputFrequency,
+                                        inputAccount,
+                                        createNextOccurance()
+            )
+            closeSheetCaller()
+            await eventDBFetch()
+        }
+    }
+
+    async function suspendHandler() {
+        if ( focusedCategory ) {
+            await suspendRecurringTypeCategory(focusedCategory.categoryId)
+            closeSheetCaller()
+            await eventDBFetch()
+        }
     }
 
     // BottomSheet
@@ -260,7 +331,6 @@ export default function Recurring({route}:Props){
     useEffect(() => {
         navigation.setOptions({title:screen})
         initialDBFetch()
-
     },[])
 
     useEffect(() => {
@@ -270,15 +340,68 @@ export default function Recurring({route}:Props){
     },[badges])
 
     useEffect(() => {
-        setInputFrequencyDate(frequencyDate[0].value)
+        if ( !focusedCategory ) { setInputFrequencyDate(frequencyDate[0].value) }        
     },[inputFrequencyMonth])
+
+    useEffect(() => {
+        if (focusedCategory){
+            const accountObject = accountsArray.filter(account => {
+                return account.value === focusedCategory.accountId
+            })
+
+            const frequencyObject = frequency.filter(item => {
+                return item.value === focusedCategory.recurringFrequency
+            })
+
+            const badgeObject = recurringTypeBadges.filter(item => {
+                return item.badge === focusedCategory.badge
+            })
+
+            const [yearMonthDate, time] = focusedCategory.nextOccurrence?.split('T')
+            const yearMonthDateArray = yearMonthDate?.split('-')
+
+            const month = Number(yearMonthDateArray[1])-1
+
+            const date = Number(yearMonthDateArray[2])
+
+            const specificDate = new Date(Number(yearMonthDateArray[0]), month, date)
+            const day = specificDate.getDay()
+
+            const hourMinArray = time.split(':')
+            hourMinArray.pop()
+            const hourMin = hourMinArray.join(':')
+
+            setInputName(focusedCategory.name)
+            setInputAmount((focusedCategory.amount / 100).toString())
+            setInputAccount(accountObject[0].value)
+            setInputFrequency(frequencyObject[0].value)
+            setInputFrequencyMonth(month)
+            setInputFrequencyDate(date)
+            setInputFrequencyDay(day)
+            setInputBadge(badgeObject[0].badge)
+            setInputFrequencyTime(hourMin)
+        } else {
+            setInputFrequency(frequency[0].value)
+            setInputFrequencyTime(frequencyTime[0].value)
+            setInputFrequencyDate(frequencyDate[0].value)
+            setInputFrequencyDay(frequencyDay[0].value)
+            setInputFrequencyMonth(frequencyMonth[0].value)
+            if (accountsArray.length !==0) {setInputAccount(accountsArray[0].value)}
+            if (badges.length !==0) {setInputBadge(badges[0].badge)}
+        }
+    },[focusedCategory])
 
     return (
         <>
             <SafeAreaView style={{backgroundColor:'#ffffff', flex:1}} edges={['top', 'left', 'right']}>
                 <ScrollView showsVerticalScrollIndicator={false}>
 
-                    
+                    <ItemContext value={editStart}>
+                    <RecurringContentWrapper
+                        categories={categories}
+                        isCategoriesReady = {isCategoriesReady}
+                    />
+                    </ItemContext>
 
                 </ScrollView>
                 
@@ -290,7 +413,6 @@ export default function Recurring({route}:Props){
                     enablePanDownToClose={true}
                     ref={sheetRef}
                     backdropComponent={backDrop}
-                    // onChange={handleSuspendNotificationState}
                     >
                     <BottomSheetView>
                         <BottomSheetRecurring
@@ -326,6 +448,11 @@ export default function Recurring({route}:Props){
                             setInputNameError = {setInputNameError}
                             inputAmountError = {inputAmountError}
                             setInputAmountError = {setInputAmountError}
+                            focusedCategory={focusedCategory}
+                            updateHandler={updateHandler}
+                            suspendHandler={suspendHandler}
+                            suspendNotification = {suspendNotification}
+                            setSuspendNotification={ setSuspendNotification }
                         />
                     </BottomSheetView>
                 </BottomSheet>

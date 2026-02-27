@@ -7,8 +7,8 @@ export async function initDB(){
         await db.execAsync(`
             CREATE TABLE IF NOT EXISTS accounts(
                 accountId INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                badge TEXT DEFAULT NULL,
+                accountName TEXT NOT NULL,
+                accountBadge TEXT DEFAULT NULL,
                 amount INTEGER NOT NULL,
                 isCredit BOOL NOT NULL,
                 isActive BOOL NOT NULL
@@ -21,6 +21,7 @@ export async function initDB(){
                 isRecurring BOOL NOT NULL,
                 recurringFrequency TEXT DEFAULT NULL,
                 amount INTEGER DEFAULT NULL,
+                accountId INTEGER REFERENCES accounts(accountId) DEFAULT NULL,
                 lastOccurrence TEXT DEFAULT NULL,
                 nextOccurrence TEXT DEFAULT NULL
             );
@@ -46,6 +47,7 @@ export async function initDB(){
                 isRecurring BOOL NOT NULL,
                 recurringFrequency TEXT DEFAULT NULL,
                 amount INTEGER DEFAULT NULL,
+                accountId INTEGER REFERENCES accounts(accountId) DEFAULT NULL,
                 lastOccurrence TEXT DEFAULT NULL,
                 nextOccurrence TEXT DEFAULT NULL
             );
