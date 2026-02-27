@@ -63,8 +63,35 @@ export async function getAccount(id:number){
         const accountJson = await db.getFirstAsync<{accountId: number;name:string; accountBadge:string;amount:number;isActive:number;}>(`
                             SELECT accountId,name,accountBadge,amount,isActive FROM accounts WHERE accountId=?;
                         `,id)
-        console.log(accountJson)
         return await accountJson
+    } catch (e){
+        handleDBError(e,'Fetching account(1) details failed')
+    }
+}
+
+export async function checkDependents(id:number){
+    try{
+        let data:any;
+        const db = await getDB();
+        await db.withTransactionAsync( async () => {
+            const fromIncomeCategories = await db.getAllAsync(`
+                            SELECT categoryId
+                            FROM incomeCategories
+                            WHERE accountId=? AND isActive=1;
+                        `,id)
+            const fromExpensesCategories = await db.getAllAsync(`
+                            SELECT categoryId
+                            FROM expensesCategories
+                            WHERE accountId=? AND isActive=1;
+                        `,id)
+            
+            data = [...fromIncomeCategories, ...fromExpensesCategories]
+        })
+        if ( data.length !== 0 ){
+            return true
+        } else {
+            return false
+        }
     } catch (e){
         handleDBError(e,'Fetching account(1) details failed')
     }

@@ -6,7 +6,7 @@ export async function suspendAccount(id:number){
         const db = await getDB();
         const badges = await db.runAsync(`
                                 UPDATE accounts 
-                                SET isActive=0, badge=NULL 
+                                SET isActive=0, accountBadge=NULL 
                                 WHERE accountId=?
                         `, id)
         return await badges.changes

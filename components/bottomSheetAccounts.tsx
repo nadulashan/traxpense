@@ -24,6 +24,7 @@ type BottomSheetWrapperProps = {
     setSuspendNotification:React.Dispatch<React.SetStateAction<boolean>>;
     saveAccountHandler:() => void;
     suspendAccountHandler:() => void;
+    areDependentsPresent: boolean;
 }
 
 export default function BottomSheetWrapper({
@@ -46,7 +47,8 @@ export default function BottomSheetWrapper({
     suspendNotification,
     setSuspendNotification,
     saveAccountHandler,
-    suspendAccountHandler
+    suspendAccountHandler,
+    areDependentsPresent
     }:BottomSheetWrapperProps){
 
 
@@ -72,6 +74,7 @@ export default function BottomSheetWrapper({
                 <>
                     <View>                        
                         {suspendNotification? <Text style={CommonStyles.NoActionDangerText}>This action is irreversable. Long Press on the button to continue</Text>:null}
+                        {areDependentsPresent? <Text style={CommonStyles.NoActionDangerText}>Cannot suspend because there are one or more dependent Recurring Item(s). Update them to another Active account or suspend them first.</Text>:null}
                         <Text style={CommonStyles.BottomSheetFieldText}>Account Name:</Text>
                         <TextInput
                             value={inputName}

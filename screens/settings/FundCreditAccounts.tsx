@@ -2,7 +2,7 @@ import AddAccountButton from '@/components/addaccountbutton';
 import BottomSheetWrapper from '@/components/bottomSheetAccounts';
 import FundCreditAccountsContentWrapper from '@/components/fundCreditAccountsContentWrapper';
 import { addNewCreditAccount, addNewFundAccount } from '@/db/fundCreditAccounts/insert';
-import { getCreditAccountBadges, getCreditAccounts, getFundAccountBadges, getFundAccounts } from '@/db/fundCreditAccounts/select';
+import { checkDependents, getCreditAccountBadges, getCreditAccounts, getFundAccountBadges, getFundAccounts } from '@/db/fundCreditAccounts/select';
 import { suspendAccount, updateAccount } from '@/db/fundCreditAccounts/update';
 import { badgeSorterAcc, checkTypes, closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
@@ -28,6 +28,7 @@ export default function FundCreditAccounts({route}:Props){
     const [ inputNameError, setInputNameError ] = useState<boolean>(false)
     const [ inputBalanceError, setInputBalanceError ] = useState<boolean>(false)
     const [ suspendNotification, setSuspendNotification ] = useState<boolean>(false)
+    const [ areDependentsPresent, setAreDependentsPresent ] = useState(false)
     const valiedFundBadges = [
         {label:null, badge:'#4A6FA5'},
         {label:null, badge:'#5E8C61'},
@@ -87,6 +88,7 @@ export default function FundCreditAccounts({route}:Props){
         setSuspendNotification(false);
         setInputNameError(false)
         setInputBalanceError(false)
+        setAreDependentsPresent(false)
     }
 
     function resetInputs(){
@@ -107,13 +109,20 @@ export default function FundCreditAccounts({route}:Props){
     }
 
     async function suspendAccountHandler(){
+        setSuspendNotification(false)
         if (focusedAccount){
-            suspendAccount(focusedAccount.accountId)
-            await refreshAccountBadges()
-            resetInputs()
-            closeSheetCaller()
-            resetRenderBottomSheet()
-            resetIsAccountsReady()
+            const check = await checkDependents(focusedAccount.accountId)
+            if ( check ) {
+                setAreDependentsPresent(true)
+            } else {
+                
+                suspendAccount(focusedAccount.accountId)
+                await refreshAccountBadges()
+                resetInputs()
+                closeSheetCaller()
+                resetRenderBottomSheet()
+                resetIsAccountsReady()
+            }
         }
     }
 
@@ -240,6 +249,7 @@ export default function FundCreditAccounts({route}:Props){
                             suspendNotification={suspendNotification}
                             setSuspendNotification={setSuspendNotification}
                             saveAccountHandler = {saveAccountHandler}
+                            areDependentsPresent = { areDependentsPresent }
                         />
                     </BottomSheetView>
                 </BottomSheet>
