@@ -18,7 +18,7 @@ export default function TabNavigation(){
 
     return (
         <Tab.Navigator 
-            initialRouteName="SettingsStack" 
+            initialRouteName="RecordsStack" 
             screenOptions={{
                 headerShown:false,
                 tabBarShowLabel:false,
