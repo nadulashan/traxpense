@@ -5,34 +5,44 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 
 interface AddItemFormTypes {
     onPressHandler: () => void;
-    category:{ categoryId:number, name:string, badge:string } | null;
-    setCategory:React.Dispatch<React.SetStateAction<{ categoryId:number, name:string, badge:string } | null>>;
-    account:{ accountId:number, accountName:string, accountBadge:string } | null;
-    setAccount:React.Dispatch<React.SetStateAction<{ accountId:number, accountName:string, accountBadge:string } | null>>;
     amount:string;
     setAmount:React.Dispatch<React.SetStateAction<string>>;
     comment:string;
     setComment:React.Dispatch<React.SetStateAction<string>>;
     amountError:boolean;
     setAmountError:React.Dispatch<React.SetStateAction<boolean>>
+    handleCateogorySelector:() => void;
+    selectedCategory:{ categoryId: number; name: string; badge: string; } | null;
 }
 
 export default function AddItemForm({
     onPressHandler,
-    category,
-    setCategory,
-    account,
-    setAccount,
     amount,
     setAmount,
     comment,
     setComment,
     amountError,
-    setAmountError
+    setAmountError,
+    handleCateogorySelector,
+    selectedCategory
 }:AddItemFormTypes) {
     return  (
         <View style={RecordStyles.AddItemWrapper}>
-            <Pressable style={RecordStyles.AddItemSelect}><Text style={RecordStyles.AddItemSelectText}>Select Category</Text></Pressable>
+            
+
+            <Pressable 
+                onPress={handleCateogorySelector}
+                style={RecordStyles.AddItemSelect}>
+                    {
+                        selectedCategory? 
+                        <View style={RecordStyles.CategoryElement}>
+                            <View style={[CommonStyles.badge, {backgroundColor:selectedCategory.badge}]}></View>
+                            <Text style={RecordStyles.CategoryElementText}>{selectedCategory.name}</Text>
+                        </View>
+                        :
+                        <Text style={RecordStyles.AddItemSelectText}>Select Category</Text>
+                    }
+            </Pressable>
             <View style={RecordStyles.AddItemAmountAccountWrapper}>
                 <View style={RecordStyles.AddItemSelectAmountWrapper}>
                 <TextInput 

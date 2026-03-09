@@ -1,24 +1,31 @@
-import { View } from 'react-native';
+import colors from '@/constants/colors';
+import RecordStyles from '@/styles/recordsStyles';
+import { ActivityIndicator, View } from 'react-native';
 import CategoryItem from './recordFormCategoryItem';
 
 interface CategoryWrapperTypes {
-    categories:{ categoryId:number, name:string, badge:string }[];
-    selectedCategory:{ categoryId:number, name:string, badge:string };
-    setSelectedCategory:React.Dispatch<React.SetStateAction<{ categoryId:number, name:string, badge:string }>>;
+    categories:{ categoryId:number, name:string, badge:string }[] | null;
+    onCategoryPress:(category: { categoryId: number; name: string; badge: string; }) => void;
+    // selectedCategory:{ categoryId:number, name:string, badge:string };
+    // setSelectedCategory:React.Dispatch<React.SetStateAction<{ categoryId:number, name:string, badge:string }>>;
 }
 
 export default function FormCategoryWrapper({
     categories,
-    selectedCategory,
-    setSelectedCategory
+    onCategoryPress
+    // selectedCategory,
+    // setSelectedCategory
 }: CategoryWrapperTypes) {
 
     return (
-        <View>
+        <View style={RecordStyles.CategoryElementWrapper}>
         {
+            categories?
             categories.map((item) => (
-                <CategoryItem name={item.name} badge={item.badge} />
+                <CategoryItem key={item.categoryId} name={item.name} badge={item.badge} onCategoryPress={onCategoryPress} category={item}/>
             ))
+            :
+            <ActivityIndicator size={'small'} color={colors.light.primary} />
         }
         </View>
     )

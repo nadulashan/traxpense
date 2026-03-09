@@ -106,7 +106,11 @@ const CommonStyles = StyleSheet.create({
         textAlign:'center'
     },
 
-
+    badge: {
+        width:20,
+        height:20,
+        borderRadius:10
+    }
 })
 
 

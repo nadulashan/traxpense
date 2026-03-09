@@ -142,6 +142,27 @@ const RecordStyles = StyleSheet.create({
         fontSize:14,
         paddingLeft:4,
         color:'grey'
+    },
+
+    CategoryElementWrapper: {
+        padding:8,
+        gap:8
+    },
+
+    CategoryElement: {
+        width:'100%',
+        padding:8,
+        borderRadius:8,
+        backgroundColor:colors.light.primaryLight,
+        flexDirection:'row',
+        gap:8,
+        alignItems:'center'
+    },
+
+    CategoryElementText: {
+        fontSize:14,
+        fontFamily:fonts.regular,
+        // justifyContent:'center'
     }
 })
 
