@@ -29,6 +29,7 @@ export async function initDB(){
                 expenseId INTEGER PRIMARY KEY AUTOINCREMENT,
                 categoryId INTEGER NOT NULL  REFERENCES expensesCategories(categoryId),
                 accountId INTEGER DEFAULT NULL  REFERENCES accounts(accountId),
+                comment TEXT DEFAULT NULL,
                 date TEXT NOT NULL,
                 amount INTEGER NOT NULL
             );
@@ -36,6 +37,7 @@ export async function initDB(){
                 customExpenseId INTEGER PRIMARY KEY AUTOINCREMENT,
                 expenseId INTEGER NOT NULL REFERENCES expenses(expenseId),
                 name TEXT NOT NULL,
+                comment TEXT DEFAULT NULL,
                 amount INTEGER NOT NULL,
                 accountId INTEGER NOT NULL REFERENCES accounts(accountId)
             );
@@ -55,6 +57,7 @@ export async function initDB(){
                 incomeId INTEGER PRIMARY KEY AUTOINCREMENT,
                 categoryId INTEGER NOT NULL REFERENCES incomeCategories(categoryId),
                 accountId INTEGER DEFAULT NULL REFERENCES accounts(accountId),
+                comment TEXT DEFAULT NULL,
                 date TEXT NOT NULL,
                 amount INTEGER NOT NULL
             );
@@ -62,12 +65,12 @@ export async function initDB(){
                 customincomeId INTEGER PRIMARY KEY AUTOINCREMENT,
                 incomeId INTEGER NOT NULL REFERENCES income(incomeId),
                 name TEXT NOT NULL,
+                comment TEXT DEFAULT NULL,
                 amount INTEGER NOT NULL,
                 accountId INTEGER NOT NULL REFERENCES accounts(accountId)
             );
-            CREATE TABLE IF NOT EXISTS general(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                key TEXT NOT NULL,
+            CREATE TABLE IF NOT EXISTS appconfig(
+                key TEXT PRIMARY KEY,
                 value TEXT NOT NULL
             );
         `)

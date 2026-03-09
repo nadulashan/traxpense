@@ -60,6 +60,89 @@ const RecordStyles = StyleSheet.create({
         transform:[{scaleY:-1}]
     },
 
+    FloatingButton: {
+        height:56,
+        width:56,
+        borderRadius:28
+    },
+
+    MenuSheetWrapper: {
+        flexDirection:'column',
+        gap:16,
+        padding:16
+    },
+
+    MenuAddItemWrapper: {
+        flexDirection:'row',
+        gap:16,
+    },
+
+    MenuAddItem: {
+        flex:1,
+        height:50,
+        borderWidth:1,
+        borderColor:colors.light.primary,
+        borderRadius:8,
+        justifyContent:'center'
+    },
+
+    MenuCreateJournal: {
+        backgroundColor:colors.light.primary,
+        borderRadius:8,
+        flex:1,
+        height:50,        
+        justifyContent:'center'
+    },
+
+    MenuText: {
+        fontFamily:fonts.medium,
+        fontSize:14,
+        color:colors.light.primary,
+        textAlign:'center',
+    },
+
+    MenuJournalText: {
+        color:colors.light.white
+    },
+
+    AddItemWrapper: {
+        width:'100%',
+        flexDirection:'column',
+        gap:16
+    },
+
+    AddItemAmountAccountWrapper: {
+        flexDirection:'row',
+        gap:16
+    },
+
+    AddItemSelect: {
+        flex:1,
+        backgroundColor:colors.light.primaryLight,
+        borderRadius:8,
+        fontSize:16,
+        height:50,
+        justifyContent:'center',
+    },
+
+    AddItemSelectAmountWrapper: {
+        flex:3,
+    },
+
+    AddItemSelectAmount: {
+        fontSize:14
+    },
+
+    AddItemSelectAccount: {
+        flex:2
+    },  
+
+    AddItemSelectText: {
+        fontFamily:fonts.regular,
+        fontSize:14,
+        paddingLeft:4,
+        color:'grey'
+    }
 })
 
 export default RecordStyles

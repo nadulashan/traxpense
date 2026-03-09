@@ -17,7 +17,7 @@ export default function CategoriesContent({
     return(
             <View style={CategoryContentStyles.CategoryItemWrapper}>
                 <View style={CategoryContentStyles.CategoryNameBadge}>
-                    {category.badge? <View style={{height:20, width:20, backgroundColor:categoryBadge, borderRadius:10}}></View> : <View style={{height:20, width:20, backgroundColor:'grey', borderRadius:10}}></View>}
+                    {category.badge? <View style={{height:24, width:24, backgroundColor:categoryBadge, borderRadius:12}}></View> : <View style={{height:24, width:24, backgroundColor:'grey', borderRadius:12}}></View>}
                     <Text style={CategoryContentStyles.CategoryNameText}>{categoryName}</Text>
                 </View>
                 <Pressable

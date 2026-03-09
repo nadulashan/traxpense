@@ -5,6 +5,7 @@ import { useFonts } from 'expo-font';
 import { StatusBar } from 'react-native';
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { handleInitialLaunch } from './db/appConfig/initialDate';
 import { initDB } from './db/create';
 import TabNavigation from './screens/TabNavigation';
 
@@ -24,6 +25,7 @@ export default function App(){
     }
 
     initDB()
+    handleInitialLaunch()
 
     return (
         <GestureHandlerRootView style={{ flex: 1, backgroundColor: 'grey' }}>
