@@ -1,7 +1,7 @@
 import { useCheckContext } from "@/context/recordsContext";
 import RecordStyles from "@/styles/recordsStyles";
 import { FlashList } from "@shopify/flash-list";
-import { RefObject, useEffect, useRef } from "react";
+import { RefObject, useRef } from "react";
 import { Pressable, Text, View } from 'react-native';
 
 
@@ -92,11 +92,6 @@ function MyList(){
       </Pressable>
       )
   }
-
-  
-  useEffect(() => {
-  updateFocusedDate(datelist[2].exact)
-  },[])
    
   return (
     <View style={RecordStyles.ListWrapper}>

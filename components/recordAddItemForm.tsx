@@ -32,8 +32,6 @@ export default function AddItemForm({
 }:AddItemFormTypes) {
     return  (
         <View style={RecordStyles.AddItemWrapper}>
-            
-
             <Pressable 
                 onPress={handleCategorySelector}
                 style={RecordStyles.AddItemSelect}>
@@ -53,6 +51,7 @@ export default function AddItemForm({
                     style={[CommonStyles.BottomSheetInput, RecordStyles.AddItemSelectAmount]}
                     placeholder='Enter Amount'
                     value={amount}
+                    keyboardType='numeric'
                     onChangeText={(input) => {
                         if ( input === '' ) {
                             setAmountError(true)

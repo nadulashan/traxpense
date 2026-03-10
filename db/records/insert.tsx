@@ -1,25 +1,30 @@
 import handleDBError from '../dbError';
 import getDB from "../opendb";
 
-export async function addNewIncomeRecurringCategory(name:string,badge:string,recurringFrequency:string,amount:number,accountId:number,nextOccurrence:string){
+export async function addNewIncome(categoryId:number, accountId:number, comment:string | null, date:string, time:string,amount:number){
     try {
         const store = amount*100
         const db = await getDB();
         await db.runAsync(`
-                INSERT INTO incomeCategories(name,badge,isActive,isRecurring,recurringFrequency,amount,accountId,nextOccurrence) VALUES (?,?,?,?,?,?,?,?)    
-            `, name,badge,1,1,recurringFrequency,store,accountId,nextOccurrence)
+                INSERT 
+                INTO income(categoryId,accountId,comment,date,time,amount) 
+                VALUES (?,?,?,?,?,?)    
+            `, categoryId,accountId, comment, date,time, store)
     } catch (e){
-        handleDBError(e,'Inserting recurring income category failed')
+        handleDBError(e,'Inserting income failed')
     }
 }
-export async function addNewExpenseRecurringCategory(name:string,badge:string,recurringFrequency:string,amount:number,accountId:number,nextOccurrence:string){
+export async function addNewExpense(categoryId:number, accountId:number, comment:string | null, date:string, time:string, amount:number){
     try {
         const store = amount*100
         const db = await getDB();
         await db.runAsync(`
-                INSERT INTO expensesCategories(name,badge,isActive,isRecurring,recurringFrequency,amount,accountId,nextOccurrence) VALUES (?,?,?,?,?,?,?,?)  
-            `, name,badge,1,1,recurringFrequency,store,accountId,nextOccurrence)
+                INSERT 
+                INTO expenses(categoryId,accountId,comment,date,time,amount) 
+                VALUES (?,?,?,?,?,?)    
+            `, categoryId,accountId, comment, date,time, store)
     } catch (e){
-        handleDBError(e,'Inserting recurring expense category failed')
+        handleDBError(e,'Inserting expense failed')
     }
 }
+

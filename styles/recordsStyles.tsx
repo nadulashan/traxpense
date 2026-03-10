@@ -3,6 +3,8 @@ import fonts from "@/constants/fonts";
 import { StyleSheet } from "react-native";
 
 const RecordStyles = StyleSheet.create({
+
+    // Date List
     CalendarButton: {
         height:44,
         width:84,
@@ -60,12 +62,15 @@ const RecordStyles = StyleSheet.create({
         transform:[{scaleY:-1}]
     },
 
+
+    // Floating Button
     FloatingButton: {
         height:56,
         width:56,
         borderRadius:28
     },
 
+    // Creation Menu
     MenuSheetWrapper: {
         flexDirection:'column',
         gap:16,
@@ -105,6 +110,8 @@ const RecordStyles = StyleSheet.create({
         color:colors.light.white
     },
 
+
+    // Add Income/Expense
     AddItemWrapper: {
         width:'100%',
         flexDirection:'column',
@@ -163,7 +170,26 @@ const RecordStyles = StyleSheet.create({
     CategoryElementText: {
         fontSize:14,
         fontFamily:fonts.regular,
-        // justifyContent:'center'
+    },
+
+    // Record Details
+    RecordDetailsWrapper: {
+        gap:16,
+    },
+
+    DateText: {
+        paddingTop:4,
+        fontFamily:fonts.light,
+        fontSize:20,
+    },
+
+    TypeWrapper: {
+        minHeight:128
+    },
+
+    TypeText: {
+        fontFamily:fonts.semiBold,
+        fontSize:24
     }
 })
 

@@ -5,20 +5,30 @@ import CalendarListWrapper from "@/components/recordsCalendarListWrapper";
 import RecordsDetails from "@/components/recordsDetails";
 import { FocusedDateProviderContext } from "@/context/recordsContext";
 import { closeBottomSheet, openBottomSheet } from "@/func/bottomSheetfunc";
+import { getLocalTime } from "@/func/time";
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useCallback, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // This is the main Screen for displaying Records
 //  there are 2 other screens for this stack
-//  there are 5 components rendered by this screen
+//  there are 4 components rendered by this screen
 //    flexed for row calender date scroller and record display scroller
-//    fixed button with absolute positioning, and two bottom sheets
-//       
+//    fixed button with absolute positioning, and a bottomsheet
+//    
+//                                BottomSheet
+//                _____________________|___________________________________________________
+//               CreationMenu                                                         Add Item
+//                    # Add Income                      _________________________________|____________________________
+//                    # Add Expense                    Form                          CategoryWrapper         AccountWrapper
+//                    # Create Journal                    # handles all states              # render                  # render
+//                                                        # define all the functions         active categories        active accounts
+//                                                        # fetching and storeing
 
 export default function Records(){
 
-  const [ focusedDate, setFocusedDate ] = useState<string | undefined>(undefined)
+  const dateNow = getLocalTime().toISOString().split('T')[0] // set Focused Date to today
+  const [ focusedDate, setFocusedDate ] = useState<string>(dateNow)
   const [ readyToFetch, setReadyToFetch ] = useState(true)
   const type = useRef< null | 'income' | 'expense' >(null)
  
@@ -43,6 +53,7 @@ export default function Records(){
     setCurrentSheetState('AddItem')
   }
 
+  // Open and Close Sheet Caller
   function openSheetCaller() {
     openBottomSheet(sheetRef)
 
@@ -53,7 +64,7 @@ export default function Records(){
       setCurrentSheetState('CreationMenu')
   }
   
-    // Bottom Sheet things including backdrop
+  // Bottom Sheet things including backdrop
   const sheetRef = useRef<BottomSheet>(null);
   const backDrop = useCallback(( props:BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
@@ -69,7 +80,7 @@ export default function Records(){
 
   return (
       <SafeAreaView style={{backgroundColor:'#ffffff', flexDirection:'row', height:'100%'}} edges={['top', 'left', 'right']}>
-        <FocusedDateProviderContext value={{focusedDate, updateFocusedDate, updateReadyToFetch,  navigateToAddItem, type}} >
+        <FocusedDateProviderContext value={{focusedDate, updateFocusedDate, updateReadyToFetch,  navigateToAddItem, type, closeSheetCaller}} >
           <CalendarListWrapper />
           <RecordsDetails />
 

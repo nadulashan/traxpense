@@ -1,5 +1,7 @@
 import { useCheckContext } from '@/context/recordsContext';
+import { addNewExpense, addNewIncome } from '@/db/records/insert';
 import { getActiveAccounts, getActiveExpenseCategories, getActiveIncomeCategories } from '@/db/records/select';
+import { getLocalTime } from '@/func/time';
 import RecordStyles from '@/styles/recordsStyles';
 import { useState } from 'react';
 import { View } from 'react-native';
@@ -10,18 +12,16 @@ import FormCategoryWrapper from './recordFormCategoryWrapper';
 
 export default function BottomSheetRecordAddItem() {
 
-    const { type } = useCheckContext()
+    const { type, closeSheetCaller } = useCheckContext()
 
     let getActiveTypeCategories:() => Promise<{ categoryId:number, name:string, badge:string }[]>;
-    let insertTypeItem;
+    let addNewType:(categoryId:number, accountId:number, comment:string | null, date:string, time:string, amount:number) => void;
     if ( type.current === 'income' ){
         getActiveTypeCategories = getActiveIncomeCategories
-        insertTypeItem = 's'
-        console.log('income')
+        addNewType = addNewIncome;
     } else {
         getActiveTypeCategories = getActiveExpenseCategories
-        insertTypeItem = 's'
-        console.log('expense')
+        addNewType = addNewExpense
     }
 
     const [ categories, setCategories ] = useState<{ categoryId:number, name:string, badge:string }[] | null>(null)
@@ -54,7 +54,9 @@ export default function BottomSheetRecordAddItem() {
         } 
 
         if ( !ammountError && selectedAccount && selectedCategory ) {
-            console.log(selectedAccount, amount, selectedAccount, comment)
+            const [ date, time ] = getLocalTime().toISOString().split('T')
+            addNewType(selectedCategory.categoryId, selectedAccount.accountId, comment, date, time, Number(amount))
+            closeSheetCaller()
         }
     }
 

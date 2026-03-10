@@ -31,6 +31,7 @@ export async function initDB(){
                 accountId INTEGER DEFAULT NULL  REFERENCES accounts(accountId),
                 comment TEXT DEFAULT NULL,
                 date TEXT NOT NULL,
+                time TEXT NOT NULL,
                 amount INTEGER NOT NULL
             );
             CREATE TABLE IF NOT EXISTS customExpenses(
@@ -59,6 +60,7 @@ export async function initDB(){
                 accountId INTEGER DEFAULT NULL REFERENCES accounts(accountId),
                 comment TEXT DEFAULT NULL,
                 date TEXT NOT NULL,
+                time TEXT NOT NULL,
                 amount INTEGER NOT NULL
             );
             CREATE TABLE IF NOT EXISTS customincome(

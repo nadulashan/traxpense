@@ -42,3 +42,47 @@ export async function getActiveExpenseCategories(){
         handleDBError(e,'Fetching active expense categories for records failed')
     }
 };
+
+export async function getIncomes(date:string) {
+    try{ 
+        const db = await getDB();
+        const incomes = await db.getAllAsync<any>(`
+                            SELECT  accountName,
+                                    accountBadge,
+                                    name,
+                                    comment,
+                                    income.amount,
+                                    time,
+                                    date
+                            FROM    income, accounts, incomeCategories
+                            WHERE   accounts.accountId = income.accountId AND 
+                                    incomeCategories.categoryId = income.categoryId AND
+                                    date = ?
+                        `, date)
+        console.log(incomes)
+    } catch (e) {
+        handleDBError( e, 'Fetching incomes failed' )
+    }
+}
+
+export async function getExpense(date:string) {
+    try{ 
+        const db = await getDB();
+        const expenses = await db.getAllAsync<any>(`
+                            SELECT  accountName,
+                                    accountBadge,
+                                    name,
+                                    comment,
+                                    expenses.amount,
+                                    time,
+                                    date
+                            FROM    expenses, accounts, expensesCategories
+                            WHERE   accounts.accountId = expenses.accountId AND 
+                                    expensesCategories.categoryId = expenses.categoryId AND
+                                    date = ?
+                        `, date)
+        console.log(expenses)
+    } catch (e) {
+        handleDBError( e, 'Fetching expenses failed' )
+    }
+}
