@@ -34,7 +34,7 @@ export async function getActiveExpenseCategories(){
         const db = await getDB();
         const accounts = await db.getAllAsync<{ categoryId:number, name:string, badge:string }>(`
                             SELECT categoryId, name, badge
-                            FROM expenseCategories
+                            FROM expensesCategories
                             WHERE isActive=1 AND isRecurring=0;
                         `)
         return accounts

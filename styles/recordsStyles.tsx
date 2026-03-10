@@ -156,7 +156,8 @@ const RecordStyles = StyleSheet.create({
         backgroundColor:colors.light.primaryLight,
         flexDirection:'row',
         gap:8,
-        alignItems:'center'
+        alignItems:'center',
+        overflow:'scroll'
     },
 
     CategoryElementText: {
