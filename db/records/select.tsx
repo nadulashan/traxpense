@@ -46,20 +46,21 @@ export async function getActiveExpenseCategories(){
 export async function getIncomes(date:string) {
     try{ 
         const db = await getDB();
-        const incomes = await db.getAllAsync<any>(`
-                            SELECT  accountName,
+        const incomes = await db.getAllAsync<{ incomeId:number, accountName:string, accountBadge:string, name:string, comment:string | null, amount:number, time:string, date:string }>(`
+                            SELECT  incomeId,
+                                    accountName,
                                     accountBadge,
                                     name,
                                     comment,
                                     income.amount,
-                                    time,
+                                    createdDateTime,
                                     date
                             FROM    income, accounts, incomeCategories
                             WHERE   accounts.accountId = income.accountId AND 
                                     incomeCategories.categoryId = income.categoryId AND
                                     date = ?
                         `, date)
-        console.log(incomes)
+        return incomes
     } catch (e) {
         handleDBError( e, 'Fetching incomes failed' )
     }
@@ -68,20 +69,21 @@ export async function getIncomes(date:string) {
 export async function getExpense(date:string) {
     try{ 
         const db = await getDB();
-        const expenses = await db.getAllAsync<any>(`
-                            SELECT  accountName,
+        const expenses = await db.getAllAsync<{ expenseId:number, accountName:string, accountBadge:string, name:string, comment:string | null, amount:number, time:string, date:string }>(`
+                            SELECT  expenseId,
+                                    accountName,
                                     accountBadge,
                                     name,
                                     comment,
                                     expenses.amount,
-                                    time,
+                                    createdDateTime,
                                     date
                             FROM    expenses, accounts, expensesCategories
                             WHERE   accounts.accountId = expenses.accountId AND 
                                     expensesCategories.categoryId = expenses.categoryId AND
                                     date = ?
                         `, date)
-        console.log(expenses)
+        return expenses
     } catch (e) {
         handleDBError( e, 'Fetching expenses failed' )
     }

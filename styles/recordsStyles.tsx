@@ -190,7 +190,35 @@ const RecordStyles = StyleSheet.create({
     TypeText: {
         fontFamily:fonts.semiBold,
         fontSize:24
-    }
+    },
+
+    TypeItemsWrapper: {
+        gap:8,
+        marginRight:16
+    },
+
+    TypeItem:{
+        flexDirection:'row',
+        justifyContent:'space-between'
+    },
+
+    TypeItemBadgeName: {
+        flexDirection:'row',
+        alignItems:'center',
+        gap:8
+    },
+
+    TypeItemBadge: {
+        height:16,
+        width:16,
+        borderRadius:8,
+    },
+
+    TypeItemText: {
+        fontFamily:fonts.regular,
+        fontSize:14,
+        justifyContent:'center',
+    },
 })
 
 export default RecordStyles

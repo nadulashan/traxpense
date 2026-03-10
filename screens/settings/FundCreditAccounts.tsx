@@ -73,9 +73,11 @@ export default function FundCreditAccounts({route}:Props){
         addNewTypeAccount = addNewCreditAccount
     }
     useEffect(() => {
-        navigation.setOptions({title:screen})
-        refreshValiedBadges()
-        refreshAccounts()
+        async function initialActivity(){    
+            navigation.setOptions({title:screen})
+            await refreshAccountBadges()
+        }
+        initialActivity()
     },[])
 
     // Functions
@@ -105,9 +107,6 @@ export default function FundCreditAccounts({route}:Props){
     }
 
     // Database actions callers
-    function addAccountCaller(name:string, badge:string, balance:number){
-    }
-
     async function suspendAccountHandler(){
         setSuspendNotification(false)
         if (focusedAccount){
@@ -145,12 +144,11 @@ export default function FundCreditAccounts({route}:Props){
 
     async function saveAccountHandler(){
         await addNewTypeAccount(inputName, inputBadge, Number(inputBalance))
-        await refreshAccountBadges()
         resetInputs()
         closeSheetCaller()
         resetRenderBottomSheet()
         resetIsAccountsReady()
-        
+        await refreshAccountBadges()        
     }
 
     // Database fetch action callers

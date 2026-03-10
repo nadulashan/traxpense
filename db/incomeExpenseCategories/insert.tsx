@@ -1,5 +1,5 @@
 import handleDBError from '../dbError';
-import getDB from "./opendb";
+import getDB from "../opendb";
 
 export async function addNewIncomeCategory(name:string,badge:string){
     try {
