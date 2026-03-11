@@ -7,6 +7,8 @@ interface ContextType {
   navigateToAddItem: () => void;
   type: React.RefObject<"income" | "expense" | null>;
   closeSheetCaller: () => void;
+  recordsRefreshTrigger:number,
+  setRecordsRefreshTrigger:React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const FocusedDateProviderContext = createContext<ContextType | undefined>(undefined)

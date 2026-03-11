@@ -7,9 +7,9 @@ export async function addNewIncome(categoryId:number, accountId:number, comment:
         const db = await getDB();
         await db.runAsync(`
                 INSERT 
-                INTO income(categoryId,accountId,comment,date,createdDateTime,amount) 
-                VALUES (?,?,?,?,?,?)    
-            `, categoryId,accountId, comment, date,createdDateTime, store)
+                INTO income(categoryId,accountId,isCustom,comment,date,createdDateTime,amount) 
+                VALUES (?,?,?,?,?,?,?)    
+            `, categoryId,accountId, 0, comment, date,createdDateTime, store)
     } catch (e){
         handleDBError(e,'Inserting income failed')
     }
@@ -20,9 +20,9 @@ export async function addNewExpense(categoryId:number, accountId:number, comment
         const db = await getDB();
         await db.runAsync(`
                 INSERT 
-                INTO expenses(categoryId,accountId,comment,date,createdDateTime,amount) 
-                VALUES (?,?,?,?,?,?)    
-            `, categoryId,accountId, comment, date,createdDateTime, store)
+                INTO expenses(categoryId,accountId,isCustom,comment,date,createdDateTime,amount) 
+                VALUES (?,?,?,?,?,?,?)    
+            `, categoryId,accountId, 0, comment, date,createdDateTime, store)
     } catch (e){
         handleDBError(e,'Inserting expense failed')
     }

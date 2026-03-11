@@ -1,3 +1,4 @@
+import { ExpenseTypes, IncomeTypes } from "@/types/recordsTypeItemType.schema";
 import handleDBError from "../dbError";
 import getDB from "../opendb";
 
@@ -46,9 +47,10 @@ export async function getActiveExpenseCategories(){
 export async function getIncomes(date:string) {
     try{ 
         const db = await getDB();
-        const incomes = await db.getAllAsync<{ incomeId:number, accountName:string, accountBadge:string, name:string, comment:string | null, amount:number, time:string, date:string }>(`
+        const incomes = await db.getAllAsync<IncomeTypes>(`
                             SELECT  incomeId,
                                     accountName,
+                                    isCustom,
                                     accountBadge,
                                     name,
                                     comment,
@@ -69,9 +71,10 @@ export async function getIncomes(date:string) {
 export async function getExpense(date:string) {
     try{ 
         const db = await getDB();
-        const expenses = await db.getAllAsync<{ expenseId:number, accountName:string, accountBadge:string, name:string, comment:string | null, amount:number, time:string, date:string }>(`
+        const expenses = await db.getAllAsync<ExpenseTypes>(`
                             SELECT  expenseId,
                                     accountName,
+                                    isCustom,
                                     accountBadge,
                                     name,
                                     comment,

@@ -12,7 +12,7 @@ import FormCategoryWrapper from './recordFormCategoryWrapper';
 
 export default function BottomSheetRecordAddItem() {
 
-    const { type, closeSheetCaller, focusedDate } = useCheckContext()
+    const { type, closeSheetCaller, focusedDate, setRecordsRefreshTrigger } = useCheckContext()
 
     let getActiveTypeCategories:() => Promise<{ categoryId:number, name:string, badge:string }[]>;
     let addNewType:(categoryId:number, accountId:number, comment:string | null, date:string, time:string, amount:number) => void;
@@ -57,6 +57,7 @@ export default function BottomSheetRecordAddItem() {
             const createdDateTime = getLocalTime().toISOString()
             addNewType(selectedCategory.categoryId, selectedAccount.accountId, comment, focusedDate, createdDateTime, Number(amount))
             closeSheetCaller()
+            setRecordsRefreshTrigger(inc => inc+1)
         }
     }
 

@@ -175,6 +175,7 @@ const RecordStyles = StyleSheet.create({
     // Record Details
     RecordDetailsWrapper: {
         gap:16,
+        marginRight:16
     },
 
     DateText: {
@@ -194,7 +195,6 @@ const RecordStyles = StyleSheet.create({
 
     TypeItemsWrapper: {
         gap:8,
-        marginRight:16
     },
 
     TypeItem:{
@@ -219,6 +219,17 @@ const RecordStyles = StyleSheet.create({
         fontSize:14,
         justifyContent:'center',
     },
+
+    RecordedTypeWrapper: {
+        flexDirection:'row',
+        justifyContent:'space-between'
+    },
+
+    RecordedTypeText: {
+        fontFamily:fonts.light,
+        fontSize:14,
+        color:colors.light.accent
+    }
 })
 
 export default RecordStyles

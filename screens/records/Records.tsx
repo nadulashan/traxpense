@@ -27,6 +27,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Records(){
 
+  // Refresh Records Trigger
+  const [ recordsRefreshTrigger, setRecordsRefreshTrigger ] = useState(0)
+
   const dateNow = getLocalTime().toISOString().split('T')[0] // set Focused Date to today
   const [ focusedDate, setFocusedDate ] = useState<string>(dateNow)
   const [ readyToFetch, setReadyToFetch ] = useState(true)
@@ -80,7 +83,7 @@ export default function Records(){
 
   return (
       <SafeAreaView style={{backgroundColor:'#ffffff', flexDirection:'row', height:'100%'}} edges={['top', 'left', 'right']}>
-        <FocusedDateProviderContext value={{focusedDate, updateFocusedDate, updateReadyToFetch,  navigateToAddItem, type, closeSheetCaller}} >
+        <FocusedDateProviderContext value={{focusedDate, updateFocusedDate, updateReadyToFetch,  navigateToAddItem, type, closeSheetCaller, recordsRefreshTrigger, setRecordsRefreshTrigger}} >
           <CalendarListWrapper />
           <RecordsDetails />
 

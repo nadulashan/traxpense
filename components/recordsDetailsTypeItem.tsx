@@ -1,10 +1,11 @@
 import { priceWithComma } from '@/func/general';
 import RecordStyles from '@/styles/recordsStyles';
+import { ExpenseTypes, IncomeTypes } from '@/types/recordsTypeItemType.schema';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { Pressable, Text, View } from 'react-native';
 
 interface TypeItemTypes{
-    item:{ accountName:string, accountBadge:string, name:string, comment:string | null, amount:number, time:string, date:string };
+    item:IncomeTypes | ExpenseTypes;
 }
 
 export default function TypeItem({
@@ -14,7 +15,7 @@ export default function TypeItem({
         <Pressable style={RecordStyles.TypeItem}>
             <View style={RecordStyles.TypeItemBadgeName}>
                 <View style={[RecordStyles.TypeItemBadge, {backgroundColor:item.accountBadge}]}></View>
-                <Text style={RecordStyles.TypeItemText}>{item.name}</Text>
+                <Text style={RecordStyles.TypeItemText}>{item.isCustom? 'Custom' : item.name}</Text>
                 { item.comment? <EvilIcons name="comment" size={14} color="black" /> : null}
             </View>
             <Text style={RecordStyles.TypeItemText}>{priceWithComma(item.amount)}</Text>
