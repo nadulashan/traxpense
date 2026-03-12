@@ -1,10 +1,12 @@
 import { useCheckContext } from '@/context/recordsContext';
 import RecordStyles from '@/styles/recordsStyles';
+import { useNavigation } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
 export default function BottomSheetRecordCreationMenu() {
 
-    const { navigateToAddItem, type } = useCheckContext()
+    const { navigateToAddItem, type, focusedDate } = useCheckContext()
+    const navigation = useNavigation<any>()
 
     return (
         <View style={RecordStyles.MenuSheetWrapper}>
@@ -23,7 +25,11 @@ export default function BottomSheetRecordCreationMenu() {
                     }}    
                 ><Text style={RecordStyles.MenuText}>Add an Expense</Text></Pressable>
             </View>
-            <Pressable style={RecordStyles.MenuCreateJournal}><Text style={[RecordStyles.MenuText, RecordStyles.MenuJournalText]}>Create a Journal</Text></Pressable>
+            <Pressable 
+                onPress={() => navigation.navigate("AddRecords", {
+                    focusedDate:focusedDate
+                })}
+                style={RecordStyles.MenuCreateJournal}><Text style={[RecordStyles.MenuText, RecordStyles.MenuJournalText]}>Create a Journal</Text></Pressable>
         </View>
     )
 }

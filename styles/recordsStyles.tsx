@@ -229,6 +229,13 @@ const RecordStyles = StyleSheet.create({
         fontFamily:fonts.light,
         fontSize:14,
         color:colors.light.accent
+    },
+
+    // Create Journal
+    CreateJournalWrapper: {
+        marginLeft:16,
+        marginRight:16,
+        gap:16
     }
 })
 

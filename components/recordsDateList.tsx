@@ -46,7 +46,7 @@ function MyList(){
     })
   }) 
 
-  const { focusedDate, updateFocusedDate, updateReadyToFetch } = useCheckContext()
+  const { focusedDate, updateFocusedDate } = useCheckContext()
   const itemHeight = 160
   const initialDate = useRef<string>(focusedDate)
   const nextDate = useRef<string | undefined>(undefined)
@@ -75,10 +75,6 @@ function MyList(){
     handlePressedScroll(initialDate, nextDate) 
   }
 
-  function handleReadytoFetch() {
-    updateReadyToFetch()
-  }
-
   function renderItem ({item}:any) {    
       const selected = focusedDate
 
@@ -104,8 +100,6 @@ function MyList(){
         snapToInterval={itemHeight} 
         snapToAlignment="start" 
         decelerationRate="fast"
-        onScrollBeginDrag={handleReadytoFetch}
-        onMomentumScrollEnd={handleReadytoFetch}
       />
     </View>
   )

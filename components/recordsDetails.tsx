@@ -2,6 +2,7 @@ import colors from '@/constants/colors';
 import { useCheckContext } from '@/context/recordsContext';
 import { getExpense, getIncomes } from '@/db/records/select';
 import { priceWithComma } from '@/func/general';
+import { getLongDate } from '@/func/time';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
 import { ExpenseTypes, IncomeTypes } from '@/types/recordsTypeItemType.schema';
@@ -14,14 +15,8 @@ export default function RecordsDetails() {
 
     // Display Today Date
     const { focusedDate, recordsRefreshTrigger } = useCheckContext()
-    const date = new Date(focusedDate)
-    const options: Intl.DateTimeFormatOptions = { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: '2-digit' 
-    };
-    const displayDate = date.toLocaleDateString('en-US', options)
+    
+    const displayDate = getLongDate(focusedDate)
 
     // States
     const [ incomes, setIncomes ] = useState<IncomeTypes[] | null>(null)

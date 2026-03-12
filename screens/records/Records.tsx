@@ -32,15 +32,10 @@ export default function Records(){
 
   const dateNow = getLocalTime().toISOString().split('T')[0] // set Focused Date to today
   const [ focusedDate, setFocusedDate ] = useState<string>(dateNow)
-  const [ readyToFetch, setReadyToFetch ] = useState(true)
   const type = useRef< null | 'income' | 'expense' >(null)
  
   function updateFocusedDate(date:string){
     setFocusedDate(date)
-  }
-
-  function updateReadyToFetch() {
-    setReadyToFetch(!setReadyToFetch)
   }
 
   // Handle mutlple states of bottom sheet
@@ -83,7 +78,7 @@ export default function Records(){
 
   return (
       <SafeAreaView style={{backgroundColor:'#ffffff', flexDirection:'row', height:'100%'}} edges={['top', 'left', 'right']}>
-        <FocusedDateProviderContext value={{focusedDate, updateFocusedDate, updateReadyToFetch,  navigateToAddItem, type, closeSheetCaller, recordsRefreshTrigger, setRecordsRefreshTrigger}} >
+        <FocusedDateProviderContext value={{focusedDate, updateFocusedDate,  navigateToAddItem, type, closeSheetCaller, recordsRefreshTrigger, setRecordsRefreshTrigger}} >
           <CalendarListWrapper />
           <RecordsDetails />
 
