@@ -106,7 +106,7 @@ export default function BottomSheetRecurring({
                     value={inputName}
                     onChangeText={value => {
                         setInputName(value)
-                        if ( value === '' ) {
+                        if ( value === '' || value.trim().length === 0 ) {
                             setInputNameError(true)
                         } else {
                             setInputNameError(false)

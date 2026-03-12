@@ -143,12 +143,20 @@ export default function FundCreditAccounts({route}:Props){
     }
 
     async function saveAccountHandler(){
-        await addNewTypeAccount(inputName, inputBadge, Number(inputBalance))
-        resetInputs()
-        closeSheetCaller()
-        resetRenderBottomSheet()
-        resetIsAccountsReady()
-        await refreshAccountBadges()        
+        if ( inputName === '' || inputName.trim().length === 0 ) {
+            setInputNameError(true)
+        } else {
+            setInputNameError(false)
+        }
+
+        if ( !inputNameError ) {
+            await addNewTypeAccount(inputName, inputBadge, Number(inputBalance))
+            resetInputs()
+            closeSheetCaller()
+            resetRenderBottomSheet()
+            resetIsAccountsReady()
+            await refreshAccountBadges() 
+        }       
     }
 
     // Database fetch action callers

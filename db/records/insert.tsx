@@ -28,3 +28,30 @@ export async function addNewExpense(categoryId:number, accountId:number, comment
     }
 }
 
+export async function addNewCustomIncome(name:string, comment:string | null, amount:number, accountId:number, date:string){
+    try {
+        const store = amount*100
+        const db = await getDB();
+        await db.runAsync(`
+                INSERT 
+                INTO customIncome(name, comment, amount, accountId, date) 
+                VALUES (?,?,?,?,?)    
+            `, name, comment, store, accountId, date)
+    } catch (e){
+        handleDBError(e,'Inserting custom income failed')
+    }
+}
+export async function addNewCustomExpense(name:string, comment:string | null, amount:number, accountId:number, date:string){
+    try {
+        const store = amount*100
+        const db = await getDB();
+        await db.runAsync(`
+                INSERT 
+                INTO customExpenses(name, comment, amount, accountId, date) 
+                VALUES (?,?,?,?,?)    
+            `, name, comment, store, accountId, date)
+    } catch (e){
+        handleDBError(e,'Inserting custom expense failed')
+    }
+}
+

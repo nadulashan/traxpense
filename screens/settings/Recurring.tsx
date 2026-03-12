@@ -278,12 +278,20 @@ export default function Recurring({route}:Props){
     }
 
     // Handlers
-    async function saveHandler(){        
-        const nextOccurrence = createNextOccurance()
-        addNewTypeRecurringCategory(inputName,inputBadge,inputFrequency, Number(inputAmount), inputAccount, nextOccurrence)
-        await refreshBadges()
-        await getCategories()
-        closeSheetCaller()              
+    async function saveHandler(){      
+        if ( inputName === '' || inputName.trim().length === 0 ) {
+            setInputNameError(true)
+        } else {
+            setInputNameError(false)
+        }  
+
+        if ( !inputNameError ) {
+            const nextOccurrence = createNextOccurance()
+            addNewTypeRecurringCategory(inputName,inputBadge,inputFrequency, Number(inputAmount), inputAccount, nextOccurrence)
+            await refreshBadges()
+            await getCategories()
+            closeSheetCaller() 
+        }             
     }
 
     function editStart(category:RecurringCategory){

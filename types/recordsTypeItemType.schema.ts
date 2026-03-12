@@ -21,3 +21,19 @@ export interface ExpenseTypes{
     time:string, 
     date:string 
 }
+
+export interface CustomIncomeTypes{
+    customIncomeId:number, 
+    accountBadge:string, 
+    name:string, 
+    comment:string | null, 
+    amount:number, 
+}
+
+export interface CustomExpenseTypes{
+    customExpenseId:number, 
+    accountBadge:string, 
+    name:string, 
+    comment:string | null, 
+    amount:number, 
+}

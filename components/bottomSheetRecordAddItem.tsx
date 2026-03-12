@@ -29,8 +29,8 @@ export default function BottomSheetRecordAddItem() {
     const [ amount, setAmount ] = useState<string>('')
     const [ selectedAccount, setselectedAccount ] = useState<{ accountId:number, accountName:string, accountBadge:string } | null>(null)
     const [ comment, setComment ] = useState<string>('')
-    const [ ammountError, setAmountError ] = useState(false)
-    const [ selectedCategory, setSelectedCategory ] = useState<{ categoryId:number, name:string, badge:string } | null>(null)
+    const [ amountError, setAmountError ] = useState(false)
+    const [ selectedCategory, setSelectedCategory ] = useState<{ categoryId:number, name:string, badge:string } | undefined>(undefined)
     const [ isCategoriesReady, setIsCategoriesReady ] = useState(false)
 
     const [ currentScreen, setCurrentScreen ] = useState<'Form' | 'Category' | 'Account'>('Form')
@@ -53,7 +53,7 @@ export default function BottomSheetRecordAddItem() {
             return
         } 
 
-        if ( !ammountError && selectedAccount && selectedCategory ) {
+        if ( !amountError && selectedAccount && selectedCategory ) {
             const createdDateTime = getLocalTime().toISOString()
             addNewType(selectedCategory.categoryId, selectedAccount.accountId, comment, focusedDate, createdDateTime, Number(amount))
             closeSheetCaller()
@@ -88,12 +88,15 @@ export default function BottomSheetRecordAddItem() {
                 onAddPressHandler={onAddPressHandler}
                 comment={comment}
                 setComment={setComment}
-                amountError={ammountError}
+                amountError={amountError}
                 setAmountError={setAmountError}
                 handleCategorySelector={handleCategorySelector}
                 selectedCategory={selectedCategory}
                 handleAccountSelector={handleAccountSelector}
                 selectedAccount={selectedAccount}
+                isCustomForm={false}
+                customName={undefined}
+                setCustomName={undefined}
             />,
         Category: () => <FormCategoryWrapper 
                         categories={categories}

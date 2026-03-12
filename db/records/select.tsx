@@ -1,4 +1,4 @@
-import { ExpenseTypes, IncomeTypes } from "@/types/recordsTypeItemType.schema";
+import { CustomExpenseTypes, CustomIncomeTypes, ExpenseTypes, IncomeTypes } from "@/types/recordsTypeItemType.schema";
 import handleDBError from "../dbError";
 import getDB from "../opendb";
 
@@ -89,5 +89,43 @@ export async function getExpense(date:string) {
         return expenses
     } catch (e) {
         handleDBError( e, 'Fetching expenses failed' )
+    }
+}
+
+export async function getCustomIncomes(date:string) {
+    try{ 
+        const db = await getDB();
+        const incomes = await db.getAllAsync<CustomIncomeTypes>(`
+                            SELECT  customIncomeId, 
+                                    accountBadge, 
+                                    customIncome.name, 
+                                    comment, 
+                                    customIncome.amount
+                            FROM    customIncome, accounts
+                            WHERE   accounts.accountId = customIncome.accountId AND 
+                                    date = ?
+                        `, date)
+        return incomes
+    } catch (e) {
+        handleDBError( e, 'Fetching custom income failed' )
+    }
+}
+
+export async function getCustomExpenses(date:string) {
+    try{ 
+        const db = await getDB();
+        const expenses = await db.getAllAsync<CustomExpenseTypes>(`
+                            SELECT  customExpenseId, 
+                                    accountBadge, 
+                                    customExpenses.name, 
+                                    comment, 
+                                    customExpenses.amount
+                            FROM    customExpenses, accounts
+                            WHERE   accounts.accountId = customExpenses.accountId AND 
+                                    date = ?
+                        `, date)
+        return expenses
+    } catch (e) {
+        handleDBError( e, 'Fetching custom expenses failed' )
     }
 }

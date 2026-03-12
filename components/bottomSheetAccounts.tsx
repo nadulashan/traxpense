@@ -79,7 +79,7 @@ export default function BottomSheetWrapper({
                         <TextInput
                             value={inputName}
                             onChangeText={name => {
-                                if (name == '') {
+                                if ( name === '' || name.trim().length === 0 ) {
                                     setInputNameError(true)
                                 } else {
                                     setInputNameError(false)

@@ -13,9 +13,7 @@ export default function AddRecordButton({ openSheetCaller }: AddCategoryProps){
 
         <View style={[ CommonStyles.FloatingActionButtonWrapper, RecordStyles.FloatingButton]}>
             <Pressable
-                onPress={() => {
-                    openSheetCaller()
-                }}
+                onPress={openSheetCaller}
             >
                     <Feather name="edit" size={24} color={colors.light.white} />
             </Pressable>

@@ -1,4 +1,5 @@
 import { useCheckContext } from "@/context/recordsContext";
+import { getLocalTime } from "@/func/time";
 import RecordStyles from "@/styles/recordsStyles";
 import { FlashList } from "@shopify/flash-list";
 import { RefObject, useRef } from "react";
@@ -18,7 +19,7 @@ function milliToDate(milli:number){
 function MyList(){
 
   const fetchedInitialDateString = '2026-01-04'
-  const today = new Date().toISOString().split('T')[0] // get today's date only
+  const today = getLocalTime().toISOString().split('T')[0] // get today's date only
   const todayDate = createDates(today)
   const fetchedDate = createDates(fetchedInitialDateString)
   const dayLength = (todayDate.getTime() - fetchedDate.getTime()) / ( 60*60*24*1000 ) + 3 // difference between today and launch day + one day for today + 2 forward days

@@ -5,7 +5,7 @@ import { Pressable, Text, View } from 'react-native';
 interface ItemTypes{
     badge:string;
     name:string;
-    onAccountPress:(account:{ accountId:number, accountName:string, accountBadge:string }) => void
+    onAccountPress:(account:{ accountId:number, accountName:string, accountBadge:string }) => void;
     account: { accountId:number, accountName:string, accountBadge:string };
 }
 

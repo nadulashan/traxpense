@@ -24,7 +24,7 @@ export default function BottomSheetRecordCreationMenu() {
                 }}    
             ><Text style={RecordStyles.MenuText}>Add Expense</Text></Pressable>
             <Pressable 
-                onPress={() => navigation.navigate("AddRecords", {
+                onPress={() => navigation.navigate("CreateCustom", {
                     focusedDate:focusedDate
                 })}
                 style={RecordStyles.MenuCreateJournal}><Text style={[RecordStyles.MenuText, RecordStyles.MenuJournalText]}>Create Custom</Text></Pressable>

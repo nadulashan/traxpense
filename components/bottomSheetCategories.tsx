@@ -58,7 +58,7 @@ export default function BottomSheetCategories({
                                 value={inputName}
                                 readOnly={ focusedCategory?.isActive == 0? true : false}
                                 onChangeText={name => {
-                                    if (name == '') {
+                                    if ( name === '' || name.trim().length === 0 ) {
                                         setInputNameError(true)
                                     } else {
                                         setInputNameError(false)

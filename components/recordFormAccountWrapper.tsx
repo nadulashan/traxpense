@@ -6,7 +6,7 @@ import AccountItem from './recordFormAccountItem';
 
 interface CategoryWrapperTypes {
     accounts:{ accountId:number, accountName:string, accountBadge:string }[] | null;
-    onAccountPress:(category: { accountId:number, accountName:string, accountBadge:string }) => void;
+    onAccountPress:(account: { accountId:number, accountName:string, accountBadge:string }) => void;
 }
 
 export default function FormAccountWrapper({

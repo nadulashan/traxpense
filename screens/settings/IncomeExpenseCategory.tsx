@@ -144,14 +144,22 @@ export default function IncomeExpenseCategory({route}:Props){
 
     // Button handlers
     async function saveHandler(){
-        setIsSheetReady(false)
-        setAsyncDisabled(true)
-        await addTypeCategory(inputName,inputBadge)
-        await refreashBadgesCategories()
-        setAsyncDisabled(false)
-        resetFields()
-        closeSheetCaller()
-        setIsSheetReady(true)
+        if ( inputName === '' || inputName.trim().length === 0 ) {
+            setInputNameError(true)
+        } else {
+            setInputNameError(false)
+        }
+
+        if ( !inputNameError ) {
+            setIsSheetReady(false)
+            setAsyncDisabled(true)
+            await addTypeCategory(inputName,inputBadge)
+            await refreashBadgesCategories()
+            setAsyncDisabled(false)
+            resetFields()
+            closeSheetCaller()
+            setIsSheetReady(true)
+        }
     }
 
     async function suspendHandler(){

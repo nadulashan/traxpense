@@ -11,10 +11,15 @@ interface AddItemFormTypes {
     setComment:React.Dispatch<React.SetStateAction<string>>;
     amountError:boolean;
     setAmountError:React.Dispatch<React.SetStateAction<boolean>>
-    handleCategorySelector:() => void;
-    selectedCategory:{ categoryId: number; name: string; badge: string; } | null;
+    handleCategorySelector:(() => void) | null;
+    selectedCategory:{ categoryId: number; name: string; badge: string; } | undefined;
     handleAccountSelector: () => void;
     selectedAccount:{ accountId:number, accountName:string, accountBadge:string } | null;
+    isCustomForm:boolean;
+    customName:string | undefined;
+    setCustomName:React.Dispatch<React.SetStateAction<string>> | undefined;
+    customTypeNameError:boolean | undefined;
+    commentError:boolean | undefined
 }
 
 export default function AddItemForm({
@@ -28,23 +33,41 @@ export default function AddItemForm({
     handleCategorySelector,
     selectedCategory,
     handleAccountSelector,
-    selectedAccount
+    selectedAccount,
+    isCustomForm,
+    customName,
+    setCustomName,
+    customTypeNameError,
+    commentError,
 }:AddItemFormTypes) {
     return  (
         <View style={RecordStyles.AddItemWrapper}>
-            <Pressable 
-                onPress={handleCategorySelector}
-                style={RecordStyles.AddItemSelect}>
-                    {
-                        selectedCategory? 
-                        <View style={RecordStyles.CategoryElement}>
-                            <View style={[CommonStyles.badge, {backgroundColor:selectedCategory.badge}]}></View>
-                            <Text style={RecordStyles.CategoryElementText}>{selectedCategory.name}</Text>
-                        </View>
-                        :
-                        <Text style={RecordStyles.AddItemSelectText}>Select Category</Text>
-                    }
-            </Pressable>
+            {
+                isCustomForm && setCustomName?
+                <>
+                <TextInput 
+                    style={CommonStyles.BottomSheetInput} 
+                    placeholder='Enter Name'
+                    value={customName}
+                    onChangeText={name => setCustomName(name)}
+                />
+                {customTypeNameError? <Text style={CommonStyles.NoActionDangerText}>Invalied Response</Text> : null}
+                </>
+                :
+                <Pressable 
+                    onPress={handleCategorySelector}
+                    style={RecordStyles.AddItemSelect}>
+                        {
+                            selectedCategory? 
+                            <View style={RecordStyles.CategoryElement}>
+                                <View style={[CommonStyles.badge, {backgroundColor:selectedCategory.badge}]}></View>
+                                <Text style={RecordStyles.CategoryElementText}>{selectedCategory.name}</Text>
+                            </View>
+                            :
+                            <Text style={RecordStyles.AddItemSelectText}>Select Category</Text>
+                        }
+                </Pressable>
+            }
             <View style={RecordStyles.AddItemAmountAccountWrapper}>
                 <View style={RecordStyles.AddItemSelectAmountWrapper}>
                 <TextInput 
@@ -89,11 +112,12 @@ export default function AddItemForm({
                     onChangeText={(input) => {
                         setComment( input )
                     }}
-                />
+                />                
+                {commentError? <Text style={CommonStyles.NoActionDangerText}>Invalied Response</Text> : null}
             <Pressable 
                 onPress={onAddPressHandler}
-                style={[CommonStyles.BottomSheetPrimaryButton, CommonStyles.BottomSheetButton]}>
-                <Text style={CommonStyles.BottomSheetButtonText}>ADD</Text>
+                style={!isCustomForm? [CommonStyles.BottomSheetPrimaryButton, CommonStyles.BottomSheetButton] : [CommonStyles.BottomSheetButton, CommonStyles.SecondaryButton]}>
+                <Text style={!isCustomForm? CommonStyles.BottomSheetButtonText : CommonStyles.SecondaryButtonText}>ADD</Text>
             </Pressable>
         </View>
     )

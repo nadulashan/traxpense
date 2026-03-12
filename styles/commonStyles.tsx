@@ -48,7 +48,7 @@ const CommonStyles = StyleSheet.create({
         backgroundColor:colors.light.primaryLight,
         borderRadius:8,
         fontFamily:fonts.regular,
-        fontSize:16,
+        fontSize:14,
         height:50,
         alignItems:'center'
     },
@@ -103,13 +103,25 @@ const CommonStyles = StyleSheet.create({
     NoActionDangerText  : {
         color:colors.light.red,
         fontFamily:fonts.semiBold,
-        textAlign:'center'
     },
 
     badge: {
         width:20,
         height:20,
         borderRadius:10
+    },
+
+    // Record Form
+    SecondaryButton: {
+        backgroundColor:colors.light.white,
+        borderWidth:1,
+        borderColor:colors.light.primary
+    },
+
+    SecondaryButtonText: {
+        fontFamily:fonts.semiBold,
+        color:colors.light.primary,
+        textAlign:'center'
     }
 })
 
