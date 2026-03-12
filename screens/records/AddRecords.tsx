@@ -1,5 +1,4 @@
 import AddItemForm from '@/components/recordAddItemForm';
-import TypeItem from '@/components/recordsDetailsTypeItem';
 import colors from '@/constants/colors';
 import { getLongDate } from '@/func/time';
 import RecordStyles from '@/styles/recordsStyles';
@@ -51,12 +50,12 @@ export default function AddRecords({route}:any){
             <View style={RecordStyles.CreateJournalWrapper}>
                 <Text style={RecordStyles.TypeText}>Income</Text>
                 <View>
-                    {
+                    {/* {
                         incomeArray?
                         incomeArray.map(incomeItem => (
                             <TypeItem item={incomeItem} />
                         ))
-                    }
+                    } */}
                      <AddItemForm 
                         amount={amount}
                         setAmount={setAmount}

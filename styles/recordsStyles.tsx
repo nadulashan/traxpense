@@ -77,22 +77,17 @@ const RecordStyles = StyleSheet.create({
         padding:16
     },
 
-    MenuAddItemWrapper: {
-        flexDirection:'row',
-        gap:16,
-    },
-
     MenuAddItem: {
         flex:1,
         height:50,
-        borderWidth:1,
-        borderColor:colors.light.primary,
         borderRadius:8,
+        backgroundColor:colors.light.primary,
         justifyContent:'center'
     },
 
     MenuCreateJournal: {
-        backgroundColor:colors.light.primary,
+        borderWidth:1,
+        borderColor:colors.light.primary,
         borderRadius:8,
         flex:1,
         height:50,        
@@ -102,12 +97,12 @@ const RecordStyles = StyleSheet.create({
     MenuText: {
         fontFamily:fonts.medium,
         fontSize:14,
-        color:colors.light.primary,
+        color:colors.light.white,
         textAlign:'center',
     },
 
     MenuJournalText: {
-        color:colors.light.white
+        color:colors.light.primary
     },
 
 

@@ -10,26 +10,24 @@ export default function BottomSheetRecordCreationMenu() {
 
     return (
         <View style={RecordStyles.MenuSheetWrapper}>
-            <View style={RecordStyles.MenuAddItemWrapper}>
-                <Pressable 
-                    onPress={() => {
-                        type.current = 'income'
-                        navigateToAddItem()
-                    }}
-                    style={RecordStyles.MenuAddItem}><Text style={RecordStyles.MenuText}>Add an Income</Text></Pressable>
-                <Pressable 
-                    style={RecordStyles.MenuAddItem}
-                    onPress={() => {
-                        type.current = 'expense'
-                        navigateToAddItem()
-                    }}    
-                ><Text style={RecordStyles.MenuText}>Add an Expense</Text></Pressable>
-            </View>
+            <Pressable 
+                onPress={() => {
+                    type.current = 'income'
+                    navigateToAddItem()
+                }}
+                style={RecordStyles.MenuAddItem}><Text style={RecordStyles.MenuText}>Add Income</Text></Pressable>
+            <Pressable 
+                style={RecordStyles.MenuAddItem}
+                onPress={() => {
+                    type.current = 'expense'
+                    navigateToAddItem()
+                }}    
+            ><Text style={RecordStyles.MenuText}>Add Expense</Text></Pressable>
             <Pressable 
                 onPress={() => navigation.navigate("AddRecords", {
                     focusedDate:focusedDate
                 })}
-                style={RecordStyles.MenuCreateJournal}><Text style={[RecordStyles.MenuText, RecordStyles.MenuJournalText]}>Create a Journal</Text></Pressable>
+                style={RecordStyles.MenuCreateJournal}><Text style={[RecordStyles.MenuText, RecordStyles.MenuJournalText]}>Create Custom</Text></Pressable>
         </View>
     )
 }
