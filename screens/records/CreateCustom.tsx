@@ -3,8 +3,9 @@ import AddItemForm from '@/components/recordAddItemForm';
 import FormAccountWrapper from '@/components/recordFormAccountWrapper';
 import CustomTypeItem from '@/components/recordsDetailsCustomTypeItem';
 import colors from '@/constants/colors';
-import { addNewCustomExpense, addNewCustomIncome, createCustomRecordOnIncome } from '@/db/records/insert';
-import { getActiveAccounts, getCustomExpenses, getCustomIncomes } from '@/db/records/select';
+import { deleteCustomExepenseOnExepense, deleteCustomIncomeOnIncome } from '@/db/records/delete';
+import { addNewCustomExpense, addNewCustomIncome, createCustomRecordOnExpense, createCustomRecordOnIncome, createRelationOnExpense, createRelationOnIncome } from '@/db/records/insert';
+import { checkCustomExpense, checkCustomIncome, getActiveAccounts, getCustomExpenses, getCustomIncomes } from '@/db/records/select';
 import { closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
 import { getLocalTime, getLongDate } from '@/func/time';
 import CommonStyles from '@/styles/commonStyles';
@@ -19,7 +20,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 export default function CreateCustom({route}:any){
 
-    const navigation = useNavigation()
+    const navigation = useNavigation<any>()
     const { focusedDate } = route.params
     const longDate = getLongDate(focusedDate)
 
@@ -44,6 +45,7 @@ export default function CreateCustom({route}:any){
     const [ expenseArray, setExpenseArray ] = useState<CustomExpenseTypes[] | null>(null)
 
     const [ accounts, setAccounts ] = useState<{ accountId:number, accountName:string, accountBadge:string }[] | null>(null)
+    const [ creatingRelations, setCreatingRelations ] = useState(false)
 
     // Handlers
     async function onAddIncomePressHandler() {
@@ -73,6 +75,7 @@ export default function CreateCustom({route}:any){
         }
     }
     async function onAddExpensePressHandler() {
+        setCreatingRelations(true)
         if ( expenseAmount === '' || expenseAmount.trim().length === 0 )  {
             setExpenseAmountError(true)
         } else {
@@ -96,7 +99,8 @@ export default function CreateCustom({route}:any){
             setExpenseAmount('')
             setExpenseComment('')
             await fetchExpenses()
-        }
+        }('Records')
+        setCreatingRelations(false)
     }
 
     async function handleAccountSelector() {
@@ -130,13 +134,34 @@ export default function CreateCustom({route}:any){
             incomeArray?.forEach(incomeItem => {
                 totalIncome = totalIncome + incomeItem.amount
             })
-            await createCustomRecordOnIncome(focusedDate, getLocalTime(), totalIncome)
-            console.log('Done')
+
+            // If is there is record with relation
+            if ( await checkCustomIncome(focusedDate) ) {
+                await deleteCustomIncomeOnIncome(focusedDate) // delete if yes
+            }
+
+            // add new rec with relation
+            const incomeId =  await createCustomRecordOnIncome(focusedDate, getLocalTime(), totalIncome/100)
+            await createRelationOnIncome(focusedDate, incomeId)
         }
 
         if ( expenseArray?.length !== 0 ){
-            console.log(expenseArray)
+            let totalExpense = 0
+            expenseArray?.forEach(exppenseItem => {
+                totalExpense = totalExpense + exppenseItem.amount
+            })
+
+            // If is there is record with relation
+            if ( await checkCustomExpense(focusedDate) ) {
+                await deleteCustomExepenseOnExepense(focusedDate) // delete if yes
+            }
+
+            // add new rec with relation
+            const expenseId =  await createCustomRecordOnExpense(focusedDate, getLocalTime(), totalExpense/100)
+            await createRelationOnExpense(focusedDate, expenseId)
         }
+
+        navigation.goBack()
     }
 
     // DB Fetching
@@ -253,7 +278,11 @@ export default function CreateCustom({route}:any){
             </View>
         </ScrollView>
 
-        <AddToRecordButton onPress={transferToJournal} isActive={ incomeArray?.length !== 0 || expenseArray?.length !== 0 }/>
+        <AddToRecordButton 
+            onPress={transferToJournal} 
+            isActive={ incomeArray?.length !== 0 || expenseArray?.length !== 0 }
+            creatingRelations={creatingRelations}
+            />
 
         <BottomSheet 
             index={-1} 

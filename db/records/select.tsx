@@ -81,10 +81,10 @@ export async function getExpense(date:string) {
                                     expenses.amount,
                                     createdDateTime,
                                     date
-                            FROM    expenses, accounts, expensesCategories
-                            WHERE   accounts.accountId = expenses.accountId AND 
-                                    expensesCategories.categoryId = expenses.categoryId AND
-                                    date = ?
+                            FROM    expenses
+                            LEFT JOIN expensesCategories ON expenses.categoryId =  expensesCategories.categoryId
+                            LEFT JOIN accounts ON expenses.accountId  = accounts.accountId
+                            WHERE date = ?
                         `, date)
         return expenses
     } catch (e) {
@@ -127,5 +127,43 @@ export async function getCustomExpenses(date:string) {
         return expenses
     } catch (e) {
         handleDBError( e, 'Fetching custom expenses failed' )
+    }
+}
+
+export async function checkCustomIncome(date:string) {
+    try{ 
+        const db = await getDB();
+        const incomes = await db.getAllAsync(`
+                            SELECT  incomeId
+                            FROM    income
+                            WHERE   isCustom = 1 AND 
+                                    date = ?
+                        `, date)
+        if ( incomes.length !== 0 ){
+            return true
+        } else {
+            return false
+        }
+    } catch (e) {
+        handleDBError( e, 'Checking for custom income relation failed' )
+    }
+}
+
+export async function checkCustomExpense(date:string) {
+    try{ 
+        const db = await getDB();
+        const expeneses = await db.getAllAsync(`
+                            SELECT  expenseId
+                            FROM    expenses
+                            WHERE   isCustom = 1 AND 
+                                    date = ?
+                        `, date)
+        if ( expeneses.length !== 0 ){
+            return true
+        } else {
+            return false
+        }
+    } catch (e) {
+        handleDBError( e, 'Checking for custom expense relation failed' )
     }
 }
