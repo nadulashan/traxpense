@@ -170,11 +170,11 @@ const RecordStyles = StyleSheet.create({
     // Record Details
     RecordDetailsWrapper: {
         gap:16,
-        marginRight:16
+        marginRight:16,
+        marginTop:16
     },
 
     DateText: {
-        paddingTop:4,
         fontFamily:fonts.light,
         fontSize:20,
     },
@@ -254,6 +254,11 @@ const RecordStyles = StyleSheet.create({
         fontFamily:fonts.semiBold,
         fontSize:16,
         color:colors.light.white
+    },
+
+    // Custom Journal
+    InfoText: {
+        fontFamily:fonts.medium,
     }
 })
 

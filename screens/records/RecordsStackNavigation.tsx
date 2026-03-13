@@ -11,7 +11,7 @@ export default function RecordsStackNavigation(){
 
     return (
         <Stack.Navigator 
-            initialRouteName="Records"            
+            initialRouteName="Records"  
             screenOptions={{
                 animation:'slide_from_right', 
                 headerShadowVisible:false,
