@@ -7,7 +7,6 @@ type AddCategoryProps = {
 }
 
 export default function AddToRecordButton({ onPress,isActive }: AddCategoryProps){
-    console.log(isActive)
     return (        
 
         <View style={[RecordStyles.FloatingBottomStickButton, !isActive? RecordStyles.FloatingBottomStickButtonDisabled : null]}>

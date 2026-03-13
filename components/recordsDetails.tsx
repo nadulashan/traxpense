@@ -32,6 +32,9 @@ export default function RecordsDetails() {
     
         setIncomes(fetchedIncomes)
         setExpenses(fetchedExpenses)
+        fetchedIncomes.forEach(income => {
+            console.log(income)
+        })
     }
 
     // Calculated Total

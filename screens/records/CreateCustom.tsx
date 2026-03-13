@@ -3,10 +3,10 @@ import AddItemForm from '@/components/recordAddItemForm';
 import FormAccountWrapper from '@/components/recordFormAccountWrapper';
 import CustomTypeItem from '@/components/recordsDetailsCustomTypeItem';
 import colors from '@/constants/colors';
-import { addNewCustomExpense, addNewCustomIncome } from '@/db/records/insert';
+import { addNewCustomExpense, addNewCustomIncome, createCustomRecordOnIncome } from '@/db/records/insert';
 import { getActiveAccounts, getCustomExpenses, getCustomIncomes } from '@/db/records/select';
 import { closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
-import { getLongDate } from '@/func/time';
+import { getLocalTime, getLongDate } from '@/func/time';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
 import { CustomExpenseTypes, CustomIncomeTypes } from '@/types/recordsTypeItemType.schema';
@@ -124,6 +124,21 @@ export default function CreateCustom({route}:any){
         closeSheetCaller()
     }
 
+    async function transferToJournal() {
+        if ( incomeArray?.length !== 0 ) {
+            let totalIncome = 0
+            incomeArray?.forEach(incomeItem => {
+                totalIncome = totalIncome + incomeItem.amount
+            })
+            await createCustomRecordOnIncome(focusedDate, getLocalTime(), totalIncome)
+            console.log('Done')
+        }
+
+        if ( expenseArray?.length !== 0 ){
+            console.log(expenseArray)
+        }
+    }
+
     // DB Fetching
     async function fetchIncomes() {
         const incomes = await getCustomIncomes(focusedDate)
@@ -139,7 +154,6 @@ export default function CreateCustom({route}:any){
         await fetchIncomes()
         await fetchExpenses()
     }
-
 
     useEffect(() => {
         navigation.setOptions({title:longDate})
@@ -239,7 +253,7 @@ export default function CreateCustom({route}:any){
             </View>
         </ScrollView>
 
-        <AddToRecordButton onPress={() => {}} isActive={ incomeArray?.length !== 0 || expenseArray?.length !== 0 }/>
+        <AddToRecordButton onPress={transferToJournal} isActive={ incomeArray?.length !== 0 || expenseArray?.length !== 0 }/>
 
         <BottomSheet 
             index={-1} 

@@ -55,3 +55,16 @@ export async function addNewCustomExpense(name:string, comment:string | null, am
     }
 }
 
+export async function createCustomRecordOnIncome( date:string,createdDateTime:string, amount:number ){
+    try {
+        const store = amount*100
+        const db = await getDB();
+        const res = await db.runAsync(`
+                INSERT 
+                INTO income(isCustom, date, createdDateTime, amount) 
+                VALUES (?,?,?,?)    
+            `, 1, date, createdDateTime, store )
+    } catch (e){
+        handleDBError(e,'Inserting custom record on income failed')
+    }
+}

@@ -49,18 +49,18 @@ export async function getIncomes(date:string) {
         const db = await getDB();
         const incomes = await db.getAllAsync<IncomeTypes>(`
                             SELECT  incomeId,
-                                    accountName,
+                                    accounts.accountName,
                                     isCustom,
                                     accountBadge,
-                                    name,
+                                    incomeCategories.name,
                                     comment,
                                     income.amount,
                                     createdDateTime,
                                     date
-                            FROM    income, accounts, incomeCategories
-                            WHERE   accounts.accountId = income.accountId AND 
-                                    incomeCategories.categoryId = income.categoryId AND
-                                    date = ?
+                            FROM    income
+                            LEFT JOIN incomeCategories ON income.categoryId =  incomeCategories.categoryId
+                            LEFT JOIN accounts ON income.accountId  = accounts.accountId
+                            WHERE date = ?
                         `, date)
         return incomes
     } catch (e) {
