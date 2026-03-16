@@ -3,8 +3,6 @@ import { createContext, useContext } from "react";
 interface ContextType {
   focusedDate:string;
   updateFocusedDate:(date:string) => void;
-  navigateToAddItem: () => void;
-  type: React.RefObject<"income" | "expense" | null>;
   closeSheetCaller: () => void;
   recordsRefreshTrigger:number,
   setRecordsRefreshTrigger:React.Dispatch<React.SetStateAction<number>>;

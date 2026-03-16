@@ -3,9 +3,19 @@ import RecordStyles from '@/styles/recordsStyles';
 import { useNavigation } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
-export default function BottomSheetRecordCreationMenu() {
+interface CreationMenuTypes{
+    navigateToAddItem: () => void;
+    navigateToTransfer: () => void;
+    type: React.RefObject<"income" | "expense" | null>;
+}
 
-    const { navigateToAddItem, type, focusedDate } = useCheckContext()
+export default function BottomSheetRecordCreationMenu({
+    navigateToAddItem,
+    type,
+    navigateToTransfer
+}:CreationMenuTypes) {
+
+    const { focusedDate } = useCheckContext()
     const navigation = useNavigation<any>()
 
     return (
@@ -23,6 +33,13 @@ export default function BottomSheetRecordCreationMenu() {
                     navigateToAddItem()
                 }}    
             ><Text style={RecordStyles.MenuText}>Add Expense</Text></Pressable>
+            <Pressable 
+                style={RecordStyles.MenuAddItem}
+                onPress={() => {
+                    type.current = null
+                    navigateToTransfer()
+                }}    
+            ><Text style={RecordStyles.MenuText}>Transfer</Text></Pressable>
             <Pressable 
                 onPress={() => navigation.navigate("CreateCustom", {
                     focusedDate:focusedDate

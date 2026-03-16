@@ -108,3 +108,17 @@ export async function createRelationOnExpense( date:string,expenseId:number ){
         handleDBError(e,'Inserting relation on custom record on expense failed')
     }
 }
+
+export async function addTransfer(transferFrom:number, transferTo:number, comment:string | null, date:string, createdDateTime:string, amount:number){
+    try {
+        const store = amount*100
+        const db = await getDB();
+        await db.runAsync(`
+                INSERT 
+                INTO transfers(transferFrom,transferTo,comment,amount,createdDateTime,date) 
+                VALUES (?,?,?,?,?,?)    
+            `, transferFrom,transferTo, comment, store, date,createdDateTime, date)
+    } catch (e){
+        handleDBError(e,'Inserting transfer failed')
+    }
+}

@@ -9,10 +9,13 @@ import AddItemForm from './recordAddItemForm';
 import FormAccountWrapper from './recordFormAccountWrapper';
 import FormCategoryWrapper from './recordFormCategoryWrapper';
 
+interface AddItemTypes {
+  type: React.RefObject<"income" | "expense" | null>;
+}
 
-export default function BottomSheetRecordAddItem() {
+export default function BottomSheetRecordAddItem({ type }: AddItemTypes) {
 
-    const { type, closeSheetCaller, focusedDate, setRecordsRefreshTrigger } = useCheckContext()
+    const { closeSheetCaller, focusedDate, setRecordsRefreshTrigger } = useCheckContext()
 
     let getActiveTypeCategories:() => Promise<{ categoryId:number, name:string, badge:string }[]>;
     let addNewType:(categoryId:number, accountId:number, comment:string | null, date:string, time:string, amount:number) => void;
@@ -97,6 +100,8 @@ export default function BottomSheetRecordAddItem() {
                 isCustomForm={false}
                 customName={undefined}
                 setCustomName={undefined}
+                customTypeNameError={undefined}
+                commentError={undefined}
             />,
         Category: () => <FormCategoryWrapper 
                         categories={categories}

@@ -1,4 +1,4 @@
-import { CustomExpenseTypes, CustomIncomeTypes, ExpenseTypes, IncomeTypes } from "@/types/recordsTypeItemType.schema";
+import { CustomExpenseTypes, CustomIncomeTypes, ExpenseTypes, IncomeTypes, TransferTypes } from "@/types/recordsTypeItemType.schema";
 import handleDBError from "../dbError";
 import getDB from "../opendb";
 
@@ -165,5 +165,29 @@ export async function checkCustomExpense(date:string) {
         }
     } catch (e) {
         handleDBError( e, 'Checking for custom expense relation failed' )
+    }
+}
+
+export async function getTransfer(date:string) {
+    try{ 
+        const db = await getDB();
+        const transfers = await db.getAllAsync<TransferTypes>(`
+                            SELECT  transferId,
+                                    transferFrom,
+                                    transferTo,
+                                    comment,
+                                    amount,
+                                    createdDateTime,
+                                    date,
+                                    accountName,
+                                    accountBadge
+                            FROM    transfers, accounts
+                            WHERE   accounts.accountId = transfers.transferFrom AND 
+                                    accounts.accountId = transfers.transferTo AND 
+                                    date = ?
+                        `, date)
+        return transfers
+    } catch (e) {
+        handleDBError( e, 'Fetching transfers failed' )
     }
 }

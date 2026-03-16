@@ -1,6 +1,7 @@
 import AddRecordButton from "@/components/addRecordButton";
 import BottomSheetRecordAddItem from "@/components/bottomSheetRecordAddItem";
 import BottomSheetRecordCreationMenu from "@/components/bottomSheetRecordCreationMenu";
+import Transfers from "@/components/bottomSheetTransfer";
 import CalendarListWrapper from "@/components/recordsCalendarListWrapper";
 import RecordsDetails from "@/components/recordsDetails";
 import { FocusedDateProviderContext } from "@/context/recordsContext";
@@ -40,15 +41,25 @@ export default function Records(){
 
   // Handle mutlple states of bottom sheet
   const BOTTOMSHEET_STATE = {
-    CreationMenu: BottomSheetRecordCreationMenu,
-    AddItem:BottomSheetRecordAddItem
+    CreationMenu: () => <BottomSheetRecordCreationMenu
+                          type={type}
+                          navigateToAddItem={navigateToAddItem}
+                          navigateToTransfer={navigateToTransfer}/>,
+
+    AddItem:() => <BottomSheetRecordAddItem type={type}/>,
+
+    Transfer: () => <Transfers />
   }
-  const [ currentSheetState, setCurrentSheetState ] = useState<'CreationMenu' | 'AddItem'>('CreationMenu')
+  const [ currentSheetState, setCurrentSheetState ] = useState<'CreationMenu' | 'AddItem' | 'Transfer'>('CreationMenu')
   
   const SheetContent = BOTTOMSHEET_STATE[currentSheetState]
 
   function navigateToAddItem(){
     setCurrentSheetState('AddItem')
+  }
+
+  function navigateToTransfer(){
+    setCurrentSheetState('Transfer')
   }
 
   // Open and Close Sheet Caller
@@ -78,7 +89,7 @@ export default function Records(){
 
   return (
       <SafeAreaView style={{backgroundColor:'#ffffff', flexDirection:'row', height:'100%'}} edges={['top', 'left', 'right']}>
-        <FocusedDateProviderContext value={{focusedDate, updateFocusedDate,  navigateToAddItem, type, closeSheetCaller, recordsRefreshTrigger, setRecordsRefreshTrigger}} >
+        <FocusedDateProviderContext value={{focusedDate, updateFocusedDate, closeSheetCaller, recordsRefreshTrigger, setRecordsRefreshTrigger}} >
           <CalendarListWrapper />
           <RecordsDetails />
 
@@ -93,7 +104,7 @@ export default function Records(){
               // onChange={handleSuspendNotificationState}
               >
               <BottomSheetView>
-                < SheetContent />
+                {SheetContent()}
               </BottomSheetView>
           </BottomSheet>
         </FocusedDateProviderContext>

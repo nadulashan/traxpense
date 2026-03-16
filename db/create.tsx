@@ -75,6 +75,15 @@ export async function initDB(){
                 accountId INTEGER NOT NULL REFERENCES accounts(accountId),
                 date TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS transfers(
+                transferId INTEGER PRIMARY KEY AUTOINCREMENT,
+                transferFrom INTEGER NOT NULL REFERENCES accounts(accountId),
+                transferTo INTEGER NOT NULL REFERENCES accounts(accountId),
+                comment TEXT DEFAULT NULL,
+                amount INTEGER NOT NULL,
+                createdDateTime TEXT NOT NULL,
+                date TEXT NOT NULL
+            );
             CREATE TABLE IF NOT EXISTS appconfig(
                 key TEXT PRIMARY KEY,
                 value TEXT NOT NULL

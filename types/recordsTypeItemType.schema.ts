@@ -37,3 +37,12 @@ export interface CustomExpenseTypes{
     comment:string | null, 
     amount:number, 
 }
+
+export interface TransferTypes{
+    transferFrom:number;
+    transferTo:number;
+    comment:string | null;
+    amount:number;
+    createdDateTime:string,
+    date:string;
+}
