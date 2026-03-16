@@ -263,8 +263,6 @@ const RecordStyles = StyleSheet.create({
 
     // Transfer Form
     AccountSelectWrapper: {
-        flex:1,
-        width:'100%',
         flexDirection:'row',
         justifyContent:'space-between',
         gap:16
