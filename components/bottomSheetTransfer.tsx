@@ -94,6 +94,7 @@ function TransferFrom({
             </View>  
             <View>
                 <TextInput
+                    keyboardType='numeric'
                     value={amount}
                     onChangeText={value => {
                         setAmount(value.trim())
@@ -114,6 +115,7 @@ function TransferFrom({
                 }
             </View>      
             <TextInput
+                multiline={true}
                 value={comment}
                 onChangeText={value => setComment(value)}
                 style={CommonStyles.BottomSheetInput}
@@ -130,7 +132,7 @@ function TransferFrom({
 }
 
 export default function Transfers() {
-    const { focusedDate } = useCheckContext()
+    const { focusedDate, closeSheetCaller } = useCheckContext()
 
     const type = useRef< 'to' | 'from' | undefined >(undefined)
     const [ transferFromAccount, setTransferFromAccount ] = useState<Accounts | undefined>(undefined)
@@ -194,9 +196,9 @@ export default function Transfers() {
         }
 
         if ( !amountError && transferFromAccount && transferToAccount ) {
-            const todayDateTime = getLocalTime()
+            const todayDateTime = getLocalTime().toISOString()
             addTransfer(transferFromAccount.accountId, transferToAccount.accountId, comment, focusedDate, todayDateTime, Number(amount) )
-            console.log(transferFromAccount.accountId, transferToAccount.accountId, comment, focusedDate, todayDateTime, Number(amount))
+            closeSheetCaller()
         }
     }
 

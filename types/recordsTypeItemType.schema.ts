@@ -45,4 +45,8 @@ export interface TransferTypes{
     amount:number;
     createdDateTime:string,
     date:string;
+    from_account_name:string;
+    from_account_badge:string;
+    to_account_name:string;
+    to_account_badge:string;
 }

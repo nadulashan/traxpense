@@ -172,19 +172,21 @@ export async function getTransfer(date:string) {
     try{ 
         const db = await getDB();
         const transfers = await db.getAllAsync<TransferTypes>(`
-                            SELECT  transferId,
-                                    transferFrom,
-                                    transferTo,
-                                    comment,
-                                    amount,
-                                    createdDateTime,
-                                    date,
-                                    accountName,
-                                    accountBadge
-                            FROM    transfers, accounts
-                            WHERE   accounts.accountId = transfers.transferFrom AND 
-                                    accounts.accountId = transfers.transferTo AND 
-                                    date = ?
+                            SELECT  tr.transferId,
+                                    tr.transferFrom,
+                                    tr.transferTo,
+                                    tr.comment,
+                                    tr.amount,
+                                    tr.createdDateTime,
+                                    tr.date,
+                                    fr.accountName AS from_account_name,
+                                    fr.accountBadge AS from_account_badge,
+                                    t.accountName AS to_account_name,
+                                    t.accountBadge AS to_account_badge
+                            FROM    transfers tr
+                            JOIN    accounts fr ON tr.transferFrom = fr.accountId
+                            JOIN    accounts t ON tr.transferTo = t.accountId
+                            WHERE   date = ?
                         `, date)
         return transfers
     } catch (e) {

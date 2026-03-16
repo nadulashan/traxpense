@@ -1,7 +1,7 @@
 import { useCheckContext } from '@/context/recordsContext';
-import { getCustomExpenses, getCustomIncomes, getExpense, getIncomes } from '@/db/records/select';
+import { getCustomExpenses, getCustomIncomes, getExpense, getIncomes, getTransfer } from '@/db/records/select';
 import { getLongDate } from '@/func/time';
-import { CustomExpenseTypes, CustomIncomeTypes, ExpenseTypes, IncomeTypes } from '@/types/recordsTypeItemType.schema';
+import { CustomExpenseTypes, CustomIncomeTypes, ExpenseTypes, IncomeTypes, TransferTypes } from '@/types/recordsTypeItemType.schema';
 import { useNavigation } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView } from 'react-native';
@@ -23,6 +23,7 @@ export default function RecordsDetails() {
     const [ expenses, setExpenses ] = useState<ExpenseTypes[] | null>(null)
     const [ customIncomeItems, setCustomIncomeItems ] = useState<CustomIncomeTypes[] | null>(null)
     const [ customExpenseItems, setCustomExpenseItems ] = useState<CustomExpenseTypes[] | null>(null)
+    const [ transfers, setTransfers ] = useState<TransferTypes[] | null>(null)
     const isCustomIncome = useRef(false)
     const customItemsSum = useRef(0)
     const [ recordedIncome, setRecordedIncome ] = useState(0)
@@ -31,12 +32,17 @@ export default function RecordsDetails() {
     const [ currentScreen, setCurrentScreen ] = useState<'IncomeExpenseDetails' | 'CustomIncomeExpenseDetails'>('IncomeExpenseDetails')
 
     // Fetch
-    async function fetchIncomesAndExpenses(date:string) {
-        const fetchedIncomes = await getIncomes(date)
-        const fetchedExpenses = await getExpense(date)
+    async function fetchIncomesAndExpenses() {
+        const fetchedIncomes = await getIncomes(focusedDate)
+        const fetchedExpenses = await getExpense(focusedDate)
     
         setIncomes(fetchedIncomes)
         setExpenses(fetchedExpenses)
+    }
+
+    async function fetchTransfers() {
+        const fetchedTransfers = await getTransfer(focusedDate)
+        setTransfers(fetchedTransfers)
     }
 
     // Calculated Total
@@ -100,6 +106,7 @@ export default function RecordsDetails() {
                                         expenses={expenses}
                                         recordedExpenses={recordedExpenses}
                                         switchCustom={switchCustom}
+                                        transfers={transfers}
                                     />,
         CustomIncomeExpenseDetails: () => <RecordsCustomIncomeExpenseDetails
                                         displayDate={displayDate}
@@ -115,7 +122,8 @@ export default function RecordsDetails() {
 
 
     useEffect(() => {
-        fetchIncomesAndExpenses(focusedDate)
+        fetchIncomesAndExpenses()
+        fetchTransfers()
     }, [focusedDate, recordsRefreshTrigger])
 
     useEffect(() => {
@@ -128,7 +136,7 @@ export default function RecordsDetails() {
 
     useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-        fetchIncomesAndExpenses(focusedDate)
+        fetchIncomesAndExpenses()
     });
 
     return unsubscribe;

@@ -2,7 +2,7 @@ import colors from '@/constants/colors';
 import { priceWithComma } from '@/func/general';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
-import { ExpenseTypes, IncomeTypes } from '@/types/recordsTypeItemType.schema';
+import { ExpenseTypes, IncomeTypes, TransferTypes } from '@/types/recordsTypeItemType.schema';
 import { ActivityIndicator, Text, View } from 'react-native';
 import TypeItem from './recordsDetailsTypeItem';
 
@@ -14,6 +14,7 @@ interface RecordIncomeExpenseDetailsTypes{
     expenses:ExpenseTypes[] | null;
     recordedExpenses:number;
     switchCustom:( type:'income' | 'expense') => void;
+    transfers: TransferTypes[] | null;
 }
 
 export default function RecordsIncomeExpenseDetails({
@@ -22,7 +23,8 @@ export default function RecordsIncomeExpenseDetails({
     recordedIncome,
     expenses,
     recordedExpenses,
-    switchCustom
+    switchCustom,
+    transfers
 }:RecordIncomeExpenseDetailsTypes) {
     return(
         
@@ -70,6 +72,24 @@ export default function RecordsIncomeExpenseDetails({
                     <Text style={RecordStyles.RecordedTypeText}>Recorded Expenses</Text>
                     <Text style={RecordStyles.RecordedTypeText}>{priceWithComma(recordedExpenses)}</Text>
                 </View>
+                {
+                    transfers?
+                        transfers.length !== 0 ?
+                        <View style={RecordStyles.TypeWrapper}>
+                            <Text style={RecordStyles.TypeText}>Transfers</Text>
+                            <View style={RecordStyles.TypeItemsWrapper}>                    
+                            {
+                                transfers.map(transfer => (
+                                    <Text>{transfer.from_account_name}</Text>
+                                ))
+                            }
+                            </View>
+                        </View>
+                        :
+                        null
+                    :
+                    <ActivityIndicator size={'large'} color={colors.light.primary}/>
+                }
         </View>
     )
 }

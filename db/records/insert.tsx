@@ -117,7 +117,7 @@ export async function addTransfer(transferFrom:number, transferTo:number, commen
                 INSERT 
                 INTO transfers(transferFrom,transferTo,comment,amount,createdDateTime,date) 
                 VALUES (?,?,?,?,?,?)    
-            `, transferFrom,transferTo, comment, store, date,createdDateTime, date)
+            `, [transferFrom,transferTo, comment, store,createdDateTime, date])
     } catch (e){
         handleDBError(e,'Inserting transfer failed')
     }
