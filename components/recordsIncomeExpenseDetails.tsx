@@ -4,6 +4,7 @@ import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
 import { ExpenseTypes, IncomeTypes, TransferTypes } from '@/types/recordsTypeItemType.schema';
 import { ActivityIndicator, Text, View } from 'react-native';
+import TransferItem from './recordsDetailsTransferItem';
 import TypeItem from './recordsDetailsTypeItem';
 
 
@@ -48,10 +49,15 @@ export default function RecordsIncomeExpenseDetails({
                     }
                     </View>
                 </View>
-                <View style={RecordStyles.RecordedTypeWrapper}>
-                    <Text style={RecordStyles.RecordedTypeText}>Recorded Income</Text>
-                    <Text style={RecordStyles.RecordedTypeText}>{priceWithComma(recordedIncome)}</Text>
-                </View>
+                {
+                    incomes?.length !== 0 ?
+                    <View style={RecordStyles.RecordedTypeWrapper}>
+                        <Text style={RecordStyles.RecordedTypeText}>Recorded Income</Text>
+                        <Text style={RecordStyles.RecordedTypeText}>{priceWithComma(recordedIncome)}</Text>
+                    </View>
+                    : 
+                    null
+                }
                 <View style={RecordStyles.TypeWrapper}>
                     <Text style={RecordStyles.TypeText}>Expense</Text>
                     <View style={RecordStyles.TypeItemsWrapper}>                    
@@ -68,10 +74,16 @@ export default function RecordsIncomeExpenseDetails({
                     }
                     </View>
                 </View>
-                <View style={RecordStyles.RecordedTypeWrapper}>
-                    <Text style={RecordStyles.RecordedTypeText}>Recorded Expenses</Text>
-                    <Text style={RecordStyles.RecordedTypeText}>{priceWithComma(recordedExpenses)}</Text>
-                </View>
+                {
+                    expenses?.length !== 0 ?
+                    <View style={RecordStyles.RecordedTypeWrapper}>
+                        <Text style={RecordStyles.RecordedTypeText}>Recorded Expenses</Text>
+                        <Text style={RecordStyles.RecordedTypeText}>{priceWithComma(recordedExpenses)}</Text>
+                    </View>
+                    :
+                    null
+
+                }
                 {
                     transfers?
                         transfers.length !== 0 ?
@@ -80,7 +92,7 @@ export default function RecordsIncomeExpenseDetails({
                             <View style={RecordStyles.TypeItemsWrapper}>                    
                             {
                                 transfers.map(transfer => (
-                                    <Text>{transfer.from_account_name}</Text>
+                                    <TransferItem item={transfer} key={transfer.transferId} onItemPress={() => {}} />
                                 ))
                             }
                             </View>
@@ -88,7 +100,7 @@ export default function RecordsIncomeExpenseDetails({
                         :
                         null
                     :
-                    <ActivityIndicator size={'large'} color={colors.light.primary}/>
+                    <ActivityIndicator size={'small'} color={colors.light.primary}/>
                 }
         </View>
     )

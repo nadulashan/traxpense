@@ -122,6 +122,9 @@ export default function RecordsDetails() {
 
 
     useEffect(() => {
+        setIncomes(null)
+        setExpenses(null)
+        setTransfers(null)
         fetchIncomesAndExpenses()
         fetchTransfers()
     }, [focusedDate, recordsRefreshTrigger])

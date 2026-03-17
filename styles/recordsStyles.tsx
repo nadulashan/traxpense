@@ -212,7 +212,6 @@ const RecordStyles = StyleSheet.create({
     TypeItemText: {
         fontFamily:fonts.regular,
         fontSize:14,
-        justifyContent:'center',
     },
 
     RecordedTypeWrapper: {
@@ -266,7 +265,46 @@ const RecordStyles = StyleSheet.create({
         flexDirection:'row',
         justifyContent:'space-between',
         gap:16
-    }
+    },
+
+    // Transfer Item
+    TransferItemWrapper: {
+        flexDirection:'row',
+        justifyContent:'space-between',
+        alignItems:'center',
+        opacity:0.75
+    },
+
+    TransferItemBankNames: {
+        flexDirection:'column',
+        gap:4,
+    },
+
+    TransferItemArrowBank: {
+        flexDirection:'row',
+        marginLeft:8,
+        alignItems:'center',
+        gap:8,
+    },
+
+    TransferRowGap: {
+        flexDirection:'row',
+        alignItems:'center',
+        gap:8
+    },
+
+    TransferItemText: {
+        fontFamily:fonts.light,
+        fontSize:13,
+        lineHeight:13
+    }, 
+
+    TransferItemBadge: {
+        height:10,
+        width:10,
+        borderRadius:5,
+    },
+
 })
 
 export default RecordStyles

@@ -132,7 +132,7 @@ function TransferFrom({
 }
 
 export default function Transfers() {
-    const { focusedDate, closeSheetCaller } = useCheckContext()
+    const { focusedDate, closeSheetCaller, setRecordsRefreshTrigger } = useCheckContext()
 
     const type = useRef< 'to' | 'from' | undefined >(undefined)
     const [ transferFromAccount, setTransferFromAccount ] = useState<Accounts | undefined>(undefined)
@@ -198,6 +198,7 @@ export default function Transfers() {
         if ( !amountError && transferFromAccount && transferToAccount ) {
             const todayDateTime = getLocalTime().toISOString()
             addTransfer(transferFromAccount.accountId, transferToAccount.accountId, comment, focusedDate, todayDateTime, Number(amount) )
+            setRecordsRefreshTrigger(inc => inc+1)
             closeSheetCaller()
         }
     }

@@ -39,6 +39,7 @@ export interface CustomExpenseTypes{
 }
 
 export interface TransferTypes{
+    transferId:number;
     transferFrom:number;
     transferTo:number;
     comment:string | null;
