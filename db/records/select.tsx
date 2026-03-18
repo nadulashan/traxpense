@@ -101,7 +101,8 @@ export async function getCustomIncomes(date:string) {
                                     accountBadge, 
                                     customIncome.name, 
                                     comment, 
-                                    customIncome.amount
+                                    customIncome.amount,
+                                    createdDateTime
                             FROM    customIncome, accounts
                             WHERE   accounts.accountId = customIncome.accountId AND 
                                     date = ?
@@ -121,7 +122,8 @@ export async function getCustomExpenses(date:string) {
                                     accountBadge, 
                                     customExpenses.name, 
                                     comment, 
-                                    customExpenses.amount
+                                    customExpenses.amount,
+                                    createdDateTime
                             FROM    customExpenses, accounts
                             WHERE   accounts.accountId = customExpenses.accountId AND 
                                     date = ?

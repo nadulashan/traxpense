@@ -10,7 +10,7 @@ import { FocusedDateProviderContext } from "@/context/recordsContext";
 import { getCustomExpenses, getCustomIncomes } from "@/db/records/select";
 import { closeBottomSheet, openBottomSheet } from "@/func/bottomSheetfunc";
 import { getLocalTime } from "@/func/time";
-import { CustomExpenseTypes, CustomIncomeTypes, ExpenseTypes, IncomeTypes } from "@/types/recordsTypeItemType.schema";
+import { CustomExpenseTypes, CustomIncomeTypes } from "@/types/recordsTypeItemType.schema";
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useCallback, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -77,12 +77,12 @@ export default function Records(){
   }
 
   // FOR ITEM DETAILS SHEET
-  const [ focusedItem, setFocusedItem ] = useState<IncomeTypes | ExpenseTypes | undefined>(undefined)
+  const [ focusedItem, setFocusedItem ] = useState<{ name:string, amount:number, comment:string, accountName:string, accountBadge:string, createdDateTime:string} | undefined>(undefined)
 
-  async function switchItemDetail(item: IncomeTypes | ExpenseTypes) {
+  async function switchItemDetail(item: { name:string, amount:number, comment:string, accountName:string, accountBadge:string, createdDateTime:string}) {
     currentSheetRef.current = 'ItemDetails'
     setFocusedItem(item)
-    openStateSheetCaller()
+    openRefSheetCaller()
   }
 
   // Handle mutlple states of bottom sheet - State
@@ -116,7 +116,9 @@ export default function Records(){
                                         customItemsSum={customItemsSum.current}
                                         isCustomIncome={isCustomIncome.current}/>,
 
-    ItemDetails: () => <ItemDetails item={focusedItem}/>
+    ItemDetails: () => <ItemDetails item={focusedItem}/>,
+
+
   }
 
   const currentSheetRef = useRef< 'ItemDetails' | 'CustomIncomeExpense' >('ItemDetails')
@@ -151,6 +153,9 @@ export default function Records(){
   
   function closeRefSheetCaller(){
     closeBottomSheet(refSheetRef)
+    setFocusedItem(undefined)
+    setCustomIncomeItems(null)
+    setCustomExpenseItems(null)
   }
   
   // Bottom Sheet things including backdrop - State
@@ -204,7 +209,7 @@ export default function Records(){
               index={-1} 
               enableDynamicSizing={true}
               enablePanDownToClose={true}
-              ref={stateSheetRef}
+              ref={refSheetRef}
               backdropComponent={refBackDrop}
               >
               <BottomSheetView>

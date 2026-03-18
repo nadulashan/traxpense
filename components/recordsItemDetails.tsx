@@ -1,11 +1,11 @@
+import colors from '@/constants/colors';
 import { priceWithComma } from '@/func/general';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
-import { ExpenseTypes, IncomeTypes } from '@/types/recordsTypeItemType.schema';
-import { Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 interface ItemDetailsTypes {
-    item: IncomeTypes | ExpenseTypes | undefined;
+    item: { name:string, amount:number, comment:string, accountName:string, accountBadge:string, createdDateTime:string} | undefined;
 }
 
 export default function ItemDetails({
@@ -49,7 +49,7 @@ export default function ItemDetails({
                     </View>
                 </>
                 :
-                <Text>Something went wrong.</Text>
+                <ActivityIndicator size={'small'} color={colors.light.primary} />
             }
         </View>
     )

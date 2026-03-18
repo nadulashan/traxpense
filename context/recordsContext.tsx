@@ -1,4 +1,3 @@
-import { ExpenseTypes, IncomeTypes } from "@/types/recordsTypeItemType.schema";
 import { createContext, useContext } from "react";
 
 interface ContextType {
@@ -7,7 +6,7 @@ interface ContextType {
   closeStateSheetCaller: () => void;
   recordsRefreshTrigger:number,
   setRecordsRefreshTrigger:React.Dispatch<React.SetStateAction<number>>;
-  switchItemDetail:(item: IncomeTypes | ExpenseTypes) => Promise<void>;
+  switchItemDetail:(item: { name:string, amount:number, comment:string, accountName:string, accountBadge:string, createdDateTime:string}) => Promise<void>;
 }
 
 export const FocusedDateProviderContext = createContext<ContextType | undefined>(undefined)

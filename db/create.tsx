@@ -42,7 +42,8 @@ export async function initDB(){
                 comment TEXT DEFAULT NULL,
                 amount INTEGER NOT NULL,
                 accountId INTEGER NOT NULL REFERENCES accounts(accountId),
-                date TEXT NOT NULL
+                date TEXT NOT NULL,
+                createdDateTime TEXT NOT NULL
             );
             CREATE TABLE IF NOT EXISTS incomeCategories(
                 categoryId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -73,7 +74,8 @@ export async function initDB(){
                 comment TEXT DEFAULT NULL,
                 amount INTEGER NOT NULL,
                 accountId INTEGER NOT NULL REFERENCES accounts(accountId),
-                date TEXT NOT NULL
+                date TEXT NOT NULL,
+                createdDateTime TEXT NOT NULL
             );
             CREATE TABLE IF NOT EXISTS transfers(
                 transferId INTEGER PRIMARY KEY AUTOINCREMENT,

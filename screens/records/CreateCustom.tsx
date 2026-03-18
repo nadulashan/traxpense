@@ -66,7 +66,8 @@ export default function CreateCustom({route}:any){
         }
 
         if ( selectedIncomeAccount && !incomeAmountError && !customIncomeNameError && !customIncomeCommentError) {
-            await addNewCustomIncome(customIncomeName, incomeComment, Number(incomeAmount), selectedIncomeAccount.accountId, focusedDate)
+            const nowTimeDate = getLocalTime().toISOString()
+            await addNewCustomIncome(customIncomeName, incomeComment, Number(incomeAmount), selectedIncomeAccount.accountId, focusedDate, nowTimeDate)
             setCustomIncomeName('')
             setSelectedIncomeAccount(null)
             setIncomeAmount('')
@@ -93,7 +94,8 @@ export default function CreateCustom({route}:any){
         }
 
         if ( selectedExpenseAccount && !expenseAmountError && !customExpenseNameError && !customExpenseCommentError) {
-            await addNewCustomExpense(customExpenseName, expenseComment, Number(expenseAmount), selectedExpenseAccount.accountId, focusedDate)
+            const nowTimeDate = getLocalTime().toISOString()
+            await addNewCustomExpense(customExpenseName, expenseComment, Number(expenseAmount), selectedExpenseAccount.accountId, focusedDate, nowTimeDate)
             setCustomExpenseName('')
             setSelectedExpenseAccount(null)
             setExpenseAmount('')

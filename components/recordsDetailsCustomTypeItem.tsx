@@ -1,3 +1,4 @@
+import { useCheckContext } from '@/context/recordsContext';
 import { priceWithComma } from '@/func/general';
 import RecordStyles from '@/styles/recordsStyles';
 import { CustomExpenseTypes, CustomIncomeTypes } from '@/types/recordsTypeItemType.schema';
@@ -11,8 +12,11 @@ interface TypeItemTypes{
 export default function CustomTypeItem({
     item
 }:TypeItemTypes){
+
+    const { switchItemDetail } = useCheckContext()
+
     return (
-        <Pressable style={RecordStyles.TypeItem}>
+        <Pressable style={RecordStyles.TypeItem} onPress={() => switchItemDetail(item)}>
             <View style={RecordStyles.TypeItemBadgeName}>
                 <View style={[RecordStyles.TypeItemBadge, {backgroundColor:item.accountBadge}]}></View>
                 <Text style={RecordStyles.TypeItemText}>{ item.name }</Text>
