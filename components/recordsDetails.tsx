@@ -1,15 +1,17 @@
 import { useCheckContext } from '@/context/recordsContext';
-import { getCustomExpenses, getCustomIncomes, getExpense, getIncomes, getTransfer } from '@/db/records/select';
+import { getExpense, getIncomes, getTransfer } from '@/db/records/select';
 import { getLongDate } from '@/func/time';
-import { CustomExpenseTypes, CustomIncomeTypes, ExpenseTypes, IncomeTypes, TransferTypes } from '@/types/recordsTypeItemType.schema';
+import { ExpenseTypes, IncomeTypes, TransferTypes } from '@/types/recordsTypeItemType.schema';
 import { useNavigation } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native';
-import RecordsCustomIncomeExpenseDetails from './recordsCustomIncomeExpenseDetails';
 import RecordsIncomeExpenseDetails from './recordsIncomeExpenseDetails';
 
+interface RecordDetailsTypes{
+    switchCustom:(type: "income" | "expense") => Promise<void>;
+}
 
-export default function RecordsDetails() {
+export default function RecordsDetails({switchCustom}:RecordDetailsTypes) {
 
 
     // Display Today Date
@@ -21,11 +23,7 @@ export default function RecordsDetails() {
     // States
     const [ incomes, setIncomes ] = useState<IncomeTypes[] | null>(null)
     const [ expenses, setExpenses ] = useState<ExpenseTypes[] | null>(null)
-    const [ customIncomeItems, setCustomIncomeItems ] = useState<CustomIncomeTypes[] | null>(null)
-    const [ customExpenseItems, setCustomExpenseItems ] = useState<CustomExpenseTypes[] | null>(null)
     const [ transfers, setTransfers ] = useState<TransferTypes[] | null>(null)
-    const isCustomIncome = useRef(false)
-    const customItemsSum = useRef(0)
     const [ recordedIncome, setRecordedIncome ] = useState(0)
     const [ recordedExpenses, setRecordedExpenses ] = useState(0)
 
@@ -68,58 +66,6 @@ export default function RecordsDetails() {
         }
     }
 
-    //Switch to Custom screen
-    async function switchCustom( type:'income' | 'expense' ) {
-         
-        if ( type === 'income' ) {
-            customItemsSum.current = 0
-            isCustomIncome.current = true
-            const fetchedCustomIncomes = await getCustomIncomes(focusedDate)
-            setCustomIncomeItems(fetchedCustomIncomes)
-            setCustomExpenseItems(null)
-            fetchedCustomIncomes.forEach(item => {
-                customItemsSum.current = customItemsSum.current + item.amount
-            })
-        } else {
-            customItemsSum.current = 0
-            isCustomIncome.current = false
-            const fetchedCustomExpenses = await getCustomExpenses(focusedDate)
-            setCustomExpenseItems(fetchedCustomExpenses)
-            setCustomIncomeItems(null)
-            fetchedCustomExpenses.forEach(item => {
-                customItemsSum.current = customItemsSum.current + item.amount
-            })
-        }
-
-        setCurrentScreen('CustomIncomeExpenseDetails')
-    }
-
-    function goPrevScreen() {
-        setCurrentScreen('IncomeExpenseDetails')
-    }
-
-    const SCREENS = {
-        IncomeExpenseDetails : () => <RecordsIncomeExpenseDetails
-                                        displayDate={displayDate}
-                                        incomes={incomes}
-                                        recordedIncome={recordedIncome}
-                                        expenses={expenses}
-                                        recordedExpenses={recordedExpenses}
-                                        switchCustom={switchCustom}
-                                        transfers={transfers}
-                                    />,
-        CustomIncomeExpenseDetails: () => <RecordsCustomIncomeExpenseDetails
-                                        displayDate={displayDate}
-                                        incomeItems={customIncomeItems}
-                                        expenseItems={customExpenseItems}
-                                        customItemsSum={customItemsSum.current}
-                                        switchCustom={switchCustom}
-                                        goPrevScreen={goPrevScreen}
-                                        isCustomIncome={isCustomIncome.current}
-                                    />,
-    }
-    const showScreen = SCREENS[currentScreen]
-
 
     useEffect(() => {
         setIncomes(null)
@@ -147,7 +93,15 @@ export default function RecordsDetails() {
     
     return(
         <ScrollView>
-            {showScreen()}
+            <RecordsIncomeExpenseDetails
+                                        displayDate={displayDate}
+                                        incomes={incomes}
+                                        recordedIncome={recordedIncome}
+                                        expenses={expenses}
+                                        recordedExpenses={recordedExpenses}
+                                        switchCustom={switchCustom}
+                                        transfers={transfers}
+                                    />
         </ScrollView>
     )
 }

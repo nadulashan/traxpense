@@ -105,7 +105,7 @@ export default function AddItemForm({
                 </Pressable>
             </View>
                 <TextInput 
-                    style={[CommonStyles.BottomSheetInput, RecordStyles.AddItemSelectAmount]}
+                    style={[CommonStyles.BottomSheetInput, RecordStyles.AddItemSelectAmount, {minHeight:50}]}
                     placeholder='Comment (optional)'
                     value={comment}
                     multiline={true}

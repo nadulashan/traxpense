@@ -97,6 +97,7 @@ export async function getCustomIncomes(date:string) {
         const db = await getDB();
         const incomes = await db.getAllAsync<CustomIncomeTypes>(`
                             SELECT  customIncomeId, 
+                                    accountName,
                                     accountBadge, 
                                     customIncome.name, 
                                     comment, 
@@ -116,6 +117,7 @@ export async function getCustomExpenses(date:string) {
         const db = await getDB();
         const expenses = await db.getAllAsync<CustomExpenseTypes>(`
                             SELECT  customExpenseId, 
+                                    accountName,
                                     accountBadge, 
                                     customExpenses.name, 
                                     comment, 

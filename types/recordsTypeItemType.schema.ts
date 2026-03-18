@@ -24,6 +24,7 @@ export interface ExpenseTypes{
 
 export interface CustomIncomeTypes{
     customIncomeId:number, 
+    accountName:string,
     accountBadge:string, 
     name:string, 
     comment:string | null, 
@@ -32,6 +33,7 @@ export interface CustomIncomeTypes{
 
 export interface CustomExpenseTypes{
     customExpenseId:number, 
+    accountName:string,
     accountBadge:string, 
     name:string, 
     comment:string | null, 

@@ -3,10 +3,14 @@ import BottomSheetRecordAddItem from "@/components/bottomSheetRecordAddItem";
 import BottomSheetRecordCreationMenu from "@/components/bottomSheetRecordCreationMenu";
 import Transfers from "@/components/bottomSheetTransfer";
 import CalendarListWrapper from "@/components/recordsCalendarListWrapper";
+import CustomIncomeExpenseDetails from "@/components/recordsCustomIncomeExpenseDetails";
 import RecordsDetails from "@/components/recordsDetails";
+import ItemDetails from "@/components/recordsItemDetails";
 import { FocusedDateProviderContext } from "@/context/recordsContext";
+import { getCustomExpenses, getCustomIncomes } from "@/db/records/select";
 import { closeBottomSheet, openBottomSheet } from "@/func/bottomSheetfunc";
 import { getLocalTime } from "@/func/time";
+import { CustomExpenseTypes, CustomIncomeTypes, ExpenseTypes, IncomeTypes } from "@/types/recordsTypeItemType.schema";
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useCallback, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,12 +22,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 //    fixed button with absolute positioning, and a bottomsheet
 //    
 //                                BottomSheet
-//                _____________________|___________________________________________________
-//               CreationMenu                                                         Add Item
-//                    # Add Income                      _________________________________|____________________________
-//                    # Add Expense                    Form                          CategoryWrapper         AccountWrapper
-//                    # Create Journal                    # handles all states              # render                  # render
-//                                                        # define all the functions         active categories        active accounts
+//                _____________________|______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+//               CreationMenu                                                         Add Item                                                    Transfer                            CustomIncomeExpense                           IncomeExpenseDetails                       TransferDetails
+//                    # Add Income                      _________________________________|____________________________                                # Create Transfer
+//                    # Add Expense                    Form                          CategoryWrapper         AccountWrapper                       
+//                    # Transfer                          # handles all states              # render                  # render
+//                    # Create Journal                    # define all the functions         active categories        active accounts
 //                                                        # fetching and storeing
 
 export default function Records(){
@@ -39,6 +43,48 @@ export default function Records(){
     setFocusedDate(date)
   }
 
+  // FOR CUSTOM INCOME EXPENSE
+  const [ customIncomeItems, setCustomIncomeItems ] = useState<CustomIncomeTypes[] | null>(null)
+  const [ customExpenseItems, setCustomExpenseItems ] = useState<CustomExpenseTypes[] | null>(null)
+  const isCustomIncome = useRef(false)
+  const customItemsSum = useRef(0)
+  
+  // Open Custom Sheet
+  async function switchCustom( type:'income' | 'expense' ) {
+        
+    setCurrentSheetState('CustomIncomeExpense')
+    if ( type === 'income' ) {
+        customItemsSum.current = 0
+        isCustomIncome.current = true
+        const fetchedCustomIncomes = await getCustomIncomes(focusedDate)
+        setCustomIncomeItems(fetchedCustomIncomes)
+        setCustomExpenseItems(null)
+        fetchedCustomIncomes.forEach(item => {
+            customItemsSum.current = customItemsSum.current + item.amount
+        })
+    } else {
+        customItemsSum.current = 0
+        isCustomIncome.current = false
+        const fetchedCustomExpenses = await getCustomExpenses(focusedDate)
+        setCustomExpenseItems(fetchedCustomExpenses)
+        setCustomIncomeItems(null)
+        fetchedCustomExpenses.forEach(item => {
+            customItemsSum.current = customItemsSum.current + item.amount
+        })
+    }
+
+    openSheetCaller()
+  }
+
+  // FOR ITEM DETAILS SHEET
+  const [ focusedItem, setFocusedItem ] = useState<IncomeTypes | ExpenseTypes | undefined>(undefined)
+
+  async function switchItemDetail(item: IncomeTypes | ExpenseTypes) {
+    setCurrentSheetState('ItemDetails')
+    setFocusedItem(item)
+    openSheetCaller()
+  }
+
   // Handle mutlple states of bottom sheet
   const BOTTOMSHEET_STATE = {
     CreationMenu: () => <BottomSheetRecordCreationMenu
@@ -48,12 +94,22 @@ export default function Records(){
 
     AddItem:() => <BottomSheetRecordAddItem type={type}/>,
 
-    Transfer: () => <Transfers />
+    Transfer: () => <Transfers />,
+
+    CustomIncomeExpense: () => < CustomIncomeExpenseDetails 
+                                        incomeItems={customIncomeItems}
+                                        expenseItems={customExpenseItems}
+                                        customItemsSum={customItemsSum.current}
+                                        isCustomIncome={isCustomIncome.current}/>,
+
+    ItemDetails: () => <ItemDetails item={focusedItem}/>
   }
-  const [ currentSheetState, setCurrentSheetState ] = useState<'CreationMenu' | 'AddItem' | 'Transfer'>('CreationMenu')
+  const [ currentSheetState, setCurrentSheetState ] = useState< 'CreationMenu' | 'AddItem' | 'Transfer' | 'ItemDetails' | 'CustomIncomeExpense' >('CreationMenu')
   
   const SheetContent = BOTTOMSHEET_STATE[currentSheetState]
 
+
+  // NAVIGATORS
   function navigateToAddItem(){
     setCurrentSheetState('AddItem')
   }
@@ -89,9 +145,9 @@ export default function Records(){
 
   return (
       <SafeAreaView style={{backgroundColor:'#ffffff', flexDirection:'row', height:'100%'}} edges={['top', 'left', 'right']}>
-        <FocusedDateProviderContext value={{focusedDate, updateFocusedDate, closeSheetCaller, recordsRefreshTrigger, setRecordsRefreshTrigger}} >
+        <FocusedDateProviderContext value={{focusedDate, updateFocusedDate, closeSheetCaller, recordsRefreshTrigger, setRecordsRefreshTrigger, switchItemDetail}} >
           <CalendarListWrapper />
-          <RecordsDetails />
+          <RecordsDetails switchCustom={switchCustom}/>
 
           <AddRecordButton openSheetCaller={openSheetCaller} />
           
@@ -101,7 +157,6 @@ export default function Records(){
               enablePanDownToClose={true}
               ref={sheetRef}
               backdropComponent={backDrop}
-              // onChange={handleSuspendNotificationState}
               >
               <BottomSheetView>
                 {SheetContent()}

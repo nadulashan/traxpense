@@ -1,3 +1,4 @@
+import { useCheckContext } from '@/context/recordsContext';
 import { priceWithComma } from '@/func/general';
 import RecordStyles from '@/styles/recordsStyles';
 import { ExpenseTypes, IncomeTypes } from '@/types/recordsTypeItemType.schema';
@@ -8,18 +9,21 @@ import { Pressable, Text, View } from 'react-native';
 interface TypeItemTypes{
     item:IncomeTypes | ExpenseTypes;
     switchCustom:( type:'income' | 'expense') => void;
-    type:'income' | 'expense'
+    type:'income' | 'expense';
 }
 
 export default function TypeItem({
     item,
     switchCustom,
-    type
+    type,
 }:TypeItemTypes){
+
+    const { switchItemDetail } = useCheckContext() 
+
     return (
         <Pressable 
             onPress={() => {
-                item.isCustom? switchCustom(type) : null
+                item.isCustom? switchCustom(type) : switchItemDetail(item)
             }}
             style={RecordStyles.TypeItem}>
             <View style={RecordStyles.TypeItemBadgeName}>

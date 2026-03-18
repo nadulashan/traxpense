@@ -272,7 +272,7 @@ const RecordStyles = StyleSheet.create({
         flexDirection:'row',
         justifyContent:'space-between',
         alignItems:'center',
-        opacity:0.75
+        // opacity:0.75
     },
 
     TransferItemBankNames: {

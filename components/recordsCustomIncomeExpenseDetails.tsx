@@ -3,40 +3,25 @@ import { priceWithComma } from '@/func/general';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
 import { CustomExpenseTypes, CustomIncomeTypes } from '@/types/recordsTypeItemType.schema';
-import Entypo from '@expo/vector-icons/Entypo';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import CustomTypeItem from './recordsDetailsCustomTypeItem';
 
 
 interface RecordCustomIncomeExpenseDetailsTypes{
-    displayDate:string;
     incomeItems:CustomIncomeTypes[] |  null;
     expenseItems:CustomExpenseTypes[] | null;
     customItemsSum:number;
-    switchCustom:( type:'income' | 'expense') => void;
-    goPrevScreen:() => void;
     isCustomIncome:boolean
 }
 
-export default function RecordsCustomIncomeExpenseDetails({
-    displayDate,
+export default function CustomIncomeExpenseDetails({
     incomeItems,
     expenseItems,
     customItemsSum,
-    switchCustom,
-    goPrevScreen,
     isCustomIncome
 }:RecordCustomIncomeExpenseDetailsTypes) {
     return(
-        <View  style={RecordStyles.RecordDetailsWrapper}>
-                <Pressable
-                    onPress={goPrevScreen}
-                    style={{flexDirection:'row', gap:16, alignItems:'center'}}>
-                <Entypo name="chevron-left" size={36} color="black" /> 
-                <Text style={RecordStyles.DateText}>
-                    {displayDate}
-                </Text>
-                </Pressable>
+        <View  style={{margin:16}}>
                 <View style={RecordStyles.TypeWrapper}>
                     <Text style={RecordStyles.TypeText}>{isCustomIncome? 'Custom Income' : 'Custom Expense'}</Text>
                     <View style={RecordStyles.TypeItemsWrapper}>                    
