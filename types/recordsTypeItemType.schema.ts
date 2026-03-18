@@ -6,7 +6,7 @@ export interface IncomeTypes{
     name:string, 
     comment:string | null, 
     amount:number, 
-    time:string, 
+    createdDateTime:string, 
     date:string 
 }
 
@@ -18,7 +18,7 @@ export interface ExpenseTypes{
     name:string, 
     comment:string | null, 
     amount:number, 
-    time:string, 
+    createdDateTime:string, 
     date:string 
 }
 

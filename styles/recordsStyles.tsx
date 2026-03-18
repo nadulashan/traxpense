@@ -305,6 +305,43 @@ const RecordStyles = StyleSheet.create({
         borderRadius:5,
     },
 
+    // Item Details
+    DetailsWrapper: {
+        flexDirection:'column',
+        gap:16,
+        margin:16
+    },
+
+    DetailsHeaderWrapper: {
+        flexDirection:'row',
+        justifyContent:'space-between'
+    },
+
+    DetailsHeaderItem: {
+        flexDirection:'column',
+        // gap:4
+    },
+
+    DetailsAccountWrapper: {
+        flexDirection:'row', 
+        gap:8, 
+        alignItems:'center'
+    },
+
+    DetailsHeaderMediumText: {
+        fontFamily:fonts.semiBold,
+        fontSize:16
+    },
+
+    DetailsHeaderLightText: {
+        fontFamily:fonts.light,
+        fontSize:12
+    },
+
+    TextAlignLeft: {
+        textAlign:'left'
+    }
+
 })
 
 export default RecordStyles
