@@ -4,7 +4,7 @@ import { createContext, useContext } from "react";
 interface ContextType {
   focusedDate:string;
   updateFocusedDate:(date:string) => void;
-  closeSheetCaller: () => void;
+  closeStateSheetCaller: () => void;
   recordsRefreshTrigger:number,
   setRecordsRefreshTrigger:React.Dispatch<React.SetStateAction<number>>;
   switchItemDetail:(item: IncomeTypes | ExpenseTypes) => Promise<void>;

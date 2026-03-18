@@ -52,7 +52,7 @@ export default function Records(){
   // Open Custom Sheet
   async function switchCustom( type:'income' | 'expense' ) {
         
-    setCurrentSheetState('CustomIncomeExpense')
+    currentSheetRef.current = 'CustomIncomeExpense'
     if ( type === 'income' ) {
         customItemsSum.current = 0
         isCustomIncome.current = true
@@ -73,19 +73,19 @@ export default function Records(){
         })
     }
 
-    openSheetCaller()
+    openRefSheetCaller()
   }
 
   // FOR ITEM DETAILS SHEET
   const [ focusedItem, setFocusedItem ] = useState<IncomeTypes | ExpenseTypes | undefined>(undefined)
 
   async function switchItemDetail(item: IncomeTypes | ExpenseTypes) {
-    setCurrentSheetState('ItemDetails')
+    currentSheetRef.current = 'ItemDetails'
     setFocusedItem(item)
-    openSheetCaller()
+    openStateSheetCaller()
   }
 
-  // Handle mutlple states of bottom sheet
+  // Handle mutlple states of bottom sheet - State
   const BOTTOMSHEET_STATE = {
     CreationMenu: () => <BottomSheetRecordCreationMenu
                           type={type}
@@ -104,10 +104,24 @@ export default function Records(){
 
     ItemDetails: () => <ItemDetails item={focusedItem}/>
   }
-  const [ currentSheetState, setCurrentSheetState ] = useState< 'CreationMenu' | 'AddItem' | 'Transfer' | 'ItemDetails' | 'CustomIncomeExpense' >('CreationMenu')
+  const [ currentSheetState, setCurrentSheetState ] = useState< 'CreationMenu' | 'AddItem' | 'Transfer'>('CreationMenu')
   
   const SheetContent = BOTTOMSHEET_STATE[currentSheetState]
 
+  // Handle Multiple ref of bottom sheet - Ref
+  const BOTTOM_REF = {
+    CustomIncomeExpense: () => < CustomIncomeExpenseDetails 
+                                        incomeItems={customIncomeItems}
+                                        expenseItems={customExpenseItems}
+                                        customItemsSum={customItemsSum.current}
+                                        isCustomIncome={isCustomIncome.current}/>,
+
+    ItemDetails: () => <ItemDetails item={focusedItem}/>
+  }
+
+  const currentSheetRef = useRef< 'ItemDetails' | 'CustomIncomeExpense' >('ItemDetails')
+
+  const SheetRefContent = BOTTOM_REF[currentSheetRef.current]
 
   // NAVIGATORS
   function navigateToAddItem(){
@@ -118,48 +132,83 @@ export default function Records(){
     setCurrentSheetState('Transfer')
   }
 
-  // Open and Close Sheet Caller
-  function openSheetCaller() {
-    openBottomSheet(sheetRef)
+  // Open and Close Sheet Caller - State
+  function openStateSheetCaller() {
+    openBottomSheet(stateSheetRef)
 
   }
   
-  function closeSheetCaller(){
-      closeBottomSheet(sheetRef)
-      setCurrentSheetState('CreationMenu')
+  function closeStateSheetCaller(){
+    closeBottomSheet(stateSheetRef)
+    setCurrentSheetState('CreationMenu')
+  }
+
+  // Open and Close Sheet Caller - Ref
+  function openRefSheetCaller() {
+    openBottomSheet(refSheetRef)
+
   }
   
-  // Bottom Sheet things including backdrop
-  const sheetRef = useRef<BottomSheet>(null);
-  const backDrop = useCallback(( props:BottomSheetBackdropProps) => (
+  function closeRefSheetCaller(){
+    closeBottomSheet(refSheetRef)
+  }
+  
+  // Bottom Sheet things including backdrop - State
+  const stateSheetRef= useRef<BottomSheet>(null);
+  const stateBackDrop = useCallback(( props:BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
           {...props}
           disappearsOnIndex={-1}
           appearsOnIndex={0}
           opacity={0.5}
           onPress={() => {
-              closeSheetCaller()
+              closeStateSheetCaller()
+          }}  
+      />
+  ),[])
+
+  // Bottom Sheet things including backdrop - Ref
+  const refSheetRef = useRef<BottomSheet>(null);
+  const refBackDrop = useCallback(( props:BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+          {...props}
+          disappearsOnIndex={-1}
+          appearsOnIndex={0}
+          opacity={0.5}
+          onPress={() => {
+              closeRefSheetCaller()
           }}  
       />
   ),[])
 
   return (
       <SafeAreaView style={{backgroundColor:'#ffffff', flexDirection:'row', height:'100%'}} edges={['top', 'left', 'right']}>
-        <FocusedDateProviderContext value={{focusedDate, updateFocusedDate, closeSheetCaller, recordsRefreshTrigger, setRecordsRefreshTrigger, switchItemDetail}} >
+        <FocusedDateProviderContext value={{focusedDate, updateFocusedDate, closeStateSheetCaller, recordsRefreshTrigger, setRecordsRefreshTrigger, switchItemDetail}} >
           <CalendarListWrapper />
           <RecordsDetails switchCustom={switchCustom}/>
 
-          <AddRecordButton openSheetCaller={openSheetCaller} />
+          <AddRecordButton openSheetCaller={openStateSheetCaller} />
           
           <BottomSheet 
               index={-1} 
               enableDynamicSizing={true}
               enablePanDownToClose={true}
-              ref={sheetRef}
-              backdropComponent={backDrop}
+              ref={stateSheetRef}
+              backdropComponent={stateBackDrop}
               >
               <BottomSheetView>
                 {SheetContent()}
+              </BottomSheetView>
+          </BottomSheet>
+          <BottomSheet 
+              index={-1} 
+              enableDynamicSizing={true}
+              enablePanDownToClose={true}
+              ref={stateSheetRef}
+              backdropComponent={refBackDrop}
+              >
+              <BottomSheetView>
+                {SheetRefContent()}
               </BottomSheetView>
           </BottomSheet>
         </FocusedDateProviderContext>

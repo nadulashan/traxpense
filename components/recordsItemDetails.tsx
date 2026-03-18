@@ -1,4 +1,5 @@
 import { priceWithComma } from '@/func/general';
+import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
 import { ExpenseTypes, IncomeTypes } from '@/types/recordsTypeItemType.schema';
 import { Pressable, Text, View } from 'react-native';
@@ -26,19 +27,25 @@ export default function ItemDetails({
                             <Text style={RecordStyles.DetailsHeaderLightText}>{displayDateTime}</Text>
                         </View>
                         <View style={RecordStyles.DetailsHeaderItem}>
-                            <Text style={[RecordStyles.DetailsHeaderMediumText, RecordStyles.TextAlignLeft]}>{priceWithComma(item.amount)}</Text>
-                            <View style={RecordStyles.DetailsAccountWrapper}>
-                                <View style={[RecordStyles.TransferItemBadge, {backgroundColor:item.accountBadge}]}></View>
-                                <Text style={[RecordStyles.DetailsHeaderLightText, RecordStyles.TextAlignLeft]}>{item.accountName}</Text>
+                            <Text style={RecordStyles.DetailsHeaderMediumText}>{priceWithComma(item.amount)}</Text>
+                            <View style={[RecordStyles.DetailsAccountWrapper, RecordStyles.DetailsPriceAccountWrapper]}>
+                                <View style={[RecordStyles.TypeItemBadge, {backgroundColor:item.accountBadge}]}></View>
+                                <Text style={RecordStyles.DetailsHeaderLightText}>{item.accountName}</Text>
                             </View>
                         </View>
                     </View>
-                    <View>
-                        <Text>{item.comment}</Text>
+                    <View style={RecordStyles.DetailsComment}>
+                        {
+                            item.comment?
+                            <Text style={RecordStyles.DetailsCommentText}>{ item.comment }</Text>
+                            :
+                            <Text style={[RecordStyles.DetailsCommentText, {color:'grey'}]}>No Comment</Text>
+                        }
                     </View>
-                    <View>
-                        <Pressable><Text>Close</Text></Pressable>
-                        <Pressable><Text>Edit</Text></Pressable>
+                    <View style={CommonStyles.BottomSheetButtonWrapper}>
+                        <Pressable style={[CommonStyles.BottomSheetButton, CommonStyles.BottomSheetPrimaryButton]}>
+                            <Text style={CommonStyles.BottomSheetButtonText}>Edit</Text>
+                        </Pressable>
                     </View>
                 </>
                 :

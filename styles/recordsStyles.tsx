@@ -322,6 +322,10 @@ const RecordStyles = StyleSheet.create({
         // gap:4
     },
 
+    DetailsPriceAccountWrapper: {
+        alignSelf:'flex-end'
+    },
+
     DetailsAccountWrapper: {
         flexDirection:'row', 
         gap:8, 
@@ -330,18 +334,24 @@ const RecordStyles = StyleSheet.create({
 
     DetailsHeaderMediumText: {
         fontFamily:fonts.semiBold,
-        fontSize:16
+        fontSize:20
     },
 
     DetailsHeaderLightText: {
         fontFamily:fonts.light,
-        fontSize:12
+        fontSize:14
     },
 
-    TextAlignLeft: {
-        textAlign:'left'
-    }
+    DetailsComment: {
+        backgroundColor:colors.light.primaryLight,
+        minHeight:84,
+        borderRadius:8,
+        padding:8
+    },
 
+    DetailsCommentText: {
+        fontFamily:fonts.regular,
+    }
 })
 
 export default RecordStyles
