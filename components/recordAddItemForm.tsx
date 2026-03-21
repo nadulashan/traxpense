@@ -19,7 +19,8 @@ interface AddItemFormTypes {
     customName:string | undefined;
     setCustomName:React.Dispatch<React.SetStateAction<string>> | undefined;
     customTypeNameError:boolean | undefined;
-    commentError:boolean | undefined
+    accountError:boolean;
+    categoryError:boolean | undefined
 }
 
 export default function AddItemForm({
@@ -38,7 +39,8 @@ export default function AddItemForm({
     customName,
     setCustomName,
     customTypeNameError,
-    commentError,
+    accountError,
+    categoryError
 }:AddItemFormTypes) {
     return  (
         <View style={RecordStyles.AddItemWrapper}>
@@ -54,19 +56,30 @@ export default function AddItemForm({
                 {customTypeNameError? <Text style={CommonStyles.NoActionDangerText}>Invalied Response</Text> : null}
                 </>
                 :
-                <Pressable 
-                    onPress={handleCategorySelector}
-                    style={RecordStyles.AddItemSelect}>
-                        {
-                            selectedCategory? 
-                            <View style={RecordStyles.CategoryElement}>
-                                <View style={[CommonStyles.badge, {backgroundColor:selectedCategory.badge}]}></View>
-                                <Text style={RecordStyles.CategoryElementText}>{selectedCategory.name}</Text>
-                            </View>
-                            :
-                            <Text style={RecordStyles.AddItemSelectText}>Select Category</Text>
-                        }
-                </Pressable>
+                <View>
+                    <Pressable 
+                        onPress={handleCategorySelector}
+                        style={RecordStyles.AddItemSelect}>
+                            {
+                                selectedCategory? 
+                                <View style={RecordStyles.CategoryElement}>
+                                    <View style={[CommonStyles.badge, {backgroundColor:selectedCategory.badge}]}></View>
+                                    <Text style={RecordStyles.CategoryElementText}>{selectedCategory.name}</Text>
+                                </View>
+                                :
+                                <>
+                                <Text style={RecordStyles.AddItemSelectText}>Select Category</Text>   
+                                </>
+                            }
+                    </Pressable>
+                    {
+                        categoryError===true?
+                        <Text style={CommonStyles.NoActionDangerText}>Invalied Response</Text>
+                        :
+                        null
+
+                    }
+                </View>
             }
             <View style={RecordStyles.AddItemAmountAccountWrapper}>
                 <View style={RecordStyles.AddItemSelectAmountWrapper}>
@@ -90,19 +103,27 @@ export default function AddItemForm({
                 />
                 { amountError? <Text style={CommonStyles.NoActionDangerText}>Invalied Response</Text> : null}
                 </View>
-                <Pressable 
-                onPress={handleAccountSelector}
-                style={[RecordStyles.AddItemSelect, RecordStyles.AddItemSelectAccount]}>
+                <View style={RecordStyles.AddItemSelectAccount}>
+                    <Pressable 
+                    onPress={handleAccountSelector}
+                    style={RecordStyles.AddItemSelect}>
+                        {
+                            selectedAccount? 
+                            <View style={RecordStyles.CategoryElement}>
+                                <View style={[CommonStyles.badge, {backgroundColor:selectedAccount.accountBadge}]}></View>
+                                <Text style={RecordStyles.CategoryElementText}>{selectedAccount.accountName}</Text>
+                            </View>
+                            :
+                            <Text style={RecordStyles.AddItemSelectText}>Select Account</Text>
+                        }
+                    </Pressable>
                     {
-                        selectedAccount? 
-                        <View style={RecordStyles.CategoryElement}>
-                            <View style={[CommonStyles.badge, {backgroundColor:selectedAccount.accountBadge}]}></View>
-                            <Text style={RecordStyles.CategoryElementText}>{selectedAccount.accountName}</Text>
-                        </View>
+                        accountError?
+                        <Text style={CommonStyles.NoActionDangerText}>Invalied Response</Text>
                         :
-                        <Text style={RecordStyles.AddItemSelectText}>Select Account</Text>
+                        null
                     }
-                </Pressable>
+                </View>
             </View>
                 <TextInput 
                     style={[CommonStyles.BottomSheetInput, RecordStyles.AddItemSelectAmount, {minHeight:50}]}
@@ -113,7 +134,6 @@ export default function AddItemForm({
                         setComment( input )
                     }}
                 />                
-                {commentError? <Text style={CommonStyles.NoActionDangerText}>Invalied Response</Text> : null}
             <Pressable 
                 onPress={onAddPressHandler}
                 style={!isCustomForm? [CommonStyles.BottomSheetPrimaryButton, CommonStyles.BottomSheetButton] : [CommonStyles.BottomSheetButton, CommonStyles.SecondaryButton]}>

@@ -1,7 +1,7 @@
 import AddToRecordButton from '@/components/addToRecordButton';
 import AddItemForm from '@/components/recordAddItemForm';
 import FormAccountWrapper from '@/components/recordFormAccountWrapper';
-import CustomTypeItem from '@/components/recordsDetailsCustomTypeItem';
+import CreateCustomCustomTypeItem from '@/components/recordsCreateCustomCustomTypeItem';
 import colors from '@/constants/colors';
 import { deleteCustomExepenseOnExepense, deleteCustomIncomeOnIncome } from '@/db/records/delete';
 import { addNewCustomExpense, addNewCustomIncome, createCustomRecordOnExpense, createCustomRecordOnIncome, createRelationOnExpense, createRelationOnIncome } from '@/db/records/insert';
@@ -31,7 +31,7 @@ export default function CreateCustom({route}:any){
     const [ incomeAmount, setIncomeAmount ] = useState<string>('')
     const [ customIncomeName, setCustomIncomeName ] = useState('')
     const [ customIncomeNameError, setCustomIncomeNameError ] = useState(false)
-    const [ customIncomeCommentError, setCustomIncomeCommentError ] = useState(false)
+    const [ customIncomeAccountsError, setCustomIncomeAccountsError ] = useState(false)
 
     const [ selectedExpenseAccount, setSelectedExpenseAccount ] = useState<{ accountId:number, accountName:string, accountBadge:string } | null>(null)
     const [ expenseComment, setExpenseComment ] = useState<string>('')
@@ -39,7 +39,8 @@ export default function CreateCustom({route}:any){
     const [ expenseAmount, setExpenseAmount ] = useState<string>('')
     const [ customExpenseName, setCustomExpenseName ] = useState('')
     const [ customExpenseNameError, setCustomExpenseNameError ] = useState(false)
-    const [ customExpenseCommentError, setCustomExpenseCommentError ] = useState(false)
+    const [ customExpenseAccountsError, setCustomExpenseAccountsError ] = useState(false)
+    
 
     const [ incomeArray, setIncomeArray ] = useState<CustomIncomeTypes[] | null>(null)
     const [ expenseArray, setExpenseArray ] = useState<CustomExpenseTypes[] | null>(null)
@@ -54,10 +55,10 @@ export default function CreateCustom({route}:any){
         } else {
             setIncomeAmountError(false)
         }
-        if ( incomeComment === '' || incomeComment.trim().length === 0 )  {
-            setCustomIncomeCommentError(true)
+        if ( !selectedIncomeAccount ) {
+            setCustomIncomeAccountsError(true)
         } else {
-            setCustomIncomeCommentError(false)
+            setCustomIncomeAccountsError(false)
         }
         if ( customIncomeName === '' || customIncomeName.trim().length === 0 )  {
             setCustomIncomeNameError(true)
@@ -65,7 +66,7 @@ export default function CreateCustom({route}:any){
             setCustomIncomeNameError(false)
         }
 
-        if ( selectedIncomeAccount && !incomeAmountError && !customIncomeNameError && !customIncomeCommentError) {
+        if ( selectedIncomeAccount && !incomeAmountError && !customIncomeNameError && !customIncomeAccountsError) {
             const nowTimeDate = getLocalTime().toISOString()
             await addNewCustomIncome(customIncomeName, incomeComment, Number(incomeAmount), selectedIncomeAccount.accountId, focusedDate, nowTimeDate)
             setCustomIncomeName('')
@@ -82,10 +83,10 @@ export default function CreateCustom({route}:any){
         } else {
             setExpenseAmountError(false)
         }
-        if ( expenseComment === '' || expenseComment.trim().length === 0 )  {
-            setCustomExpenseCommentError(true)
+        if ( !selectedExpenseAccount ) {
+            setCustomExpenseAccountsError(true)
         } else {
-            setCustomExpenseCommentError(false)
+            setCustomExpenseAccountsError(false)
         }
         if ( customExpenseName === '' || customExpenseName.trim().length === 0 )  {
             setCustomExpenseNameError(true)
@@ -93,7 +94,7 @@ export default function CreateCustom({route}:any){
             setCustomExpenseNameError(false)
         }
 
-        if ( selectedExpenseAccount && !expenseAmountError && !customExpenseNameError && !customExpenseCommentError) {
+        if ( selectedExpenseAccount && !expenseAmountError && !customExpenseNameError && !customExpenseAccountsError) {
             const nowTimeDate = getLocalTime().toISOString()
             await addNewCustomExpense(customExpenseName, expenseComment, Number(expenseAmount), selectedExpenseAccount.accountId, focusedDate, nowTimeDate)
             setCustomExpenseName('')
@@ -101,7 +102,7 @@ export default function CreateCustom({route}:any){
             setExpenseAmount('')
             setExpenseComment('')
             await fetchExpenses()
-        }('Records')
+        }
         setCreatingRelations(false)
     }
 
@@ -219,7 +220,7 @@ export default function CreateCustom({route}:any){
                         incomeArray?
                             incomeArray.length !== 0 ?
                             incomeArray.map(incomeItem => (
-                                <CustomTypeItem key={incomeItem.customIncomeId} item={incomeItem} />
+                                <CreateCustomCustomTypeItem key={incomeItem.customIncomeId} item={incomeItem} />
                             ))
                             :
                             <Text style={CommonStyles.NoActionText}>No Records</Text>
@@ -243,7 +244,8 @@ export default function CreateCustom({route}:any){
                 customName={customIncomeName}
                 setCustomName={setCustomIncomeName}
                 customTypeNameError={customIncomeNameError}
-                commentError={customIncomeCommentError}
+                accountError={customIncomeAccountsError}
+                categoryError={undefined}
             />
                 <Text style={RecordStyles.TypeText}>Expense</Text>
                 <View style={RecordStyles.TypeItemsWrapper}>
@@ -251,7 +253,7 @@ export default function CreateCustom({route}:any){
                         expenseArray ?
                             expenseArray.length !== 0 ?
                             expenseArray.map(expenseItem => (
-                                <CustomTypeItem key={expenseItem.customExpenseId} item={expenseItem} />
+                                <CreateCustomCustomTypeItem key={expenseItem.customExpenseId} item={expenseItem} />
                             ))
                             :
                             <Text style={CommonStyles.NoActionText}>No Records</Text>
@@ -259,24 +261,25 @@ export default function CreateCustom({route}:any){
                         <ActivityIndicator size={'small'} color={colors.light.primary} />
                     }
                 </View>
-                     <AddItemForm 
-                        amount={expenseAmount}
-                        setAmount={setExpenseAmount}
-                        onAddPressHandler={onAddExpensePressHandler}
-                        comment={expenseComment}
-                        setComment={setExpenseComment}
-                        amountError={expenseAmountError}
-                        setAmountError={setExpenseAmountError}
-                        handleCategorySelector={null}
-                        selectedCategory={undefined}
-                        handleAccountSelector={handleExpenseAccountSelector}
-                        selectedAccount={selectedExpenseAccount}
-                        isCustomForm={true}
-                        customName={customExpenseName}
-                        setCustomName={setCustomExpenseName}
-                        customTypeNameError={customExpenseNameError}
-                        commentError={customExpenseCommentError}
-                    />
+                <AddItemForm 
+                amount={expenseAmount}
+                setAmount={setExpenseAmount}
+                onAddPressHandler={onAddExpensePressHandler}
+                comment={expenseComment}
+                setComment={setExpenseComment}
+                amountError={expenseAmountError}
+                setAmountError={setExpenseAmountError}
+                handleCategorySelector={null}
+                selectedCategory={undefined}
+                handleAccountSelector={handleExpenseAccountSelector}
+                selectedAccount={selectedExpenseAccount}
+                isCustomForm={true}
+                customName={customExpenseName}
+                setCustomName={setCustomExpenseName}
+                customTypeNameError={customExpenseNameError}
+                accountError={customExpenseAccountsError}
+                categoryError={undefined}
+                />
             </View>
         </ScrollView>
 

@@ -15,7 +15,7 @@ interface AddItemTypes {
 
 export default function BottomSheetRecordAddItem({ type }: AddItemTypes) {
 
-    const { closeSheetCaller, focusedDate, setRecordsRefreshTrigger } = useCheckContext()
+    const { closeStateSheetCaller, focusedDate, setRecordsRefreshTrigger } = useCheckContext()
 
     let getActiveTypeCategories:() => Promise<{ categoryId:number, name:string, badge:string }[]>;
     let addNewType:(categoryId:number, accountId:number, comment:string | null, date:string, time:string, amount:number) => void;
@@ -32,9 +32,10 @@ export default function BottomSheetRecordAddItem({ type }: AddItemTypes) {
     const [ amount, setAmount ] = useState<string>('')
     const [ selectedAccount, setselectedAccount ] = useState<{ accountId:number, accountName:string, accountBadge:string } | null>(null)
     const [ comment, setComment ] = useState<string>('')
-    const [ amountError, setAmountError ] = useState(false)
     const [ selectedCategory, setSelectedCategory ] = useState<{ categoryId:number, name:string, badge:string } | undefined>(undefined)
-    const [ isCategoriesReady, setIsCategoriesReady ] = useState(false)
+    const [ amountError, setAmountError ] = useState(false)
+    const [ accountError, setAccountsError ] = useState(false)
+    const [ categoryError, setCategoryError ] = useState(false)
 
     const [ currentScreen, setCurrentScreen ] = useState<'Form' | 'Category' | 'Account'>('Form')
 
@@ -51,15 +52,30 @@ export default function BottomSheetRecordAddItem({ type }: AddItemTypes) {
 
     // Button Click handler
     function onAddPressHandler() {
-        if ( amount === '' ) {
+        if ( amount === '' || amount.trim().length === 0 ) {
             setAmountError(true)
-            return
+        } else {
+            setAmountError(false)
         } 
+
+        if ( !selectedAccount ) {
+            setAccountsError(true)
+        } else {
+            setAccountsError(false)
+        }
+
+        if ( !selectedCategory ) {
+            setCategoryError(true)
+        } else {
+            setCategoryError(false)
+        }
+
+        // if()
 
         if ( !amountError && selectedAccount && selectedCategory ) {
             const createdDateTime = getLocalTime().toISOString()
             addNewType(selectedCategory.categoryId, selectedAccount.accountId, comment, focusedDate, createdDateTime, Number(amount))
-            closeSheetCaller()
+            closeStateSheetCaller()
             setRecordsRefreshTrigger(inc => inc+1)
         }
     }
@@ -101,7 +117,8 @@ export default function BottomSheetRecordAddItem({ type }: AddItemTypes) {
                 customName={undefined}
                 setCustomName={undefined}
                 customTypeNameError={undefined}
-                commentError={undefined}
+                accountError={accountError}
+                categoryError={categoryError}
             />,
         Category: () => <FormCategoryWrapper 
                         categories={categories}

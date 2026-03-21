@@ -6,7 +6,7 @@ interface ContextType {
   closeStateSheetCaller: () => void;
   recordsRefreshTrigger:number,
   setRecordsRefreshTrigger:React.Dispatch<React.SetStateAction<number>>;
-  switchItemDetail:(item: { name:string, amount:number, comment:string, accountName:string, accountBadge:string, createdDateTime:string}) => Promise<void>;
+  switchItemDetail:(item: any) => Promise<void>;
 }
 
 export const FocusedDateProviderContext = createContext<ContextType | undefined>(undefined)

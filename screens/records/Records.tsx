@@ -94,15 +94,7 @@ export default function Records(){
 
     AddItem:() => <BottomSheetRecordAddItem type={type}/>,
 
-    Transfer: () => <Transfers />,
-
-    CustomIncomeExpense: () => < CustomIncomeExpenseDetails 
-                                        incomeItems={customIncomeItems}
-                                        expenseItems={customExpenseItems}
-                                        customItemsSum={customItemsSum.current}
-                                        isCustomIncome={isCustomIncome.current}/>,
-
-    ItemDetails: () => <ItemDetails item={focusedItem}/>
+    Transfer: () => <Transfers />
   }
   const [ currentSheetState, setCurrentSheetState ] = useState< 'CreationMenu' | 'AddItem' | 'Transfer'>('CreationMenu')
   

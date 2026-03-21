@@ -28,6 +28,7 @@ export interface CustomIncomeTypes{
     accountBadge:string, 
     name:string, 
     comment:string | null, 
+    createdDateTime:string, 
     amount:number, 
 }
 
