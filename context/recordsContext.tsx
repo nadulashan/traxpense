@@ -1,3 +1,4 @@
+import { TransferTypes } from "@/types/recordsTypeItemType.schema";
 import { createContext, useContext } from "react";
 
 interface ContextType {
@@ -7,6 +8,7 @@ interface ContextType {
   recordsRefreshTrigger:number,
   setRecordsRefreshTrigger:React.Dispatch<React.SetStateAction<number>>;
   switchItemDetail:(item: any) => Promise<void>;
+  switchTransferDetails: (item:TransferTypes) => void;
 }
 
 export const FocusedDateProviderContext = createContext<ContextType | undefined>(undefined)

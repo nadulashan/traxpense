@@ -2,13 +2,15 @@ import colors from '@/constants/colors';
 import { priceWithComma } from '@/func/general';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
+import { TransferTypes } from '@/types/recordsTypeItemType.schema';
+import Fontisto from '@expo/vector-icons/Fontisto';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 interface ItemDetailsTypes {
-    item: any;
+    item: TransferTypes | undefined;
 }
 
-export default function ItemDetails({
+export default function TransferDetails({
     item
 }:ItemDetailsTypes) {
 
@@ -23,15 +25,15 @@ export default function ItemDetails({
                 <>
                     <View style={RecordStyles.DetailsHeaderWrapper}>
                         <View style={RecordStyles.DetailsHeaderItem}>
-                            <Text style={RecordStyles.DetailsHeaderMediumText}>{item.name}</Text>
+                            <View style={{flexDirection:'row', gap:12, alignItems:'center'}}>
+                                <Text style={RecordStyles.DetailsHeaderMediumText}>{item.from_account_name}</Text>
+                                <Fontisto name="arrow-right-l" size={24} color="black" /> 
+                                <Text style={RecordStyles.DetailsHeaderMediumText}>{item.to_account_name}</Text>
+                            </View>
                             <Text style={RecordStyles.DetailsHeaderLightText}>{displayDateTime}</Text>
                         </View>
                         <View style={RecordStyles.DetailsHeaderItem}>
                             <Text style={RecordStyles.DetailsHeaderMediumText}>{priceWithComma(item.amount)}</Text>
-                            <View style={[RecordStyles.DetailsAccountWrapper, RecordStyles.DetailsPriceAccountWrapper]}>
-                                <View style={[RecordStyles.TypeItemBadge, {backgroundColor:item.accountBadge}]}></View>
-                                <Text style={RecordStyles.DetailsHeaderLightText}>{item.accountName}</Text>
-                            </View>
                         </View>
                     </View>
                     <View style={RecordStyles.DetailsComment}>

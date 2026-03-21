@@ -1,3 +1,4 @@
+import { useCheckContext } from "@/context/recordsContext";
 import { priceWithComma } from "@/func/general";
 import RecordStyles from "@/styles/recordsStyles";
 import { TransferTypes } from "@/types/recordsTypeItemType.schema";
@@ -6,16 +7,17 @@ import { Pressable, Text, View } from "react-native";
 
 interface TransferItemTypes{
     item:TransferTypes;
-    onItemPress:() => void;
 }
 
 export default function TransferItem({
-    item,
-    onItemPress
+    item
 }:TransferItemTypes) {
+
+    const { switchTransferDetails } = useCheckContext()
+
     return (
         <Pressable
-            onPress={onItemPress}
+            onPress={() => switchTransferDetails(item)}
             style={RecordStyles.TransferItemWrapper}>
             <View style={RecordStyles.TransferItemBankNames}>
                 <View style={RecordStyles.TransferRowGap}>

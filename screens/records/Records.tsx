@@ -6,11 +6,12 @@ import CalendarListWrapper from "@/components/recordsCalendarListWrapper";
 import CustomIncomeExpenseDetails from "@/components/recordsCustomIncomeExpenseDetails";
 import RecordsDetails from "@/components/recordsDetails";
 import ItemDetails from "@/components/recordsItemDetails";
+import TransferDetails from "@/components/recordsTransferDetails";
 import { FocusedDateProviderContext } from "@/context/recordsContext";
 import { getCustomExpenses, getCustomIncomes } from "@/db/records/select";
 import { closeBottomSheet, openBottomSheet } from "@/func/bottomSheetfunc";
 import { getLocalTime } from "@/func/time";
-import { CustomExpenseTypes, CustomIncomeTypes, ExpenseTypes, IncomeTypes } from "@/types/recordsTypeItemType.schema";
+import { CustomExpenseTypes, CustomIncomeTypes, ExpenseTypes, IncomeTypes, TransferTypes } from "@/types/recordsTypeItemType.schema";
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useCallback, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -50,9 +51,8 @@ export default function Records(){
   const customItemsSum = useRef(0)
   
   // Open Custom Sheet
-  async function switchCustom( type:'income' | 'expense' ) {
-        
-    setCurrentSheetState( 'CustomIncomeExpense' )
+  async function switchCustom( type:'income' | 'expense' ) {        
+    setCurrentSheetRef( 'CustomIncomeExpense' )
     if ( type === 'income' ) {ItemDetails
         customItemsSum.current = 0
         isCustomIncome.current = true
@@ -72,17 +72,27 @@ export default function Records(){
             customItemsSum.current = customItemsSum.current + item.amount
         })
     }
-
-    openStateSheetCaller()
+    
+    openRefSheetCaller()
   }
 
   // FOR ITEM DETAILS SHEET
   const [ focusedItem, setFocusedItem ] = useState<IncomeTypes | ExpenseTypes | undefined>(undefined)
 
   async function switchItemDetail(item: IncomeTypes | ExpenseTypes) {
-    setCurrentSheetRef( 'ItemDetails' )
+    // closeStateSheetCaller()
+    setCurrentSheetState( 'ItemDetails' )
     setFocusedItem(item)
-    openRefSheetCaller()
+    openStateSheetCaller()
+  }
+
+  // FOR TRANSFER DETAILS
+  const [ transferItem, setTransferItem ] = useState< TransferTypes | undefined >(undefined)
+
+  function switchTransferDetails(item:TransferTypes) {
+    setTransferItem(item)
+    setCurrentSheetState('TransferDetails')
+    openStateSheetCaller()
   }
 
   // Handle mutlple states of bottom sheet - State
@@ -96,22 +106,28 @@ export default function Records(){
 
     Transfer: () => <Transfers />,
 
+    
+    ItemDetails: () => <ItemDetails item={focusedItem}/>,
+
+    TransferDetails: () => <TransferDetails item={transferItem} />
+
+
+  }
+  const [ currentSheetState, setCurrentSheetState ] = useState< 'CreationMenu' | 'AddItem' | 'Transfer'  | 'ItemDetails' | 'TransferDetails' >('CreationMenu')
+  
+  const SheetContent = BOTTOMSHEET_STATE[currentSheetState]
+
+  // Handle Multiple ref of bottom sheet - Ref
+  const BOTTOM_REF = {
+
     CustomIncomeExpense: () => < CustomIncomeExpenseDetails 
                                         incomeItems={customIncomeItems}
                                         expenseItems={customExpenseItems}
                                         customItemsSum={customItemsSum.current}
                                         isCustomIncome={isCustomIncome.current}/>,
   }
-  const [ currentSheetState, setCurrentSheetState ] = useState< 'CreationMenu' | 'AddItem' | 'Transfer'  | 'CustomIncomeExpense' >('CreationMenu')
-  
-  const SheetContent = BOTTOMSHEET_STATE[currentSheetState]
 
-  // Handle Multiple ref of bottom sheet - Ref
-  const BOTTOM_REF = {
-    ItemDetails: () => <ItemDetails item={focusedItem}/>
-  }
-
-  const [ currentSheetRef, setCurrentSheetRef ]= useState< 'ItemDetails'>('ItemDetails')
+  const [ currentSheetRef, setCurrentSheetRef ]= useState< 'CustomIncomeExpense'>('CustomIncomeExpense')
 
   const SheetRefContent = BOTTOM_REF[currentSheetRef]
 
@@ -174,13 +190,30 @@ export default function Records(){
 
   return (
       <SafeAreaView style={{backgroundColor:'#ffffff', flexDirection:'row', height:'100%'}} edges={['top', 'left', 'right']}>
-        <FocusedDateProviderContext value={{focusedDate, updateFocusedDate, closeStateSheetCaller, recordsRefreshTrigger, setRecordsRefreshTrigger, switchItemDetail}} >
+        <FocusedDateProviderContext value={{focusedDate, 
+                                            updateFocusedDate, 
+                                            closeStateSheetCaller, 
+                                            recordsRefreshTrigger, 
+                                            setRecordsRefreshTrigger, 
+                                            switchItemDetail,
+                                            switchTransferDetails}} >
           <CalendarListWrapper />
           <RecordsDetails switchCustom={switchCustom}/>
 
           <AddRecordButton openSheetCaller={openStateSheetCaller} />
           
-          {/* <BottomSheet 
+          <BottomSheet 
+              index={-1} 
+              enableDynamicSizing={true}
+              enablePanDownToClose={true}
+              ref={refSheetRef}
+              backdropComponent={refBackDrop}
+              >
+              <BottomSheetView>
+                {SheetRefContent()}
+              </BottomSheetView>
+          </BottomSheet>
+          <BottomSheet 
               index={-1} 
               enableDynamicSizing={true}
               enablePanDownToClose={true}
@@ -189,17 +222,6 @@ export default function Records(){
               >
               <BottomSheetView>
                 {SheetContent()}
-              </BottomSheetView>
-          </BottomSheet> */}
-          <BottomSheet 
-              index={-1} 
-              enableDynamicSizing={true}
-              enablePanDownToClose={true}
-              ref={stateSheetRef}
-              backdropComponent={refBackDrop}
-              >
-              <BottomSheetView>
-                {SheetRefContent()}
               </BottomSheetView>
           </BottomSheet>
         </FocusedDateProviderContext>

@@ -92,7 +92,7 @@ export default function RecordsIncomeExpenseDetails({
                             <View style={RecordStyles.TypeItemsWrapper}>                    
                             {
                                 transfers.map(transfer => (
-                                    <TransferItem item={transfer} key={transfer.transferId} onItemPress={() => {}} />
+                                    <TransferItem item={transfer} key={transfer.transferId} />
                                 ))
                             }
                             </View>
