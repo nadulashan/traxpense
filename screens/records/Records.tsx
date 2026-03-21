@@ -52,7 +52,7 @@ export default function Records(){
   // Open Custom Sheet
   async function switchCustom( type:'income' | 'expense' ) {
         
-    setCurrentSheetRef( 'CustomIncomeExpense' )
+    setCurrentSheetState( 'CustomIncomeExpense' )
     if ( type === 'income' ) {ItemDetails
         customItemsSum.current = 0
         isCustomIncome.current = true
@@ -74,7 +74,6 @@ export default function Records(){
     }
 
     openStateSheetCaller()
-    console.log('asas')
   }
 
   // FOR ITEM DETAILS SHEET
@@ -83,7 +82,7 @@ export default function Records(){
   async function switchItemDetail(item: IncomeTypes | ExpenseTypes) {
     setCurrentSheetRef( 'ItemDetails' )
     setFocusedItem(item)
-    openStateSheetCaller()
+    openRefSheetCaller()
   }
 
   // Handle mutlple states of bottom sheet - State
@@ -96,23 +95,23 @@ export default function Records(){
     AddItem:() => <BottomSheetRecordAddItem type={type}/>,
 
     Transfer: () => <Transfers />,
-  }
-  const [ currentSheetState, setCurrentSheetState ] = useState< 'CreationMenu' | 'AddItem' | 'Transfer'>('CreationMenu')
-  
-  const SheetContent = BOTTOMSHEET_STATE[currentSheetState]
 
-  // Handle Multiple ref of bottom sheet - Ref
-  const BOTTOM_REF = {
     CustomIncomeExpense: () => < CustomIncomeExpenseDetails 
                                         incomeItems={customIncomeItems}
                                         expenseItems={customExpenseItems}
                                         customItemsSum={customItemsSum.current}
                                         isCustomIncome={isCustomIncome.current}/>,
+  }
+  const [ currentSheetState, setCurrentSheetState ] = useState< 'CreationMenu' | 'AddItem' | 'Transfer'  | 'CustomIncomeExpense' >('CreationMenu')
+  
+  const SheetContent = BOTTOMSHEET_STATE[currentSheetState]
 
+  // Handle Multiple ref of bottom sheet - Ref
+  const BOTTOM_REF = {
     ItemDetails: () => <ItemDetails item={focusedItem}/>
   }
 
-  const [ currentSheetRef, setCurrentSheetRef ]= useState< 'ItemDetails' | 'CustomIncomeExpense' >('ItemDetails')
+  const [ currentSheetRef, setCurrentSheetRef ]= useState< 'ItemDetails'>('ItemDetails')
 
   const SheetRefContent = BOTTOM_REF[currentSheetRef]
 
@@ -181,7 +180,7 @@ export default function Records(){
 
           <AddRecordButton openSheetCaller={openStateSheetCaller} />
           
-          <BottomSheet 
+          {/* <BottomSheet 
               index={-1} 
               enableDynamicSizing={true}
               enablePanDownToClose={true}
@@ -191,7 +190,7 @@ export default function Records(){
               <BottomSheetView>
                 {SheetContent()}
               </BottomSheetView>
-          </BottomSheet>
+          </BottomSheet> */}
           <BottomSheet 
               index={-1} 
               enableDynamicSizing={true}
