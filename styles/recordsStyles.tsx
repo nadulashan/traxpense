@@ -230,19 +230,18 @@ const RecordStyles = StyleSheet.create({
         marginLeft:16,
         marginRight:16,
         gap:16,
-        paddingBottom:84
+        paddingBottom:16
     },
 
     // Add to Journal
-    FloatingBottomStickButton: {
-        position:'absolute',
-        bottom:0,
+    AddToJournalButton: {
         width:'100%',
         backgroundColor:colors.light.primary,
         alignItems:'center',
         justifyContent:'center',
         paddingTop:16,
         paddingBottom:16,
+        borderRadius:8
     },
 
     FloatingBottomStickButtonDisabled: {

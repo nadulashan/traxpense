@@ -143,17 +143,13 @@ export async function getCustomExpenses(date:string) {
 export async function checkCustomIncome(date:string) {
     try{ 
         const db = await getDB();
-        const incomes = await db.getAllAsync(`
+        const id = await db.getFirstAsync< {typeId: number}>(`
                             SELECT  typeId
                             FROM    income
                             WHERE   isCustom = 1 AND 
                                     date = ?
                         `, date)
-        if ( incomes.length !== 0 ){
-            return true
-        } else {
-            return false
-        }
+        return id
     } catch (e) {
         handleDBError( e, 'Checking for custom income relation failed' )
     }
@@ -162,17 +158,13 @@ export async function checkCustomIncome(date:string) {
 export async function checkCustomExpense(date:string) {
     try{ 
         const db = await getDB();
-        const expeneses = await db.getAllAsync(`
+        const id = await db.getFirstAsync< {typeId: number}>(`
                             SELECT  typeId
                             FROM    expenses
                             WHERE   isCustom = 1 AND 
                                     date = ?
                         `, date)
-        if ( expeneses.length !== 0 ){
-            return true
-        } else {
-            return false
-        }
+        return id
     } catch (e) {
         handleDBError( e, 'Checking for custom expense relation failed' )
     }

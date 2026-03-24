@@ -129,7 +129,7 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
     }, [ focusedItem ])
 
     // Delete
-    async function handleDeletion() {
+    function handleDeletion() {
         if ( focusedItem ) {
             deleteType(focusedItem.typeId)
         }
@@ -138,7 +138,7 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
         closeStateSheetCaller()
     }
 
-    async function handleUpdate() {
+    function handleUpdate() {
         if ( amount === '' || amount.trim().length === 0 ) {
             setAmountError(true)
         } else {

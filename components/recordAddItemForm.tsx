@@ -22,10 +22,10 @@ interface AddItemFormTypes {
     accountError:boolean;
     categoryError:boolean | undefined,
     isEdit:boolean;
-    handleDeletion: () => void;
-    longPressWarn: boolean;
-    setLongPressWarn:React.Dispatch<React.SetStateAction<boolean>>;
-    handleUpdate: () => void;
+    handleDeletion: undefined | ( () => void );
+    longPressWarn: boolean | undefined;
+    setLongPressWarn:React.Dispatch<React.SetStateAction<boolean>> | undefined;
+    handleUpdate: ( () => void ) | undefined;
 }
 
 export default function AddItemForm({
@@ -160,7 +160,7 @@ export default function AddItemForm({
                 :
                 <View style={CommonStyles.BottomSheetButtonWrapper}>                
                     <Pressable 
-                        onPress={() => setLongPressWarn(true)}
+                        onPress={() => { if ( setLongPressWarn ) { setLongPressWarn(true) }} }
                         onLongPress={handleDeletion}
                         style={[CommonStyles.BottomSheetSecondaryButton, CommonStyles.BottomSheetButton]}>
                         <Text style={CommonStyles.BottomSheetButtonText}>DELETE</Text>

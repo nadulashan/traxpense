@@ -11,7 +11,7 @@ type AddCategoryProps = {
 export default function AddToRecordButton({ onPress,isActive, creatingRelations }: AddCategoryProps){
     return (        
 
-        <View style={[RecordStyles.FloatingBottomStickButton, !isActive || creatingRelations? RecordStyles.FloatingBottomStickButtonDisabled : null]}>
+        <View style={[RecordStyles.AddToJournalButton, !isActive || creatingRelations? RecordStyles.FloatingBottomStickButtonDisabled : null]}>
             <Pressable
                 onPress={onPress}
                 disabled={!isActive}

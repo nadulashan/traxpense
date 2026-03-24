@@ -82,13 +82,13 @@ export default function RecordsDetails() {
         calculatedRecordedExpenses()
     },[expenses])
 
-    // useEffect(() => {
-    //     const unsubscribe = navigation.addListener('focus', () => {
-    //         fetchIncomesAndExpenses()
-    //     });
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            fetchIncomesAndExpenses()
+        });
 
-    //     return unsubscribe;
-    // }, [navigation]);
+        return unsubscribe;
+    }, [navigation]);
     
     return(
         <ScrollView>

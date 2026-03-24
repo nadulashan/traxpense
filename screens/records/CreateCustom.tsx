@@ -3,9 +3,9 @@ import AddItemForm from '@/components/recordAddItemForm';
 import FormAccountWrapper from '@/components/recordFormAccountWrapper';
 import CreateCustomCustomTypeItem from '@/components/recordsCreateCustomCustomTypeItem';
 import colors from '@/constants/colors';
-import { deleteCustomExepenseOnExepense, deleteCustomIncomeOnIncome } from '@/db/records/delete';
 import { addNewCustomExpense, addNewCustomIncome, createCustomRecordOnExpense, createCustomRecordOnIncome, createRelationOnExpense, createRelationOnIncome } from '@/db/records/insert';
 import { checkCustomExpense, checkCustomIncome, getActiveAccounts, getCustomExpenses, getCustomIncomes } from '@/db/records/select';
+import { updateCustomExpenseRelation, updateCustomIncomeRelation } from '@/db/records/update';
 import { closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
 import { getLocalTime, getLongDate } from '@/func/time';
 import CommonStyles from '@/styles/commonStyles';
@@ -131,37 +131,46 @@ export default function CreateCustom({route}:any){
         closeSheetCaller()
     }
 
+    function calculateTotal(array:CustomIncomeTypes[] | CustomExpenseTypes[]) {
+        let total = 0
+        array.forEach( item => {
+            total = total + item.amount
+        })
+        return total
+    }
+
     async function transferToJournal() {
-        if ( incomeArray?.length !== 0 ) {
-            let totalIncome = 0
-            incomeArray?.forEach(incomeItem => {
-                totalIncome = totalIncome + incomeItem.amount
-            })
+        if ( incomeArray && incomeArray.length !== 0 ) {
+
+            // Calculate Total Income
+            const totalIncome = calculateTotal( incomeArray )
 
             // If is there is record with relation
-            if ( await checkCustomIncome(focusedDate) ) {
-                await deleteCustomIncomeOnIncome(focusedDate) // delete if yes
+            const id = await checkCustomIncome(focusedDate)
+            if ( id ) {
+                await updateCustomIncomeRelation( totalIncome, id.typeId ) // Update is yes
+            } else {
+                // create new record on income and relation with customIncome
+                const incomeId = await createCustomRecordOnIncome(focusedDate, getLocalTime(), totalIncome/100)
+                await createRelationOnIncome(focusedDate, incomeId)
             }
 
-            // add new rec with relation
-            const incomeId =  await createCustomRecordOnIncome(focusedDate, getLocalTime(), totalIncome/100)
-            await createRelationOnIncome(focusedDate, incomeId)
         }
 
-        if ( expenseArray?.length !== 0 ){
-            let totalExpense = 0
-            expenseArray?.forEach(exppenseItem => {
-                totalExpense = totalExpense + exppenseItem.amount
-            })
+        if ( expenseArray && expenseArray.length !== 0 ){
+
+            // Calculate Total Expense
+            const totalExpense = calculateTotal( expenseArray )
 
             // If is there is record with relation
-            if ( await checkCustomExpense(focusedDate) ) {
-                await deleteCustomExepenseOnExepense(focusedDate) // delete if yes
+            const id = await checkCustomExpense(focusedDate)
+            if ( id ) {
+                await updateCustomExpenseRelation ( totalExpense, id.typeId ) // Update is yes
+            } else {
+                // create new record on income and relation with customIncome
+                const incomeId = await createCustomRecordOnExpense(focusedDate, getLocalTime(), totalExpense/100)
+                await createRelationOnExpense(focusedDate, incomeId)
             }
-
-            // add new rec with relation
-            const expenseId =  await createCustomRecordOnExpense(focusedDate, getLocalTime(), totalExpense/100)
-            await createRelationOnExpense(focusedDate, expenseId)
         }
 
         navigation.goBack()
@@ -246,7 +255,12 @@ export default function CreateCustom({route}:any){
                 customTypeNameError={customIncomeNameError}
                 accountError={customIncomeAccountsError}
                 categoryError={undefined}
-            />
+                isEdit={false}
+                handleDeletion={undefined}
+                handleUpdate={undefined}
+                longPressWarn={undefined}
+                setLongPressWarn={undefined}
+                />
                 <Text style={RecordStyles.TypeText}>Expense</Text>
                 <View style={RecordStyles.TypeItemsWrapper}>
                     {
@@ -279,15 +293,20 @@ export default function CreateCustom({route}:any){
                 customTypeNameError={customExpenseNameError}
                 accountError={customExpenseAccountsError}
                 categoryError={undefined}
+                isEdit={false}
+                handleDeletion={undefined}
+                handleUpdate={undefined}
+                longPressWarn={undefined}
+                setLongPressWarn={undefined}
+                />                
+                <AddToRecordButton 
+                onPress={transferToJournal} 
+                isActive={ incomeArray?.length !== 0 || expenseArray?.length !== 0 }
+                creatingRelations={creatingRelations}
                 />
             </View>
         </ScrollView>
 
-        <AddToRecordButton 
-            onPress={transferToJournal} 
-            isActive={ incomeArray?.length !== 0 || expenseArray?.length !== 0 }
-            creatingRelations={creatingRelations}
-            />
 
         <BottomSheet 
             index={-1} 
