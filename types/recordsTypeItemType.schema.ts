@@ -1,9 +1,12 @@
 export interface IncomeTypes{
-    incomeId:number, 
+    typeId:number, 
     accountName:string, 
+    accountId:number,
     isCustom:number, 
     accountBadge:string, 
+    categoryId:number,
     name:string, 
+    badge:string,
     comment:string | null, 
     amount:number, 
     createdDateTime:string, 
@@ -11,11 +14,14 @@ export interface IncomeTypes{
 }
 
 export interface ExpenseTypes{
-    expenseId:number, 
+    typeId:number, 
     accountName:string, 
+    accountId:number,
     isCustom:number, 
     accountBadge:string, 
+    categoryId:number,
     name:string, 
+    badge:string,
     comment:string | null, 
     amount:number, 
     createdDateTime:string, 

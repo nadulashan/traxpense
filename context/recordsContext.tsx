@@ -7,7 +7,8 @@ interface ContextType {
   closeStateSheetCaller: () => void;
   recordsRefreshTrigger:number,
   setRecordsRefreshTrigger:React.Dispatch<React.SetStateAction<number>>;
-  switchItemDetail:(item: any) => Promise<void>;
+  switchItemDetail:(item: any, focusedType: 'income' | 'expense' ) => Promise<void>;
+  switchCustom:( type:'income' | 'expense') => void;
   switchTransferDetails: (item:TransferTypes) => void;
 }
 

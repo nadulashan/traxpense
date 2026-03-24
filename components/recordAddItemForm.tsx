@@ -10,7 +10,7 @@ interface AddItemFormTypes {
     comment:string;
     setComment:React.Dispatch<React.SetStateAction<string>>;
     amountError:boolean;
-    setAmountError:React.Dispatch<React.SetStateAction<boolean>>
+    setAmountError:React.Dispatch<React.SetStateAction<boolean>>;
     handleCategorySelector:(() => void) | null;
     selectedCategory:{ categoryId: number; name: string; badge: string; } | undefined;
     handleAccountSelector: () => void;
@@ -20,7 +20,11 @@ interface AddItemFormTypes {
     setCustomName:React.Dispatch<React.SetStateAction<string>> | undefined;
     customTypeNameError:boolean | undefined;
     accountError:boolean;
-    categoryError:boolean | undefined
+    categoryError:boolean | undefined,
+    isEdit:boolean;
+    handleDeletion: () => void;
+    longPressWarn: boolean;
+    setLongPressWarn:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default function AddItemForm({
@@ -40,10 +44,20 @@ export default function AddItemForm({
     setCustomName,
     customTypeNameError,
     accountError,
-    categoryError
+    categoryError,
+    isEdit,
+    handleDeletion,
+    longPressWarn,
+    setLongPressWarn
 }:AddItemFormTypes) {
     return  (
         <View style={RecordStyles.AddItemWrapper}>
+            {
+                longPressWarn?
+                <Text style={CommonStyles.NoActionDangerText}>This Action is irreversible. Long Press to continue</Text>
+                :
+                null
+            }
             {
                 isCustomForm && setCustomName?
                 <>
@@ -134,11 +148,28 @@ export default function AddItemForm({
                         setComment( input )
                     }}
                 />                
-            <Pressable 
-                onPress={onAddPressHandler}
-                style={!isCustomForm? [CommonStyles.BottomSheetPrimaryButton, CommonStyles.BottomSheetButton] : [CommonStyles.BottomSheetButton, CommonStyles.SecondaryButton]}>
-                <Text style={!isCustomForm? CommonStyles.BottomSheetButtonText : CommonStyles.SecondaryButtonText}>ADD</Text>
-            </Pressable>
+            {
+                !isEdit?
+                <Pressable 
+                    onPress={onAddPressHandler}
+                    style={!isCustomForm? [CommonStyles.BottomSheetPrimaryButton, CommonStyles.BottomSheetButton] : [CommonStyles.BottomSheetButton, CommonStyles.SecondaryButton]}>
+                    <Text style={!isCustomForm? CommonStyles.BottomSheetButtonText : CommonStyles.SecondaryButtonText}>ADD</Text>
+                </Pressable> 
+                :
+                <View style={CommonStyles.BottomSheetButtonWrapper}>                
+                    <Pressable 
+                        onPress={() => setLongPressWarn(true)}
+                        onLongPress={handleDeletion}
+                        style={[CommonStyles.BottomSheetSecondaryButton, CommonStyles.BottomSheetButton]}>
+                        <Text style={CommonStyles.BottomSheetButtonText}>DELETE</Text>
+                    </Pressable> 
+                    <Pressable 
+                        onPress={onAddPressHandler}
+                        style={[CommonStyles.BottomSheetPrimaryButton, CommonStyles.BottomSheetButton]}>
+                        <Text style={CommonStyles.BottomSheetButtonText}>UPDATE</Text>
+                    </Pressable> 
+                </View>
+                }
         </View>
     )
 }

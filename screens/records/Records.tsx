@@ -44,6 +44,95 @@ export default function Records(){
     setFocusedDate(date)
   }
 
+  // On Edit Press
+  const focusedItemType = useRef< 'income' | 'expense' | 'transfer' | undefined >(undefined)
+
+  function onEditPress() {
+    // if ( focusedItemType ) {
+
+    //   if ( focusedItemType.current === 'income') {
+    //     console.log('its an income')
+
+    //   } else if ( focusedItemType.current === 'expense' ){
+    //     console.log('its an expense')
+
+    //   } else {
+    //     console.log('its an transfer')
+
+    //   }
+
+    // }
+
+    setCurrentSheetState('AddItem')
+
+  }
+
+  // Handle mutlple states of bottom sheet - State
+  const BOTTOMSHEET_STATE = {
+    CreationMenu: () => <BottomSheetRecordCreationMenu
+                          type={type}
+                          navigateToAddItem={navigateToAddItem}
+                          navigateToTransfer={navigateToTransfer}/>,
+
+    AddItem:() => <BottomSheetRecordAddItem type={type} focusedItem={focusedItem}/>,
+
+    Transfer: () => <Transfers />,
+
+    
+    ItemDetails: () => <ItemDetails item={focusedItem} onEditPress={onEditPress}/>,
+
+    TransferDetails: () => <TransferDetails item={transferItem} onEditPress={onEditPress}/>
+
+
+  }
+  const [ currentSheetState, setCurrentSheetState ] = useState< 'CreationMenu' | 'AddItem' | 'Transfer'  | 'ItemDetails' | 'TransferDetails' >('CreationMenu')
+  
+  const SheetContent = BOTTOMSHEET_STATE[currentSheetState]
+  
+
+  // FOR ITEM DETAILS SHEET
+  const [ focusedItem, setFocusedItem ] = useState<IncomeTypes | ExpenseTypes | undefined>(undefined)
+
+  async function switchItemDetail(item: IncomeTypes | ExpenseTypes, clickedType: 'income' | 'expense' ) {
+
+    if ( clickedType === 'income' ) {
+      type.current = 'income'
+    } else {
+      type.current = 'expense'
+    }
+
+    setCurrentSheetState( 'ItemDetails' )
+    setFocusedItem(item)
+    openStateSheetCaller()
+  }
+
+  // FOR TRANSFER DETAILS
+  const [ transferItem, setTransferItem ] = useState< TransferTypes | undefined >(undefined)
+
+  function switchTransferDetails(item:TransferTypes) {
+
+    focusedItemType.current = 'transfer'
+
+    setTransferItem(item)
+    setCurrentSheetState('TransferDetails')
+    openStateSheetCaller()
+  }
+
+
+  // Handle Multiple ref of bottom sheet - Ref
+  const BOTTOM_REF = {
+
+    CustomIncomeExpense: () => < CustomIncomeExpenseDetails 
+                                        incomeItems={customIncomeItems}
+                                        expenseItems={customExpenseItems}
+                                        customItemsSum={customItemsSum.current}
+                                        isCustomIncome={isCustomIncome.current}/>,
+  }
+
+  const [ currentSheetRef, setCurrentSheetRef ]= useState< 'CustomIncomeExpense'>('CustomIncomeExpense')
+
+  const SheetRefContent = BOTTOM_REF[currentSheetRef]  
+
   // FOR CUSTOM INCOME EXPENSE
   const [ customIncomeItems, setCustomIncomeItems ] = useState<CustomIncomeTypes[] | null>(null)
   const [ customExpenseItems, setCustomExpenseItems ] = useState<CustomExpenseTypes[] | null>(null)
@@ -53,7 +142,7 @@ export default function Records(){
   // Open Custom Sheet
   async function switchCustom( type:'income' | 'expense' ) {        
     setCurrentSheetRef( 'CustomIncomeExpense' )
-    if ( type === 'income' ) {ItemDetails
+    if ( type === 'income' ) {
         customItemsSum.current = 0
         isCustomIncome.current = true
         const fetchedCustomIncomes = await getCustomIncomes(focusedDate)
@@ -76,61 +165,6 @@ export default function Records(){
     openRefSheetCaller()
   }
 
-  // FOR ITEM DETAILS SHEET
-  const [ focusedItem, setFocusedItem ] = useState<IncomeTypes | ExpenseTypes | undefined>(undefined)
-
-  async function switchItemDetail(item: IncomeTypes | ExpenseTypes) {
-    // closeStateSheetCaller()
-    setCurrentSheetState( 'ItemDetails' )
-    setFocusedItem(item)
-    openStateSheetCaller()
-  }
-
-  // FOR TRANSFER DETAILS
-  const [ transferItem, setTransferItem ] = useState< TransferTypes | undefined >(undefined)
-
-  function switchTransferDetails(item:TransferTypes) {
-    setTransferItem(item)
-    setCurrentSheetState('TransferDetails')
-    openStateSheetCaller()
-  }
-
-  // Handle mutlple states of bottom sheet - State
-  const BOTTOMSHEET_STATE = {
-    CreationMenu: () => <BottomSheetRecordCreationMenu
-                          type={type}
-                          navigateToAddItem={navigateToAddItem}
-                          navigateToTransfer={navigateToTransfer}/>,
-
-    AddItem:() => <BottomSheetRecordAddItem type={type}/>,
-
-    Transfer: () => <Transfers />,
-
-    
-    ItemDetails: () => <ItemDetails item={focusedItem}/>,
-
-    TransferDetails: () => <TransferDetails item={transferItem} />
-
-
-  }
-  const [ currentSheetState, setCurrentSheetState ] = useState< 'CreationMenu' | 'AddItem' | 'Transfer'  | 'ItemDetails' | 'TransferDetails' >('CreationMenu')
-  
-  const SheetContent = BOTTOMSHEET_STATE[currentSheetState]
-
-  // Handle Multiple ref of bottom sheet - Ref
-  const BOTTOM_REF = {
-
-    CustomIncomeExpense: () => < CustomIncomeExpenseDetails 
-                                        incomeItems={customIncomeItems}
-                                        expenseItems={customExpenseItems}
-                                        customItemsSum={customItemsSum.current}
-                                        isCustomIncome={isCustomIncome.current}/>,
-  }
-
-  const [ currentSheetRef, setCurrentSheetRef ]= useState< 'CustomIncomeExpense'>('CustomIncomeExpense')
-
-  const SheetRefContent = BOTTOM_REF[currentSheetRef]
-
   // NAVIGATORS
   function navigateToAddItem(){
     setCurrentSheetState('AddItem')
@@ -148,6 +182,7 @@ export default function Records(){
   
   function closeStateSheetCaller(){
     closeBottomSheet(stateSheetRef)
+    setFocusedItem(undefined)
     setCurrentSheetState('CreationMenu')
   }
 
@@ -196,9 +231,10 @@ export default function Records(){
                                             recordsRefreshTrigger, 
                                             setRecordsRefreshTrigger, 
                                             switchItemDetail,
+                                            switchCustom,
                                             switchTransferDetails}} >
           <CalendarListWrapper />
-          <RecordsDetails switchCustom={switchCustom}/>
+          <RecordsDetails />
 
           <AddRecordButton openSheetCaller={openStateSheetCaller} />
           

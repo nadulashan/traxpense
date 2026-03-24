@@ -6,10 +6,12 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 interface ItemDetailsTypes {
     item: any;
+    onEditPress: () => void;
 }
 
 export default function ItemDetails({
-    item
+    item,
+    onEditPress
 }:ItemDetailsTypes) {
 
     // Setup date time for display
@@ -43,7 +45,9 @@ export default function ItemDetails({
                         }
                     </View>
                     <View style={CommonStyles.BottomSheetButtonWrapper}>
-                        <Pressable style={[CommonStyles.BottomSheetButton, CommonStyles.BottomSheetPrimaryButton]}>
+                        <Pressable 
+                            onPress={onEditPress}
+                            style={[CommonStyles.BottomSheetButton, CommonStyles.BottomSheetPrimaryButton]}>
                             <Text style={CommonStyles.BottomSheetButtonText}>Edit</Text>
                         </Pressable>
                     </View>

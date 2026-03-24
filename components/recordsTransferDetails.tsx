@@ -8,10 +8,12 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 interface ItemDetailsTypes {
     item: TransferTypes | undefined;
+    onEditPress: () => void;
 }
 
 export default function TransferDetails({
-    item
+    item, 
+    onEditPress
 }:ItemDetailsTypes) {
 
     // Setup date time for display
@@ -45,7 +47,9 @@ export default function TransferDetails({
                         }
                     </View>
                     <View style={CommonStyles.BottomSheetButtonWrapper}>
-                        <Pressable style={[CommonStyles.BottomSheetButton, CommonStyles.BottomSheetPrimaryButton]}>
+                        <Pressable 
+                            onPress={onEditPress}
+                            style={[CommonStyles.BottomSheetButton, CommonStyles.BottomSheetPrimaryButton]}>
                             <Text style={CommonStyles.BottomSheetButtonText}>Edit</Text>
                         </Pressable>
                     </View>

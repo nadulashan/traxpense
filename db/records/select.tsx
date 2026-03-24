@@ -48,11 +48,14 @@ export async function getIncomes(date:string) {
     try{ 
         const db = await getDB();
         const incomes = await db.getAllAsync<IncomeTypes>(`
-                            SELECT  incomeId,
-                                    accounts.accountName,
+                            SELECT  typeId,
+                                    accountName,
+                                    accounts.accountId,
                                     isCustom,
                                     accountBadge,
+                                    incomeCategories.categoryId,
                                     incomeCategories.name,
+                                    incomeCategories.badge,
                                     comment,
                                     income.amount,
                                     createdDateTime,
@@ -72,11 +75,14 @@ export async function getExpense(date:string) {
     try{ 
         const db = await getDB();
         const expenses = await db.getAllAsync<ExpenseTypes>(`
-                            SELECT  expenseId,
+                            SELECT  typeId,
                                     accountName,
+                                    accounts.accountId,
                                     isCustom,
                                     accountBadge,
-                                    name,
+                                    expensesCategories.categoryId,
+                                    expensesCategories.name,
+                                    expensesCategories.badge,
                                     comment,
                                     expenses.amount,
                                     createdDateTime,

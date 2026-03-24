@@ -8,22 +8,20 @@ import { Pressable, Text, View } from 'react-native';
 
 interface TypeItemTypes{
     item:IncomeTypes | ExpenseTypes;
-    switchCustom:( type:'income' | 'expense') => void;
     type:'income' | 'expense';
 }
 
 export default function TypeItem({
     item,
-    switchCustom,
     type,
 }:TypeItemTypes){
 
-    const { switchItemDetail } = useCheckContext() 
+    const { switchItemDetail, switchCustom } = useCheckContext() 
 
     return (
         <Pressable 
             onPress={() => {
-                item.isCustom? switchCustom(type) : switchItemDetail(item)
+                item.isCustom? switchCustom(type) : switchItemDetail(item, type)
             }}
             style={RecordStyles.TypeItem}>
             <View style={RecordStyles.TypeItemBadgeName}>

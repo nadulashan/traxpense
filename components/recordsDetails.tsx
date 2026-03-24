@@ -1,17 +1,18 @@
+import colors from '@/constants/colors';
 import { useCheckContext } from '@/context/recordsContext';
 import { getExpense, getIncomes, getTransfer } from '@/db/records/select';
+import { priceWithComma } from '@/func/general';
 import { getLongDate } from '@/func/time';
+import CommonStyles from '@/styles/commonStyles';
+import RecordStyles from '@/styles/recordsStyles';
 import { ExpenseTypes, IncomeTypes, TransferTypes } from '@/types/recordsTypeItemType.schema';
 import { useNavigation } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ScrollView } from 'react-native';
-import RecordsIncomeExpenseDetails from './recordsIncomeExpenseDetails';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import TransferItem from './recordsDetailsTransferItem';
+import TypeItem from './recordsDetailsTypeItem';
 
-interface RecordDetailsTypes{
-    switchCustom:(type: "income" | "expense") => Promise<void>;
-}
-
-export default function RecordsDetails({switchCustom}:RecordDetailsTypes) {
+export default function RecordsDetails() {
 
 
     // Display Today Date
@@ -26,8 +27,6 @@ export default function RecordsDetails({switchCustom}:RecordDetailsTypes) {
     const [ transfers, setTransfers ] = useState<TransferTypes[] | null>(null)
     const [ recordedIncome, setRecordedIncome ] = useState(0)
     const [ recordedExpenses, setRecordedExpenses ] = useState(0)
-
-    const [ currentScreen, setCurrentScreen ] = useState<'IncomeExpenseDetails' | 'CustomIncomeExpenseDetails'>('IncomeExpenseDetails')
 
     // Fetch
     async function fetchIncomesAndExpenses() {
@@ -93,15 +92,80 @@ export default function RecordsDetails({switchCustom}:RecordDetailsTypes) {
     
     return(
         <ScrollView>
-            <RecordsIncomeExpenseDetails
-                                        displayDate={displayDate}
-                                        incomes={incomes}
-                                        recordedIncome={recordedIncome}
-                                        expenses={expenses}
-                                        recordedExpenses={recordedExpenses}
-                                        switchCustom={switchCustom}
-                                        transfers={transfers}
-                                    />
+            <View  style={RecordStyles.RecordDetailsWrapper}>
+                <Text style={RecordStyles.DateText}>
+                    {displayDate}
+                </Text>
+                <View style={RecordStyles.TypeWrapper}>
+                    <Text style={RecordStyles.TypeText}>Income</Text>
+                    <View style={RecordStyles.TypeItemsWrapper}>                    
+                    {
+                        incomes?
+                            incomes.length !== 0 ?
+                            incomes.map((income) => (
+                                <TypeItem key={income.typeId} item={income}  type={'income'}/>
+                            ))
+                            :
+                            <Text style={CommonStyles.NoActionText}>No Records</Text>
+                        :
+                        <ActivityIndicator size={'small'} color={colors.light.primary}/>
+                    }
+                    </View>
+                </View>
+                {
+                    incomes?.length !== 0 ?
+                    <View style={RecordStyles.RecordedTypeWrapper}>
+                        <Text style={RecordStyles.RecordedTypeText}>Recorded Income</Text>
+                        <Text style={RecordStyles.RecordedTypeText}>{priceWithComma(recordedIncome)}</Text>
+                    </View>
+                    : 
+                    null
+                }
+                <View style={RecordStyles.TypeWrapper}>
+                    <Text style={RecordStyles.TypeText}>Expense</Text>
+                    <View style={RecordStyles.TypeItemsWrapper}>                    
+                    {
+                        expenses?
+                            expenses.length !== 0 ?
+                            expenses.map((expense) => (
+                                <TypeItem key={expense.typeId} item={expense} type={'expense'}/>
+                            ))
+                            :
+                            <Text style={CommonStyles.NoActionText}>No Records</Text>
+                        :
+                        <ActivityIndicator size={'small'} color={colors.light.primary}/>
+                    }
+                    </View>
+                </View>
+                {
+                    expenses?.length !== 0 ?
+                    <View style={RecordStyles.RecordedTypeWrapper}>
+                        <Text style={RecordStyles.RecordedTypeText}>Recorded Expenses</Text>
+                        <Text style={RecordStyles.RecordedTypeText}>{priceWithComma(recordedExpenses)}</Text>
+                    </View>
+                    :
+                    null
+
+                }
+                {
+                    transfers?
+                        transfers.length !== 0 ?
+                        <View style={RecordStyles.TypeWrapper}>
+                            <Text style={RecordStyles.TypeText}>Transfers</Text>
+                            <View style={RecordStyles.TypeItemsWrapper}>                    
+                            {
+                                transfers.map(transfer => (
+                                    <TransferItem item={transfer} key={transfer.transferId} />
+                                ))
+                            }
+                            </View>
+                        </View>
+                        :
+                        null
+                    :
+                    <ActivityIndicator size={'small'} color={colors.light.primary}/>
+                }
+            </View>
         </ScrollView>
     )
 }
