@@ -144,7 +144,7 @@ export async function checkCustomIncome(date:string) {
     try{ 
         const db = await getDB();
         const incomes = await db.getAllAsync(`
-                            SELECT  incomeId
+                            SELECT  typeId
                             FROM    income
                             WHERE   isCustom = 1 AND 
                                     date = ?
@@ -163,7 +163,7 @@ export async function checkCustomExpense(date:string) {
     try{ 
         const db = await getDB();
         const expeneses = await db.getAllAsync(`
-                            SELECT  expenseId
+                            SELECT  typeId
                             FROM    expenses
                             WHERE   isCustom = 1 AND 
                                     date = ?

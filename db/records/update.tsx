@@ -104,3 +104,17 @@ export async function updateExpenseItem(categoryId:number, accountId:number, com
         handleDBError(e, 'Updating type failed - expense')
     }
 }
+
+export async function updateTransfer( transferFrom: number, transferTo: number, amount: number, comment: string | null, id: number) {
+    try {
+        const store = amount*100
+        const db = await getDB()
+        db.runAsync(`
+            UPDATE transfers
+            SET transferFrom = ?, transferTo = ?, amount = ?, comment = ?
+            WHERE transferId = ?
+            `, [ transferFrom, transferTo, store, comment, id])
+    } catch (e) {
+        handleDBError(e,'Updating Transfer Failed')
+    }
+}

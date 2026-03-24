@@ -45,26 +45,15 @@ export default function Records(){
   }
 
   // On Edit Press
-  const focusedItemType = useRef< 'income' | 'expense' | 'transfer' | undefined >(undefined)
+  const isTransfer = useRef(false)
 
   function onEditPress() {
-    // if ( focusedItemType ) {
 
-    //   if ( focusedItemType.current === 'income') {
-    //     console.log('its an income')
-
-    //   } else if ( focusedItemType.current === 'expense' ){
-    //     console.log('its an expense')
-
-    //   } else {
-    //     console.log('its an transfer')
-
-    //   }
-
-    // }
-
-    setCurrentSheetState('AddItem')
-
+    if ( isTransfer.current ) {
+      setCurrentSheetState('Transfer')
+    } else {
+      setCurrentSheetState('AddItem')
+    }
   }
 
   // Handle mutlple states of bottom sheet - State
@@ -76,7 +65,7 @@ export default function Records(){
 
     AddItem:() => <BottomSheetRecordAddItem type={type} focusedItem={focusedItem}/>,
 
-    Transfer: () => <Transfers />,
+    Transfer: () => <Transfers focusedItem={transferItem} />,
 
     
     ItemDetails: () => <ItemDetails item={focusedItem} onEditPress={onEditPress}/>,
@@ -111,7 +100,7 @@ export default function Records(){
 
   function switchTransferDetails(item:TransferTypes) {
 
-    focusedItemType.current = 'transfer'
+    isTransfer.current = true
 
     setTransferItem(item)
     setCurrentSheetState('TransferDetails')
@@ -183,6 +172,8 @@ export default function Records(){
   function closeStateSheetCaller(){
     closeBottomSheet(stateSheetRef)
     setFocusedItem(undefined)
+    setTransferItem(undefined)
+    isTransfer.current = false
     setCurrentSheetState('CreationMenu')
   }
 

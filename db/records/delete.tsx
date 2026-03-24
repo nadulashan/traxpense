@@ -51,3 +51,16 @@ export async function deleteExpense( id: number ){
         handleDBError(e, 'Deleting expense failed')
     }
 }
+
+export async function deleteTransfer( id: number ){ 
+    try {
+        const db = await getDB();
+        await db.runAsync(`
+                DELETE 
+                FROM transfers
+                WHERE transferId = ?
+            `, id)  
+    } catch (e) {
+        handleDBError(e, 'Deleting transfer failed')
+    }
+}
