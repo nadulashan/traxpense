@@ -106,7 +106,7 @@ export default function Records(){
     openStateSheetCaller()
   }
 
-  // FOR TRANSFER DETAILS
+  // FOR TRANSFER DETAILSCommonStyles.NoActionDangerText
   const [ transferItem, setTransferItem ] = useState< TransferTypes | undefined >(undefined)
 
   function switchTransferDetails(item:TransferTypes) {

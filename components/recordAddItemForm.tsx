@@ -24,7 +24,8 @@ interface AddItemFormTypes {
     isEdit:boolean;
     handleDeletion: () => void;
     longPressWarn: boolean;
-    setLongPressWarn:React.Dispatch<React.SetStateAction<boolean>>
+    setLongPressWarn:React.Dispatch<React.SetStateAction<boolean>>;
+    handleUpdate: () => void;
 }
 
 export default function AddItemForm({
@@ -48,13 +49,14 @@ export default function AddItemForm({
     isEdit,
     handleDeletion,
     longPressWarn,
-    setLongPressWarn
+    setLongPressWarn,
+    handleUpdate
 }:AddItemFormTypes) {
     return  (
         <View style={RecordStyles.AddItemWrapper}>
             {
                 longPressWarn?
-                <Text style={CommonStyles.NoActionDangerText}>This Action is irreversible. Long Press to continue</Text>
+                <Text style={[CommonStyles.NoActionDangerText, {textAlign:'center'}]}>This Action is irreversible. Long Press to continue</Text>
                 :
                 null
             }
@@ -164,7 +166,7 @@ export default function AddItemForm({
                         <Text style={CommonStyles.BottomSheetButtonText}>DELETE</Text>
                     </Pressable> 
                     <Pressable 
-                        onPress={onAddPressHandler}
+                        onPress={handleUpdate}
                         style={[CommonStyles.BottomSheetPrimaryButton, CommonStyles.BottomSheetButton]}>
                         <Text style={CommonStyles.BottomSheetButtonText}>UPDATE</Text>
                     </Pressable> 

@@ -76,3 +76,31 @@ export async function updateRecurringExpenseCategory(
         handleDBError(e,'Updating recurring expense category failed - update')
     }
 };
+
+export async function updateIncomeItem(categoryId:number, accountId:number, comment:string | null, amount:number, id:number) {
+    try {
+        const store = amount * 100
+        const db = await getDB();
+        db.runAsync(`
+            UPDATE income
+            SET categoryId = ?, accountId = ?, comment = ?, amount = ?
+            WHERE typeId = ?
+            `, [ categoryId, accountId, comment, store, id] )
+    } catch (e) {
+        handleDBError(e, 'Updating type failed - income')
+    }
+}
+
+export async function updateExpenseItem(categoryId:number, accountId:number, comment:string | null, amount:number, id:number) {
+    try {
+        const store = amount * 100
+        const db = await getDB();
+        db.runAsync(`
+            UPDATE expenses
+            SET categoryId = ?, accountId = ?, comment = ?, amount = ?
+            WHERE typeId = ?
+            `, [ categoryId, accountId, comment, store, id] )
+    } catch (e) {
+        handleDBError(e, 'Updating type failed - expense')
+    }
+}

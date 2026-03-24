@@ -2,6 +2,7 @@ import { useCheckContext } from '@/context/recordsContext';
 import { deleteExpense, deleteIncome } from '@/db/records/delete';
 import { addNewExpense, addNewIncome } from '@/db/records/insert';
 import { getActiveAccounts, getActiveExpenseCategories, getActiveIncomeCategories } from '@/db/records/select';
+import { updateExpenseItem, updateIncomeItem } from '@/db/records/update';
 import { getLocalTime } from '@/func/time';
 import RecordStyles from '@/styles/recordsStyles';
 import { ExpenseTypes, IncomeTypes } from '@/types/recordsTypeItemType.schema';
@@ -23,14 +24,17 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
     let getActiveTypeCategories:() => Promise<{ categoryId:number, name:string, badge:string }[]>;
     let addNewType:(categoryId:number, accountId:number, comment:string | null, date:string, time:string, amount:number) => void;
     let deleteType: (id: number) => void;
+    let updateType: (categoryId:number, accountId:number, comment:string | null, amount:number, id:number) => void;
     if ( type.current === 'income' ){
         getActiveTypeCategories = getActiveIncomeCategories
         addNewType = addNewIncome;
         deleteType = deleteIncome;
+        updateType = updateIncomeItem;
     } else {
         getActiveTypeCategories = getActiveExpenseCategories
         addNewType = addNewExpense
-        deleteType = deleteExpense
+        deleteType = deleteExpense;
+        updateType = updateExpenseItem
     }
 
     const [ categories, setCategories ] = useState<{ categoryId:number, name:string, badge:string }[] | null>(null)
@@ -130,11 +134,34 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
             deleteType(focusedItem.typeId)
         }
         setLongPressWarn(false)
+        setRecordsRefreshTrigger(inc => inc+1)
         closeStateSheetCaller()
     }
 
     async function handleUpdate() {
+        if ( amount === '' || amount.trim().length === 0 ) {
+            setAmountError(true)
+        } else {
+            setAmountError(false)
+        } 
 
+        if ( !selectedAccount ) {
+            setAccountsError(true)
+        } else {
+            setAccountsError(false)
+        }
+
+        if ( !selectedCategory ) {
+            setCategoryError(true)
+        } else {
+            setCategoryError(false)
+        }
+
+        if ( !amountError && selectedAccount && selectedCategory && focusedItem) {
+            updateType(selectedCategory.categoryId, selectedAccount?.accountId, comment, Number(amount), focusedItem.typeId)
+            setRecordsRefreshTrigger(inc => inc+1)
+            closeStateSheetCaller()
+        }
     }
 
     const SCREEN = {
@@ -160,6 +187,7 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
                 handleDeletion={handleDeletion}
                 longPressWarn={longPressWarn}
                 setLongPressWarn={setLongPressWarn}
+                handleUpdate={handleUpdate}
             />,
         Category: () => <FormCategoryWrapper 
                         categories={categories}
