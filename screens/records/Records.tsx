@@ -11,7 +11,7 @@ import { FocusedDateProviderContext } from "@/context/recordsContext";
 import { getCustomExpenses, getCustomIncomes } from "@/db/records/select";
 import { closeBottomSheet, openBottomSheet } from "@/func/bottomSheetfunc";
 import { getLocalTime } from "@/func/time";
-import { CustomExpenseTypes, CustomIncomeTypes, ExpenseTypes, IncomeTypes, TransferTypes } from "@/types/recordsTypeItemType.schema";
+import { CustomTypeProps, ExpenseTypes, IncomeTypes, TransferTypes } from "@/types/recordsTypeItemType.schema";
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useCallback, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -123,8 +123,8 @@ export default function Records(){
   const SheetRefContent = BOTTOM_REF[currentSheetRef]  
 
   // FOR CUSTOM INCOME EXPENSE
-  const [ customIncomeItems, setCustomIncomeItems ] = useState<CustomIncomeTypes[] | null>(null)
-  const [ customExpenseItems, setCustomExpenseItems ] = useState<CustomExpenseTypes[] | null>(null)
+  const [ customIncomeItems, setCustomIncomeItems ] = useState<CustomTypeProps[] | null>(null)
+  const [ customExpenseItems, setCustomExpenseItems ] = useState<CustomTypeProps[] | null>(null)
   const isCustomIncome = useRef(false)
   const customItemsSum = useRef(0)
   

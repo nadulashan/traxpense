@@ -68,3 +68,31 @@ export async function updateTransfer( transferFrom: number, transferTo: number, 
         handleDBError(e,'Updating Transfer Failed')
     }
 }
+
+export async function updateCustomIncome( name:string, accountId:number, comment:string | null, amount:number, id:number ) {
+    try {
+        const store = amount * 100
+        const db = await getDB();
+        db.runAsync(`
+            UPDATE customIncome
+            SET name = ?, accountId = ?, comment = ?, amount = ?
+            WHERE customTypeId = ?
+            `, [ name, accountId, comment, store, id] )
+    } catch (e) {
+        handleDBError(e, 'Updating custom type failed - income')
+    }
+}
+
+export async function updateCustomExpense( name:string, accountId:number, comment:string | null, amount:number, id:number ) {
+    try {
+        const store = amount * 100
+        const db = await getDB();
+        db.runAsync(`
+            UPDATE customExpenses
+            SET name = ?, accountId = ?, comment = ?, amount = ?
+            WHERE customTypeId = ?
+            `, [ name, accountId, comment, store, id] )
+    } catch (e) {
+        handleDBError(e, 'Updating custom type failed - expense')
+    }
+}

@@ -1,4 +1,4 @@
-import { CustomExpenseTypes, CustomIncomeTypes, ExpenseTypes, IncomeTypes, TransferTypes } from "@/types/recordsTypeItemType.schema";
+import { CustomTypeProps, ExpenseTypes, IncomeTypes, TransferTypes } from "@/types/recordsTypeItemType.schema";
 import handleDBError from "../dbError";
 import getDB from "../opendb";
 
@@ -101,10 +101,11 @@ export async function getExpense(date:string) {
 export async function getCustomIncomes(date:string) {
     try{ 
         const db = await getDB();
-        const incomes = await db.getAllAsync<CustomIncomeTypes>(`
-                            SELECT  customIncomeId, 
+        const incomes = await db.getAllAsync<CustomTypeProps>(`
+                            SELECT  customTypeId, 
                                     accountName,
                                     accountBadge, 
+                                    accounts.accountId,
                                     customIncome.name, 
                                     comment, 
                                     customIncome.amount,
@@ -122,10 +123,11 @@ export async function getCustomIncomes(date:string) {
 export async function getCustomExpenses(date:string) {
     try{ 
         const db = await getDB();
-        const expenses = await db.getAllAsync<CustomExpenseTypes>(`
-                            SELECT  customExpenseId, 
+        const expenses = await db.getAllAsync<CustomTypeProps>(`
+                            SELECT  customTypeId, 
                                     accountName,
                                     accountBadge, 
+                                    accounts.accountId,
                                     customExpenses.name, 
                                     comment, 
                                     customExpenses.amount,

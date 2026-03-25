@@ -36,7 +36,7 @@ export async function initDB(){
                 amount INTEGER NOT NULL
             );
             CREATE TABLE IF NOT EXISTS customExpenses(
-                customExpenseId INTEGER PRIMARY KEY AUTOINCREMENT,
+                customTypeId INTEGER PRIMARY KEY AUTOINCREMENT,
                 expenseId INTEGER DEFAULT NULL REFERENCES expenses(expenseId),
                 name TEXT NOT NULL,
                 comment TEXT DEFAULT NULL,
@@ -68,7 +68,7 @@ export async function initDB(){
                 amount INTEGER NOT NULL
             );
             CREATE TABLE IF NOT EXISTS customIncome(
-                customIncomeId INTEGER PRIMARY KEY AUTOINCREMENT,
+                customTypeId INTEGER PRIMARY KEY AUTOINCREMENT,
                 incomeId INTEGER DEFAULT NULL REFERENCES income(incomeId),
                 name TEXT NOT NULL,
                 comment TEXT DEFAULT NULL,

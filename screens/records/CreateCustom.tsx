@@ -1,17 +1,17 @@
-import AddToRecordButton from '@/components/addToRecordButton';
 import AddButton from '@/components/createCustomAddButton';
 import AddItemForm from '@/components/recordAddItemForm';
 import FormAccountWrapper from '@/components/recordFormAccountWrapper';
 import CreateCustomCustomTypeItem from '@/components/recordsCreateCustomCustomTypeItem';
 import colors from '@/constants/colors';
+import { deleteCustomExpense, deleteCustomExpenseRelationOnExpense, deleteCustomIncome, deleteCustomIncomeRelationOnIncome } from '@/db/records/delete';
 import { addNewCustomExpense, addNewCustomIncome, createCustomRecordOnExpense, createCustomRecordOnIncome, createRelationOnExpense, createRelationOnIncome } from '@/db/records/insert';
 import { checkCustomExpense, checkCustomIncome, getActiveAccounts, getCustomExpenses, getCustomIncomes } from '@/db/records/select';
-import { updateCustomExpenseRelation, updateCustomIncomeRelation } from '@/db/records/update';
+import { updateCustomExpense, updateCustomExpenseRelation, updateCustomIncome, updateCustomIncomeRelation } from '@/db/records/update';
 import { closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
 import { getLocalTime, getLongDate } from '@/func/time';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
-import { CustomExpenseTypes, CustomIncomeTypes } from '@/types/recordsTypeItemType.schema';
+import { CustomTypeProps } from '@/types/recordsTypeItemType.schema';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -35,21 +35,26 @@ export default function CreateCustom({route}:any){
     const [ customTypeAccountsError, setCustomTypeAccountsError ] = useState(false)
     
 
-    const [ incomeArray, setIncomeArray ] = useState<CustomIncomeTypes[] | null>(null)
-    const incomeArrayRef = useRef<CustomIncomeTypes[] | null>(null) // Ref for create relations along with custom type creation
-    const [ expenseArray, setExpenseArray ] = useState<CustomExpenseTypes[] | null>(null)
-    const expenseArrayRef = useRef< CustomExpenseTypes[] | null >(null)
+    const [ incomeArray, setIncomeArray ] = useState<CustomTypeProps[] | null>(null)
+    const incomeArrayRef = useRef<CustomTypeProps[] | null>(null) // Ref for create relations along with custom type creation
+    const [ expenseArray, setExpenseArray ] = useState<CustomTypeProps[] | null>(null)
+    const expenseArrayRef = useRef< CustomTypeProps[] | null >(null)
 
     const [ accounts, setAccounts ] = useState<{ accountId:number, accountName:string, accountBadge:string }[] | null>(null)
-    const [ creatingRelations, setCreatingRelations ] = useState(false)
 
     const [ isIncome, setIsIncome ] = useState(true)
 
     let addNewCustomType : ( name:string, comment:string | null, amount:number, accountId:number, date:string, createdDateTime:string ) => Promise<void>;
+    let deleteCustomType: ( id: number ) => Promise<void>;
+    let updateCustomType: ( name:string, accountId:number, comment:string | null, amount:number, id:number) => Promise<void>;
     if ( isIncome ) {
         addNewCustomType = addNewCustomIncome
+        deleteCustomType = deleteCustomIncome
+        updateCustomType = updateCustomIncome
     } else {
         addNewCustomType = addNewCustomExpense
+        deleteCustomType = deleteCustomExpense
+        updateCustomType = updateCustomExpense
     }
 
     // function
@@ -72,7 +77,7 @@ export default function CreateCustom({route}:any){
 
     }
 
-    function calculateTotal(array:CustomIncomeTypes[] | CustomExpenseTypes[]) {
+    function calculateTotal(array:CustomTypeProps[]) {
         let total = 0
         array.forEach( item => {
             total = total + item.amount
@@ -90,10 +95,6 @@ export default function CreateCustom({route}:any){
             closeSheetCaller()
             const nowTimeDate = getLocalTime().toISOString()
             await addNewCustomType(customTypeName, typeComment, Number(typeAmount), selectedTypeAccount.accountId, focusedDate, nowTimeDate)
-            setCustomTypeName('')
-            setSelectedTypeAccount(null)
-            setTypeAmount('')
-            setTypeComment('')
             await initialFetch()
             await transferToJournal()
         }
@@ -107,11 +108,13 @@ export default function CreateCustom({route}:any){
 
     function handleIncomeAddPress() {
         setIsIncome(true)
+        setIsEdit( false )
         openSheetCaller()
     }
 
     function handleExpenseAddPress() {
         setIsIncome(false)
+        setIsEdit( false )
         openSheetCaller()
     }
 
@@ -121,39 +124,47 @@ export default function CreateCustom({route}:any){
     }
 
     async function transferToJournal() {
+        // If is there is record with relation
+        const IncomeId = await checkCustomIncome(focusedDate)
+
         if ( incomeArrayRef.current && incomeArrayRef.current.length !== 0 ) {
             
             // Calculate Total Income
             const totalIncome = calculateTotal( incomeArrayRef.current )
 
-            // If is there is record with relation
-            const id = await checkCustomIncome(focusedDate)
-            if ( id ) {
-                await updateCustomIncomeRelation( totalIncome, id.typeId ) // Update is yes
+            if ( IncomeId ) {
+                await updateCustomIncomeRelation( totalIncome, IncomeId.typeId ) // Update is yes
             } else {
                 // create new record on income and relation with customIncome
                 const incomeId = await createCustomRecordOnIncome(focusedDate, getLocalTime().toISOString(), totalIncome)
                 await createRelationOnIncome(focusedDate, incomeId)
             }
 
+        } else {
+            if ( IncomeId ) {
+                await deleteCustomIncomeRelationOnIncome( IncomeId.typeId )
+            }
         }
 
+        // If is there is record with relation
+        const expenseId = await checkCustomExpense(focusedDate)
         if ( expenseArrayRef.current && expenseArrayRef.current.length !== 0 ){
 
             // Calculate Total Expense
             const totalExpense = calculateTotal( expenseArrayRef.current )
 
-            // If is there is record with relation
-            const id = await checkCustomExpense(focusedDate)
-            if ( id ) {
-                await updateCustomExpenseRelation ( totalExpense, id.typeId ) // Update is yes
+            if ( expenseId ) {
+                await updateCustomExpenseRelation ( totalExpense, expenseId.typeId ) // Update is yes
             } else {
                 // create new record on income and relation with customIncome
                 const incomeId = await createCustomRecordOnExpense(focusedDate, getLocalTime().toISOString(), totalExpense)
                 await createRelationOnExpense(focusedDate, incomeId)
             }
+        } else {
+            if ( expenseId ) {
+                await deleteCustomExpenseRelationOnExpense( expenseId.typeId )
+            }
         }
-        // await check()
     }
 
     // DB Fetching
@@ -175,13 +186,59 @@ export default function CreateCustom({route}:any){
     }
 
     // EDIT
-    const [ focusedIncome, setFocusedIncome ] = useState< CustomIncomeTypes | undefined >(undefined)
-    const [ focusedExpense, setFocusedExpense ] = useState< CustomExpenseTypes | undefined >(undefined)
+    const  focusedItem = useRef< CustomTypeProps | undefined >(undefined)
+    const [ isEdit, setIsEdit ] = useState(false)
+    const [ longPressWarn, setLongPressWarn ] = useState(false)
 
-    function onItemPress() {
-        
+    function updateStatesOnFocus() {
+        if ( focusedItem.current ) {
+            setIsEdit(true)
+            setCustomTypeName(focusedItem.current.name)
+            setSelectedTypeAccount( { accountId: focusedItem.current.accountId, accountName: focusedItem.current.accountName, accountBadge: focusedItem.current.accountBadge } )
+            setTypeAmount( ( focusedItem.current.amount/100 ).toString() )
+            if ( focusedItem.current.comment ) {
+                setTypeComment( focusedItem.current.comment )
+            }
+        }
     }
 
+    function onIncomePress( item: CustomTypeProps ) {
+        setIsIncome(true)
+        focusedItem.current = item
+        updateStatesOnFocus()
+        openSheetCaller()
+    }
+
+    function onExpensePress( item: CustomTypeProps ) {
+        setIsIncome(false)
+        focusedItem.current = item
+        updateStatesOnFocus()
+        openSheetCaller()
+    }
+
+    async function onDeletePress() {
+        if ( focusedItem.current ) {
+            deleteCustomType(focusedItem.current.customTypeId)
+            closeSheetCaller()
+            await initialFetch()
+            await transferToJournal()
+        }
+    }
+
+    async function onUpdatePress() {
+
+
+        checkValidity()
+
+        if ( selectedTypeAccount && !typeAmountError && !customTypeNameError && !customTypeAccountsError && focusedItem.current) {
+            updateCustomType( customTypeName, selectedTypeAccount?.accountId, typeComment, Number(typeAmount), focusedItem.current.customTypeId)
+            closeSheetCaller()
+            await initialFetch()
+            await transferToJournal()
+        }
+    }
+
+    // useEffects
     useEffect(() => {
         navigation.setOptions({title:longDate})
         initialFetch()
@@ -198,6 +255,7 @@ export default function CreateCustom({route}:any){
         setCustomTypeNameError(false)
         setTypeAmountError(false)
         setCustomTypeAccountsError(false)
+        setLongPressWarn(false)
     }
 
     function openSheetCaller() {
@@ -241,11 +299,11 @@ export default function CreateCustom({route}:any){
                 customTypeNameError={customTypeNameError}
                 accountError={customTypeAccountsError}
                 categoryError={undefined}
-                isEdit={false}
-                handleDeletion={undefined}
-                handleUpdate={undefined}
-                longPressWarn={undefined}
-                setLongPressWarn={undefined}
+                isEdit={isEdit}
+                longPressWarn={longPressWarn}
+                setLongPressWarn={setLongPressWarn}
+                handleDeletion={onDeletePress}
+                handleUpdate={onUpdatePress}
                 />
             </View>
     }
@@ -264,12 +322,12 @@ export default function CreateCustom({route}:any){
                         incomeArray?
                             incomeArray.length !== 0 ?
                             incomeArray.map(incomeItem => (
-                                <CreateCustomCustomTypeItem key={incomeItem.customIncomeId} item={incomeItem} />
+                                <CreateCustomCustomTypeItem key={incomeItem.customTypeId} item={incomeItem} onPress={onIncomePress}/>
                             ))
                             :
                             <Text style={CommonStyles.NoActionText}>No Records</Text>
                         :
-                        <ActivityIndicator size={'small'} color={colors.light.primary} />
+                            <ActivityIndicator size={'small'} color={colors.light.primary} />
                     }
                 </View>
                 <AddButton onPress={handleIncomeAddPress} />
@@ -279,20 +337,15 @@ export default function CreateCustom({route}:any){
                         expenseArray ?
                             expenseArray.length !== 0 ?
                             expenseArray.map(expenseItem => (
-                                <CreateCustomCustomTypeItem key={expenseItem.customExpenseId} item={expenseItem} />
+                                <CreateCustomCustomTypeItem key={expenseItem.customTypeId} item={expenseItem} onPress={onExpensePress}/>
                             ))
                             :
                             <Text style={CommonStyles.NoActionText}>No Records</Text>
                         : 
-                        <ActivityIndicator size={'small'} color={colors.light.primary} />
+                            <ActivityIndicator size={'small'} color={colors.light.primary} />
                     }
                 </View>
                 <AddButton onPress={handleExpenseAddPress} />
-                <AddToRecordButton 
-                onPress={transferToJournal} 
-                isActive={ incomeArray?.length !== 0 || expenseArray?.length !== 0 }
-                creatingRelations={creatingRelations}
-                />
             </View>
         </ScrollView>
 

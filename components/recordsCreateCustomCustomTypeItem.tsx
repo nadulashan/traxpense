@@ -1,19 +1,21 @@
 import { priceWithComma } from '@/func/general';
 import RecordStyles from '@/styles/recordsStyles';
-import { CustomExpenseTypes, CustomIncomeTypes } from '@/types/recordsTypeItemType.schema';
+import { CustomTypeProps } from '@/types/recordsTypeItemType.schema';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { Pressable, Text, View } from 'react-native';
 
 interface TypeItemTypes{
-    item:CustomIncomeTypes | CustomExpenseTypes;
+    item:CustomTypeProps;
+    onPress: ( item: CustomTypeProps ) => void;
 }
 
 export default function CreateCustomCustomTypeItem({
-    item
+    item,
+    onPress
 }:TypeItemTypes){
 
     return (
-        <Pressable style={RecordStyles.TypeItem}>
+        <Pressable onPress={ () => onPress(item) } style={RecordStyles.TypeItem}>
             <View style={RecordStyles.TypeItemBadgeName}>
                 <View style={[RecordStyles.TypeItemBadge, {backgroundColor:item.accountBadge}]}></View>
                 <Text style={RecordStyles.TypeItemText}>{ item.name }</Text>

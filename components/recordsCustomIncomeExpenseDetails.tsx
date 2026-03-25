@@ -2,14 +2,14 @@ import colors from '@/constants/colors';
 import { priceWithComma } from '@/func/general';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
-import { CustomExpenseTypes, CustomIncomeTypes } from '@/types/recordsTypeItemType.schema';
+import { CustomTypeProps } from '@/types/recordsTypeItemType.schema';
 import { ActivityIndicator, Text, View } from 'react-native';
 import CustomTypeItem from './recordsDetailsCustomTypeItem';
 
 
 interface RecordCustomIncomeExpenseDetailsTypes{
-    incomeItems:CustomIncomeTypes[] |  null;
-    expenseItems:CustomExpenseTypes[] | null;
+    incomeItems:CustomTypeProps[] |  null;
+    expenseItems:CustomTypeProps[] | null;
     customItemsSum:number;
     isCustomIncome:boolean
 }
@@ -30,7 +30,7 @@ export default function CustomIncomeExpenseDetails({
                             incomeItems ?
                                 incomeItems.length !== 0 ?
                                 incomeItems.map((items) => (
-                                    <CustomTypeItem key={items.customIncomeId} item={items} />
+                                    <CustomTypeItem key={items.customTypeId} item={items} />
                                 ))
                                 :
                                 <Text style={CommonStyles.NoActionText}>No Records</Text>
@@ -40,7 +40,7 @@ export default function CustomIncomeExpenseDetails({
                             expenseItems ?
                                 expenseItems.length !== 0 ?
                                 expenseItems.map((items) => (
-                                    <CustomTypeItem key={items.customExpenseId} item={items} />
+                                    <CustomTypeItem key={items.customTypeId} item={items} />
                                 ))
                                 :
                                 <Text style={CommonStyles.NoActionText}>No Records</Text>

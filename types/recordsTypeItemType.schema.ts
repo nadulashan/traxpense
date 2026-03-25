@@ -28,22 +28,14 @@ export interface ExpenseTypes{
     date:string 
 }
 
-export interface CustomIncomeTypes{
-    customIncomeId:number, 
+export interface CustomTypeProps{
+    customTypeId:number, 
     accountName:string,
     accountBadge:string, 
+    accountId:number,
     name:string, 
     comment:string | null, 
     createdDateTime:string, 
-    amount:number, 
-}
-
-export interface CustomExpenseTypes{
-    customExpenseId:number, 
-    accountName:string,
-    accountBadge:string, 
-    name:string, 
-    comment:string | null, 
     amount:number, 
 }
 
