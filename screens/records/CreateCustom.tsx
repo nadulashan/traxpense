@@ -1,10 +1,11 @@
 import AddToRecordButton from '@/components/addToRecordButton';
+import AddButton from '@/components/createCustomAddButton';
 import AddItemForm from '@/components/recordAddItemForm';
 import FormAccountWrapper from '@/components/recordFormAccountWrapper';
 import CreateCustomCustomTypeItem from '@/components/recordsCreateCustomCustomTypeItem';
 import colors from '@/constants/colors';
 import { addNewCustomExpense, addNewCustomIncome, createCustomRecordOnExpense, createCustomRecordOnIncome, createRelationOnExpense, createRelationOnIncome } from '@/db/records/insert';
-import { check, checkCustomExpense, checkCustomIncome, getActiveAccounts, getCustomExpenses, getCustomIncomes } from '@/db/records/select';
+import { checkCustomExpense, checkCustomIncome, getActiveAccounts, getCustomExpenses, getCustomIncomes } from '@/db/records/select';
 import { updateCustomExpenseRelation, updateCustomIncomeRelation } from '@/db/records/update';
 import { closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
 import { getLocalTime, getLongDate } from '@/func/time';
@@ -25,110 +26,50 @@ export default function CreateCustom({route}:any){
     const longDate = getLongDate(focusedDate)
 
     // States
-    const [ selectedIncomeAccount, setSelectedIncomeAccount ] = useState<{ accountId:number, accountName:string, accountBadge:string } | null>(null)
-    const [ incomeComment, setIncomeComment ] = useState<string>('')
-    const [ incomeAmountError, setIncomeAmountError ] = useState(false)
-    const [ incomeAmount, setIncomeAmount ] = useState<string>('')
-    const [ customIncomeName, setCustomIncomeName ] = useState('')
-    const [ customIncomeNameError, setCustomIncomeNameError ] = useState(false)
-    const [ customIncomeAccountsError, setCustomIncomeAccountsError ] = useState(false)
-
-    const [ selectedExpenseAccount, setSelectedExpenseAccount ] = useState<{ accountId:number, accountName:string, accountBadge:string } | null>(null)
-    const [ expenseComment, setExpenseComment ] = useState<string>('')
-    const [ expenseAmountError, setExpenseAmountError ] = useState(false)
-    const [ expenseAmount, setExpenseAmount ] = useState<string>('')
-    const [ customExpenseName, setCustomExpenseName ] = useState('')
-    const [ customExpenseNameError, setCustomExpenseNameError ] = useState(false)
-    const [ customExpenseAccountsError, setCustomExpenseAccountsError ] = useState(false)
+    const [ selectedTypeAccount, setSelectedTypeAccount ] = useState<{ accountId:number, accountName:string, accountBadge:string } | null>(null)
+    const [ typeComment, setTypeComment ] = useState<string>('')
+    const [ typeAmountError, setTypeAmountError ] = useState(false)
+    const [ typeAmount, setTypeAmount ] = useState<string>('')
+    const [ customTypeName, setCustomTypeName ] = useState('')
+    const [ customTypeNameError, setCustomTypeNameError ] = useState(false)
+    const [ customTypeAccountsError, setCustomTypeAccountsError ] = useState(false)
     
 
     const [ incomeArray, setIncomeArray ] = useState<CustomIncomeTypes[] | null>(null)
+    const incomeArrayRef = useRef<CustomIncomeTypes[] | null>(null) // Ref for create relations along with custom type creation
     const [ expenseArray, setExpenseArray ] = useState<CustomExpenseTypes[] | null>(null)
+    const expenseArrayRef = useRef< CustomExpenseTypes[] | null >(null)
 
     const [ accounts, setAccounts ] = useState<{ accountId:number, accountName:string, accountBadge:string }[] | null>(null)
     const [ creatingRelations, setCreatingRelations ] = useState(false)
 
-    // Handlers
-    async function onAddIncomePressHandler() {
-        if ( incomeAmount === '' || incomeAmount.trim().length === 0 )  {
-            setIncomeAmountError(true)
-        } else {
-            setIncomeAmountError(false)
-        }
-        if ( !selectedIncomeAccount ) {
-            setCustomIncomeAccountsError(true)
-        } else {
-            setCustomIncomeAccountsError(false)
-        }
-        if ( customIncomeName === '' || customIncomeName.trim().length === 0 )  {
-            setCustomIncomeNameError(true)
-        } else {
-            setCustomIncomeNameError(false)
-        }
+    const [ isIncome, setIsIncome ] = useState(true)
 
-        if ( selectedIncomeAccount && !incomeAmountError && !customIncomeNameError && !customIncomeAccountsError) {
-            const nowTimeDate = getLocalTime().toISOString()
-            await addNewCustomIncome(customIncomeName, incomeComment, Number(incomeAmount), selectedIncomeAccount.accountId, focusedDate, nowTimeDate)
-            setCustomIncomeName('')
-            setSelectedIncomeAccount(null)
-            setIncomeAmount('')
-            setIncomeComment('')
-            await fetchIncomes()
-        }
-    }
-    async function onAddExpensePressHandler() {
-        setCreatingRelations(true)
-        if ( expenseAmount === '' || expenseAmount.trim().length === 0 )  {
-            setExpenseAmountError(true)
-        } else {
-            setExpenseAmountError(false)
-        }
-        if ( !selectedExpenseAccount ) {
-            setCustomExpenseAccountsError(true)
-        } else {
-            setCustomExpenseAccountsError(false)
-        }
-        if ( customExpenseName === '' || customExpenseName.trim().length === 0 )  {
-            setCustomExpenseNameError(true)
-        } else {
-            setCustomExpenseNameError(false)
-        }
-
-        if ( selectedExpenseAccount && !expenseAmountError && !customExpenseNameError && !customExpenseAccountsError) {
-            const nowTimeDate = getLocalTime().toISOString()
-            await addNewCustomExpense(customExpenseName, expenseComment, Number(expenseAmount), selectedExpenseAccount.accountId, focusedDate, nowTimeDate)
-            setCustomExpenseName('')
-            setSelectedExpenseAccount(null)
-            setExpenseAmount('')
-            setExpenseComment('')
-            await fetchExpenses()
-        }
-        setCreatingRelations(false)
+    let addNewCustomType : ( name:string, comment:string | null, amount:number, accountId:number, date:string, createdDateTime:string ) => Promise<void>;
+    if ( isIncome ) {
+        addNewCustomType = addNewCustomIncome
+    } else {
+        addNewCustomType = addNewCustomExpense
     }
 
-    async function handleAccountSelector() {
-        const fetchedAccounts = await getActiveAccounts()
-        setAccounts(fetchedAccounts)
-        openSheetCaller()
-    }
-
-    const isIncome = useRef<boolean>(undefined)
-    function handleIncomeAccountSelector() {
-        isIncome.current = true
-        handleAccountSelector()
-    }
-    function handleExpenseAccountSelector() {
-        isIncome.current = false
-        handleAccountSelector()
-    }
-
-    function onAccountPress(account:{ accountId:number, accountName:string, accountBadge:string }) {
-        if ( isIncome.current ) {
-            setSelectedIncomeAccount(account)
-        } else {            
-            setSelectedExpenseAccount(account)
+    // function
+    function checkValidity() {
+        if ( typeAmount === '' || typeAmount.trim().length === 0 )  {
+            setTypeAmountError(true)
+        } else {
+            setTypeAmountError(false)
         }
-        closeSheetCaller()
+        if ( !selectedTypeAccount ) {
+            setCustomTypeAccountsError(true)
+        } else {
+            setCustomTypeAccountsError(false)
+        }
+        if ( customTypeName === '' || customTypeName.trim().length === 0 )  {
+            setCustomTypeNameError(true)
+        } else {
+            setCustomTypeNameError(false)
+        }
+
     }
 
     function calculateTotal(array:CustomIncomeTypes[] | CustomExpenseTypes[]) {
@@ -139,11 +80,51 @@ export default function CreateCustom({route}:any){
         return total
     }
 
-    async function transferToJournal() {
-        if ( incomeArray && incomeArray.length !== 0 ) {
+    // Handlers
+    async function onAddPressHandler() {
 
+        checkValidity()
+
+        if ( selectedTypeAccount && !typeAmountError && !customTypeNameError && !customTypeAccountsError) {
+
+            closeSheetCaller()
+            const nowTimeDate = getLocalTime().toISOString()
+            await addNewCustomType(customTypeName, typeComment, Number(typeAmount), selectedTypeAccount.accountId, focusedDate, nowTimeDate)
+            setCustomTypeName('')
+            setSelectedTypeAccount(null)
+            setTypeAmount('')
+            setTypeComment('')
+            await initialFetch()
+            await transferToJournal()
+        }
+    }
+
+    async function handleAccountSelector() {
+        const fetchedAccounts = await getActiveAccounts()
+        setAccounts(fetchedAccounts)
+        setCurrentScreen('Accounts')
+    }
+
+    function handleIncomeAddPress() {
+        setIsIncome(true)
+        openSheetCaller()
+    }
+
+    function handleExpenseAddPress() {
+        setIsIncome(false)
+        openSheetCaller()
+    }
+
+    function onAccountPress(account:{ accountId:number, accountName:string, accountBadge:string }) {
+        setSelectedTypeAccount(account)
+        setCurrentScreen('DEFAULT')
+    }
+
+    async function transferToJournal() {
+        if ( incomeArrayRef.current && incomeArrayRef.current.length !== 0 ) {
+            
             // Calculate Total Income
-            const totalIncome = calculateTotal( incomeArray )
+            const totalIncome = calculateTotal( incomeArrayRef.current )
 
             // If is there is record with relation
             const id = await checkCustomIncome(focusedDate)
@@ -157,10 +138,10 @@ export default function CreateCustom({route}:any){
 
         }
 
-        if ( expenseArray && expenseArray.length !== 0 ){
+        if ( expenseArrayRef.current && expenseArrayRef.current.length !== 0 ){
 
             // Calculate Total Expense
-            const totalExpense = calculateTotal( expenseArray )
+            const totalExpense = calculateTotal( expenseArrayRef.current )
 
             // If is there is record with relation
             const id = await checkCustomExpense(focusedDate)
@@ -172,18 +153,19 @@ export default function CreateCustom({route}:any){
                 await createRelationOnExpense(focusedDate, incomeId)
             }
         }
-        await check()
-        navigation.goBack()
+        // await check()
     }
 
     // DB Fetching
     async function fetchIncomes() {
         const incomes = await getCustomIncomes(focusedDate)
+        incomeArrayRef.current = incomes
         setIncomeArray(incomes)
     }
 
     async function fetchExpenses() {
         const expenses = await getCustomExpenses(focusedDate)
+        expenseArrayRef.current = expenses
         setExpenseArray(expenses)
     }
 
@@ -209,6 +191,13 @@ export default function CreateCustom({route}:any){
     // Bottom Sheet things including backdrop
     function closeSheetCaller() {
         closeBottomSheet(sheetRef)
+        setCustomTypeName('')
+        setSelectedTypeAccount(null)
+        setTypeAmount('')
+        setTypeComment('')
+        setCustomTypeNameError(false)
+        setTypeAmountError(false)
+        setCustomTypeAccountsError(false)
     }
 
     function openSheetCaller() {
@@ -227,6 +216,44 @@ export default function CreateCustom({route}:any){
             }}  
         />
     ),[])
+
+    // Multi Screen BottomSheet
+    const SCREENS = {
+        Accounts: () => < FormAccountWrapper accounts={accounts} onAccountPress={onAccountPress}/>,
+
+        DEFAULT: () => 
+            <View style={{margin:16}}>
+                <AddItemForm
+                amount={typeAmount}
+                setAmount={setTypeAmount}
+                onAddPressHandler={onAddPressHandler}
+                comment={typeComment}
+                setComment={setTypeComment}
+                amountError={typeAmountError}
+                setAmountError={setTypeAmountError}
+                handleCategorySelector={null}
+                selectedCategory={undefined}
+                handleAccountSelector={handleAccountSelector}
+                selectedAccount={selectedTypeAccount}
+                isCustomForm={true}
+                customName={customTypeName}
+                setCustomName={setCustomTypeName}
+                customTypeNameError={customTypeNameError}
+                accountError={customTypeAccountsError}
+                categoryError={undefined}
+                isEdit={false}
+                handleDeletion={undefined}
+                handleUpdate={undefined}
+                longPressWarn={undefined}
+                setLongPressWarn={undefined}
+                />
+            </View>
+    }
+
+    const [ currentScreen, setCurrentScreen ] = useState< 'DEFAULT' | 'Accounts' >('DEFAULT')
+
+
+
     return (
         <>
         <ScrollView style={{backgroundColor:colors.light.white}}>
@@ -245,30 +272,7 @@ export default function CreateCustom({route}:any){
                         <ActivityIndicator size={'small'} color={colors.light.primary} />
                     }
                 </View>
-                <AddItemForm 
-                amount={incomeAmount}
-                setAmount={setIncomeAmount}
-                onAddPressHandler={onAddIncomePressHandler}
-                comment={incomeComment}
-                setComment={setIncomeComment}
-                amountError={incomeAmountError}
-                setAmountError={setIncomeAmountError}
-                handleCategorySelector={null}
-                selectedCategory={undefined}
-                handleAccountSelector={handleIncomeAccountSelector}
-                selectedAccount={selectedIncomeAccount}
-                isCustomForm={true}
-                customName={customIncomeName}
-                setCustomName={setCustomIncomeName}
-                customTypeNameError={customIncomeNameError}
-                accountError={customIncomeAccountsError}
-                categoryError={undefined}
-                isEdit={false}
-                handleDeletion={undefined}
-                handleUpdate={undefined}
-                longPressWarn={undefined}
-                setLongPressWarn={undefined}
-                />
+                <AddButton onPress={handleIncomeAddPress} />
                 <Text style={RecordStyles.TypeText}>Expense</Text>
                 <View style={RecordStyles.TypeItemsWrapper}>
                     {
@@ -283,30 +287,7 @@ export default function CreateCustom({route}:any){
                         <ActivityIndicator size={'small'} color={colors.light.primary} />
                     }
                 </View>
-                <AddItemForm 
-                amount={expenseAmount}
-                setAmount={setExpenseAmount}
-                onAddPressHandler={onAddExpensePressHandler}
-                comment={expenseComment}
-                setComment={setExpenseComment}
-                amountError={expenseAmountError}
-                setAmountError={setExpenseAmountError}
-                handleCategorySelector={null}
-                selectedCategory={undefined}
-                handleAccountSelector={handleExpenseAccountSelector}
-                selectedAccount={selectedExpenseAccount}
-                isCustomForm={true}
-                customName={customExpenseName}
-                setCustomName={setCustomExpenseName}
-                customTypeNameError={customExpenseNameError}
-                accountError={customExpenseAccountsError}
-                categoryError={undefined}
-                isEdit={false}
-                handleDeletion={undefined}
-                handleUpdate={undefined}
-                longPressWarn={undefined}
-                setLongPressWarn={undefined}
-                />                
+                <AddButton onPress={handleExpenseAddPress} />
                 <AddToRecordButton 
                 onPress={transferToJournal} 
                 isActive={ incomeArray?.length !== 0 || expenseArray?.length !== 0 }
@@ -322,10 +303,9 @@ export default function CreateCustom({route}:any){
             enablePanDownToClose={true}
             ref={sheetRef}
             backdropComponent={backDrop}
-            // onChange={handleSuspendNotificationState}
             >
             <BottomSheetView>
-            < FormAccountWrapper accounts={accounts} onAccountPress={onAccountPress}/>
+                {SCREENS[currentScreen]()}
             </BottomSheetView>
         </BottomSheet>
         </>

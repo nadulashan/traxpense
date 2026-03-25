@@ -3,13 +3,12 @@ import getDB from "../opendb";
 
 export async function updateCustomIncomeRelation( amount: number, id: number ) {
     try {
-        const store = amount * 100
         const db = await getDB();
         db.runAsync(`
             UPDATE income
             SET amount = ?
             WHERE typeId = ?
-            `, [ store, id] )
+            `, [ amount, id] )
     } catch (e) {
         handleDBError(e, 'Updating custom relation on income failed')
     }
@@ -17,13 +16,12 @@ export async function updateCustomIncomeRelation( amount: number, id: number ) {
 
 export async function updateCustomExpenseRelation( amount: number, id: number ) {
     try {
-        const store = amount * 100
         const db = await getDB();
         db.runAsync(`
             UPDATE expenses
             SET amount = ?
             WHERE typeId = ?
-            `, [ store, id] )
+            `, [ amount, id] )
     } catch (e) {
         handleDBError(e, 'Updating custom relation on expense failed')
     }

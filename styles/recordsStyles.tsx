@@ -233,6 +233,12 @@ const RecordStyles = StyleSheet.create({
         paddingBottom:16
     },
 
+    AddButton: {
+        fontFamily:fonts.semiBold,
+        fontSize:16,
+        textAlign:'right'
+    },
+
     // Add to Journal
     AddToJournalButton: {
         width:'100%',
