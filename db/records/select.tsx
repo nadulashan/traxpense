@@ -170,6 +170,20 @@ export async function checkCustomExpense(date:string) {
     }
 }
 
+export async function check() {
+    try{ 
+        const db = await getDB();
+        const id = await db.getAllAsync(`
+                            SELECT  *
+                            FROM    expenses
+                            WHERE   isCustom = 1
+                        `)
+        console.log( id )
+    } catch (e) {
+        handleDBError( e, 'Checking for custom expense relation failed' )
+    }
+}
+
 export async function getTransfer(date:string) {
     try{ 
         const db = await getDB();

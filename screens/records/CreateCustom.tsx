@@ -4,7 +4,7 @@ import FormAccountWrapper from '@/components/recordFormAccountWrapper';
 import CreateCustomCustomTypeItem from '@/components/recordsCreateCustomCustomTypeItem';
 import colors from '@/constants/colors';
 import { addNewCustomExpense, addNewCustomIncome, createCustomRecordOnExpense, createCustomRecordOnIncome, createRelationOnExpense, createRelationOnIncome } from '@/db/records/insert';
-import { checkCustomExpense, checkCustomIncome, getActiveAccounts, getCustomExpenses, getCustomIncomes } from '@/db/records/select';
+import { check, checkCustomExpense, checkCustomIncome, getActiveAccounts, getCustomExpenses, getCustomIncomes } from '@/db/records/select';
 import { updateCustomExpenseRelation, updateCustomIncomeRelation } from '@/db/records/update';
 import { closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
 import { getLocalTime, getLongDate } from '@/func/time';
@@ -151,7 +151,7 @@ export default function CreateCustom({route}:any){
                 await updateCustomIncomeRelation( totalIncome, id.typeId ) // Update is yes
             } else {
                 // create new record on income and relation with customIncome
-                const incomeId = await createCustomRecordOnIncome(focusedDate, getLocalTime(), totalIncome/100)
+                const incomeId = await createCustomRecordOnIncome(focusedDate, getLocalTime().toISOString(), totalIncome)
                 await createRelationOnIncome(focusedDate, incomeId)
             }
 
@@ -168,11 +168,11 @@ export default function CreateCustom({route}:any){
                 await updateCustomExpenseRelation ( totalExpense, id.typeId ) // Update is yes
             } else {
                 // create new record on income and relation with customIncome
-                const incomeId = await createCustomRecordOnExpense(focusedDate, getLocalTime(), totalExpense/100)
+                const incomeId = await createCustomRecordOnExpense(focusedDate, getLocalTime().toISOString(), totalExpense)
                 await createRelationOnExpense(focusedDate, incomeId)
             }
         }
-
+        await check()
         navigation.goBack()
     }
 
@@ -190,6 +190,14 @@ export default function CreateCustom({route}:any){
     async function initialFetch() {
         await fetchIncomes()
         await fetchExpenses()
+    }
+
+    // EDIT
+    const [ focusedIncome, setFocusedIncome ] = useState< CustomIncomeTypes | undefined >(undefined)
+    const [ focusedExpense, setFocusedExpense ] = useState< CustomExpenseTypes | undefined >(undefined)
+
+    function onItemPress() {
+        
     }
 
     useEffect(() => {
