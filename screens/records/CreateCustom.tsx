@@ -45,7 +45,7 @@ export default function CreateCustom({route}:any){
     const [ isIncome, setIsIncome ] = useState(true)
 
     let addNewCustomType : ( name:string, comment:string | null, amount:number, accountId:number, date:string, createdDateTime:string ) => Promise<void>;
-    let deleteCustomType: ( id: number ) => Promise<void>;
+    let deleteCustomType: ( id: number, accountId: number ) => Promise<void>;
     let updateCustomType: ( name:string, accountId:number, comment:string | null, amount:number, id:number) => Promise<void>;
     if ( isIncome ) {
         addNewCustomType = addNewCustomIncome
@@ -218,7 +218,7 @@ export default function CreateCustom({route}:any){
 
     async function onDeletePress() {
         if ( focusedItem.current ) {
-            deleteCustomType(focusedItem.current.customTypeId)
+            deleteCustomType( focusedItem.current.customTypeId, focusedItem.current.accountId )
             closeSheetCaller()
             await initialFetch()
             await transferToJournal()

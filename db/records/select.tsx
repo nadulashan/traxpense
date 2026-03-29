@@ -211,3 +211,89 @@ export async function getTransfer(date:string) {
         handleDBError( e, 'Fetching transfers failed' )
     }
 }
+
+export async function getIncomeAmount( id: number ): Promise<number> {
+    try{ 
+        const db = await getDB();
+        const fetch = await db.getFirstAsync<{ amount: number }>(`
+                            SELECT  amount
+                            FROM    income
+                            WHERE   typeId = ?
+                        `, [ id ])
+        if ( fetch ) {
+            return fetch.amount
+        } else {
+            return 0
+        }
+    } catch (e) {
+        handleDBError( e, 'Fetching income amount failed' )
+    }
+}
+
+export async function getExpenseAmount( id: number ): Promise<number> {
+    try{ 
+        const db = await getDB();
+        const fetch = await db.getFirstAsync<{ amount: number }>(`
+                            SELECT  amount
+                            FROM    expenses
+                            WHERE   typeId = ?
+                        `, [ id ])
+        if ( fetch ) {
+            return fetch.amount
+        } else {
+            return 0
+        }
+    } catch (e) {
+        handleDBError( e, 'Fetching expense amount failed' )
+    }
+}
+
+export async function getCustomIncomeAmount( id: number ): Promise<number> {
+    try{ 
+        const db = await getDB();
+        const fetch = await db.getFirstAsync<{ amount: number }>(`
+                            SELECT  amount
+                            FROM    customIncome
+                            WHERE   customTypeId = ?
+                        `, [ id ])
+        if ( fetch ) {
+            return fetch.amount
+        } else {
+            return 0
+        }
+    } catch (e) {
+        handleDBError( e, 'Fetching custom income amount failed' )
+    }
+}
+
+export async function getCustomExpenseAmount( id: number ): Promise<number> {
+    try{ 
+        const db = await getDB();
+        const fetch = await db.getFirstAsync<{ amount: number }>(`
+                            SELECT  amount
+                            FROM    customExpenses
+                            WHERE   customTypeId = ?
+                        `, [ id ])
+        if ( fetch ) {
+            return fetch.amount
+        } else {
+            return 0
+        }
+    } catch (e) {
+        handleDBError( e, 'Fetching custom expense amount failed' )
+    }
+}
+
+export async function getTransferDetails( id: number ) {
+    try{ 
+        const db = await getDB();
+        const fetch = await db.getFirstAsync<{ transferFrom: number; transferTo: number; amount:number }>(`
+                            SELECT  transferFrom, transferTo, amount
+                            FROM    transfers
+                            WHERE   transferId = ?
+                        `, [ id ])
+        return fetch
+    } catch (e) {
+        handleDBError( e, 'Fetching transfer IDs failed' )
+    }
+}

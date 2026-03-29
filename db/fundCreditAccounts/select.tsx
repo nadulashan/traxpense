@@ -33,7 +33,7 @@ export async function getFundAccounts() {
     try{
         const db = await getDB();
         const accounts = await db.getAllAsync<{accountId: number;accountName:string; accountBadge:string;amount:number;isActive:number;}>(`
-                            SELECT accountId,accountName,accountBadge,amount,isActive 
+                            SELECT accountId,accountName,accountBadge,amount,runningAmount,isActive 
                             FROM accounts
                             WHERE isCredit=0;
                         `)
@@ -94,5 +94,23 @@ export async function checkDependents(id:number){
         }
     } catch (e){
         handleDBError(e,'Fetching account(1) details failed')
+    }
+}
+
+export async function getRunningAmount( id: number ): Promise<number> {
+    try{
+        const db = await getDB()
+        const runningAmount = await db.getFirstAsync<{runningAmount:number}>(`
+                SELECT runningAmount
+                FROM accounts
+                WHERE accountId = ?
+            `, [ id ])
+        if ( runningAmount ) {
+            return runningAmount.runningAmount
+        } else {
+            return 0
+        }
+    } catch ( e ) {
+        handleDBError(e, 'Fetching Running Amount Failed')
     }
 }

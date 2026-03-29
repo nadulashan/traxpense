@@ -133,7 +133,7 @@ export default function FundCreditAccounts({route}:Props){
 
     async function updateAccountHandler(){
         if (focusedAccount){
-            updateAccount(focusedAccount.accountId,inputName,Number(inputBalance), inputBadge)
+            updateAccount(focusedAccount.accountId,inputName,Number(inputBalance), focusedAccount.amount, inputBadge)
             await refreshAccountBadges()
             resetInputs()
             closeSheetCaller()
@@ -184,6 +184,7 @@ export default function FundCreditAccounts({route}:Props){
             accounts = await getCreditAccounts()
         }
         setFetchedAccounts(accounts)
+        console.log(accounts)
         setIsAccountsReady(true)
     }
 

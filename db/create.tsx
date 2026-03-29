@@ -10,6 +10,7 @@ export async function initDB(){
                 accountName TEXT NOT NULL,
                 accountBadge TEXT DEFAULT NULL,
                 amount INTEGER NOT NULL,
+                runningAmount INTEGER NOT NULL,
                 isCredit BOOL NOT NULL,
                 isActive BOOL NOT NULL
             );

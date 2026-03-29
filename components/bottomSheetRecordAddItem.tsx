@@ -23,7 +23,7 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
 
     let getActiveTypeCategories:() => Promise<{ categoryId:number, name:string, badge:string }[]>;
     let addNewType:(categoryId:number, accountId:number, comment:string | null, date:string, time:string, amount:number) => void;
-    let deleteType: (id: number) => void;
+    let deleteType: (id: number, accoundId: number) => void;
     let updateType: (categoryId:number, accountId:number, comment:string | null, amount:number, id:number) => void;
     if ( type.current === 'income' ){
         getActiveTypeCategories = getActiveIncomeCategories
@@ -131,7 +131,7 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
     // Delete
     function handleDeletion() {
         if ( focusedItem ) {
-            deleteType(focusedItem.typeId)
+            deleteType(focusedItem.typeId, focusedItem.accountId)
         }
         setLongPressWarn(false)
         setRecordsRefreshTrigger(inc => inc+1)
