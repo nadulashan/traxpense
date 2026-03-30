@@ -125,7 +125,7 @@ export default function CreateCustom({route}:any){
 
         await checkValidity()
 
-        if ( selectedTypeAccount && !typeAmountError && !customTypeNameError && !customTypeAccountsError) {
+        if ( selectedTypeAccount && !typeAmountError && !customTypeNameError && !customTypeAccountsError && !negativeBalanceErrorRef.current ) {
 
             closeSheetCaller()
             const nowTimeDate = getLocalTime().toISOString()
@@ -265,7 +265,7 @@ export default function CreateCustom({route}:any){
 
         await checkValidity()
 
-        if ( selectedTypeAccount && !typeAmountError && !customTypeNameError && !customTypeAccountsError && focusedItem.current) {
+        if ( selectedTypeAccount && !typeAmountError && !customTypeNameError && !customTypeAccountsError && focusedItem.current && !negativeBalanceErrorRef.current) {
             await updateCustomType( customTypeName, selectedTypeAccount?.accountId, typeComment, Number(typeAmount), focusedItem.current.customTypeId)
             closeSheetCaller()
             await initialFetch()
