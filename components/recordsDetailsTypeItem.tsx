@@ -1,13 +1,13 @@
 import { useCheckContext } from '@/context/recordsContext';
 import { priceWithComma } from '@/func/general';
 import RecordStyles from '@/styles/recordsStyles';
-import { ExpenseTypes, IncomeTypes } from '@/types/recordsTypeItemType.schema';
+import { TypeProps } from '@/types/recordsTypeItemType.schema';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Pressable, Text, View } from 'react-native';
 
 interface TypeItemTypes{
-    item:IncomeTypes | ExpenseTypes;
+    item:TypeProps;
     type:'income' | 'expense';
 }
 

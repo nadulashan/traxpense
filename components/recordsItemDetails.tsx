@@ -2,10 +2,11 @@ import colors from '@/constants/colors';
 import { priceWithComma } from '@/func/general';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
+import { TypeProps } from '@/types/recordsTypeItemType.schema';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 interface ItemDetailsTypes {
-    item: any;
+    item: React.RefObject< TypeProps | undefined>;
     onEditPress: () => void;
 }
 
@@ -15,31 +16,31 @@ export default function ItemDetails({
 }:ItemDetailsTypes) {
 
     // Setup date time for display
-    const dateTime = item?.createdDateTime.split('.')[0].split('T')
+    const dateTime = item.current?.createdDateTime.split('.')[0].split('T')
     const displayDateTime = dateTime?.join(' @ ')
 
     return (
         <View style={RecordStyles.DetailsWrapper}>
             {
-                item?
+                item.current?
                 <>
                     <View style={RecordStyles.DetailsHeaderWrapper}>
                         <View style={RecordStyles.DetailsHeaderItem}>
-                            <Text style={RecordStyles.DetailsHeaderMediumText}>{item.name}</Text>
+                            <Text style={RecordStyles.DetailsHeaderMediumText}>{item.current.name}</Text>
                             <Text style={RecordStyles.DetailsHeaderLightText}>{displayDateTime}</Text>
                         </View>
                         <View style={RecordStyles.DetailsHeaderItem}>
-                            <Text style={RecordStyles.DetailsHeaderMediumText}>{priceWithComma(item.amount)}</Text>
+                            <Text style={RecordStyles.DetailsHeaderMediumText}>{priceWithComma(item.current.amount)}</Text>
                             <View style={[RecordStyles.DetailsAccountWrapper, RecordStyles.DetailsPriceAccountWrapper]}>
-                                <View style={[RecordStyles.TypeItemBadge, {backgroundColor:item.accountBadge}]}></View>
-                                <Text style={RecordStyles.DetailsHeaderLightText}>{item.accountName}</Text>
+                                <View style={[RecordStyles.TypeItemBadge, {backgroundColor:item.current.accountBadge}]}></View>
+                                <Text style={RecordStyles.DetailsHeaderLightText}>{item.current.accountName}</Text>
                             </View>
                         </View>
                     </View>
                     <View style={RecordStyles.DetailsComment}>
                         {
-                            item.comment?
-                            <Text style={RecordStyles.DetailsCommentText}>{ item.comment }</Text>
+                            item.current.comment?
+                            <Text style={RecordStyles.DetailsCommentText}>{ item.current.comment }</Text>
                             :
                             <Text style={[RecordStyles.DetailsCommentText, {color:'grey'}]}>No Comment</Text>
                         }
