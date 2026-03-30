@@ -7,7 +7,7 @@ import Fontisto from '@expo/vector-icons/Fontisto';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 interface ItemDetailsTypes {
-    item: TransferTypes | undefined;
+    item: React.RefObject<TransferTypes | undefined>;
     onEditPress: () => void;
 }
 
@@ -17,31 +17,31 @@ export default function TransferDetails({
 }:ItemDetailsTypes) {
 
     // Setup date time for display
-    const dateTime = item?.createdDateTime.split('.')[0].split('T')
+    const dateTime = item.current?.createdDateTime.split('.')[0].split('T')
     const displayDateTime = dateTime?.join(' @ ')
 
     return (
         <View style={RecordStyles.DetailsWrapper}>
             {
-                item?
+                item.current?
                 <>
                     <View style={RecordStyles.DetailsHeaderWrapper}>
                         <View style={RecordStyles.DetailsHeaderItem}>
                             <View style={{flexDirection:'row', gap:12, alignItems:'center'}}>
-                                <Text style={RecordStyles.DetailsHeaderMediumText}>{item.from_account_name}</Text>
+                                <Text style={RecordStyles.DetailsHeaderMediumText}>{item.current.from_account_name}</Text>
                                 <Fontisto name="arrow-right-l" size={24} color="black" /> 
-                                <Text style={RecordStyles.DetailsHeaderMediumText}>{item.to_account_name}</Text>
+                                <Text style={RecordStyles.DetailsHeaderMediumText}>{item.current.to_account_name}</Text>
                             </View>
                             <Text style={RecordStyles.DetailsHeaderLightText}>{displayDateTime}</Text>
                         </View>
                         <View style={RecordStyles.DetailsHeaderItem}>
-                            <Text style={RecordStyles.DetailsHeaderMediumText}>{priceWithComma(item.amount)}</Text>
+                            <Text style={RecordStyles.DetailsHeaderMediumText}>{priceWithComma(item.current.amount)}</Text>
                         </View>
                     </View>
                     <View style={RecordStyles.DetailsComment}>
                         {
-                            item.comment?
-                            <Text style={RecordStyles.DetailsCommentText}>{ item.comment }</Text>
+                            item.current.comment?
+                            <Text style={RecordStyles.DetailsCommentText}>{ item.current.comment }</Text>
                             :
                             <Text style={[RecordStyles.DetailsCommentText, {color:'grey'}]}>No Comment</Text>
                         }

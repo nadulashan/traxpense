@@ -80,7 +80,7 @@ export default function Records(){
   
 
   // FOR ITEM DETAILS SHEET
-  const [ focusedItem, setFocusedItem ] = useState<TypeProps | undefined>(undefined)
+  const focusedItem  = useRef<TypeProps | undefined>(undefined)
 
   async function switchItemDetail(item: TypeProps, clickedType: 'income' | 'expense' ) {
 
@@ -91,18 +91,18 @@ export default function Records(){
     }
 
     setCurrentSheetState( 'ItemDetails' )
-    setFocusedItem(item)
+    focusedItem.current = item
     openStateSheetCaller()
   }
 
-  // FOR TRANSFER DETAILSCommonStyles.NoActionDangerText
-  const [ transferItem, setTransferItem ] = useState< TransferTypes | undefined >(undefined)
+  // FOR TRANSFER DETAILS
+  const transferItem = useRef< TransferTypes | undefined >(undefined)
 
   function switchTransferDetails(item:TransferTypes) {
 
     isTransfer.current = true
 
-    setTransferItem(item)
+    transferItem.current = item
     setCurrentSheetState('TransferDetails')
     openStateSheetCaller()
   }
@@ -171,8 +171,8 @@ export default function Records(){
   
   function closeStateSheetCaller(){
     closeBottomSheet(stateSheetRef)
-    setFocusedItem(undefined)
-    setTransferItem(undefined)
+    focusedItem.current = undefined
+    transferItem.current = undefined
     isTransfer.current = false
     setCurrentSheetState('CreationMenu')
   }

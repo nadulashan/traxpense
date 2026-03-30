@@ -19,7 +19,7 @@ export async function addNewCreditAccount(name:string,badge:string,amount:number
         const db = await getDB();
         await db.runAsync(`
                 INSERT INTO accounts(accountName,accountBadge,amount, runningAmount, isCredit, isActive) VALUES (?,?,?,?,?,?)    
-            `, [name,badge,toBeStored,toBeStored,1,1])
+            `, [name,badge,toBeStored,0,1,1])
     } catch (e){
         handleDBError(e,'Inserting Credit account failed')
     }

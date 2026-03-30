@@ -4,6 +4,7 @@ import { addTransfer } from '@/db/records/insert';
 import { getActiveAccounts } from '@/db/records/select';
 import { updateTransfer } from '@/db/records/update';
 import { checkTypes } from '@/func/bottomSheetfunc';
+import { checkNegativeBalance } from '@/func/general';
 import { getLocalTime } from '@/func/time';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
@@ -25,12 +26,10 @@ interface TransferFormTypes{
     transferFromAccount:Accounts | undefined;
     transferToAccount:Accounts | undefined;
     amount:string;
-    setAmount:React.Dispatch<React.SetStateAction<string>>;
     accountError:boolean;
     amountError:boolean;
     transferFromError: boolean;
     transferToError:boolean;
-    setAmountError:React.Dispatch<React.SetStateAction<boolean>>;
     onTransferPress:() => void;
     comment:string;
     setComment:React.Dispatch<React.SetStateAction<string>>;
@@ -39,6 +38,8 @@ interface TransferFormTypes{
     onPressWarn:boolean;
     setOnPressWarn:React.Dispatch<React.SetStateAction<boolean>>;
     handleUpdate: () => void;
+    onChangeAmountText: ( value: string ) => void;
+    negativeBalanceError: boolean;
 }
 
 function TransferFrom({ 
@@ -47,12 +48,10 @@ function TransferFrom({
     transferFromAccount, 
     transferToAccount, 
     amount,
-    setAmount,
     accountError,
     amountError,
     transferFromError,
     transferToError,
-    setAmountError,
     onTransferPress,
     comment,
     setComment,
@@ -60,7 +59,9 @@ function TransferFrom({
     handleDelete,
     onPressWarn,
     setOnPressWarn,
-    handleUpdate
+    handleUpdate,
+    onChangeAmountText,
+    negativeBalanceError
 } : TransferFormTypes) {
     return (
         <View style={{gap:16}}>   
@@ -132,12 +133,7 @@ function TransferFrom({
                     keyboardType='numeric'
                     value={amount}
                     onChangeText={value => {
-                        setAmount(value.trim())
-                        if ( !checkTypes(value) ) {
-                            setAmountError(true)
-                        } else {
-                            setAmountError(false)
-                        }
+                        onChangeAmountText( value )
                     }}
                     style={CommonStyles.BottomSheetInput}
                     placeholder='Enter Amount'
@@ -155,7 +151,13 @@ function TransferFrom({
                 onChangeText={value => setComment(value)}
                 style={CommonStyles.BottomSheetInput}
                 placeholder='Comment ( optional )'
-            />     
+            /> 
+            {
+                negativeBalanceError?
+                <Text style={[CommonStyles.NoActionDangerText, {textAlign:'center'}]}>Not Enough Balance</Text>
+                :
+                null
+            }    
             {
                 !isEdit?
                 <Pressable
@@ -186,7 +188,7 @@ function TransferFrom({
 }
 
 interface TransferFormType{
-    focusedItem: TransferTypes | undefined;
+    focusedItem: React.RefObject<TransferTypes | undefined>;
 }
 
 export default function Transfers({ focusedItem } : TransferFormType) {
@@ -201,6 +203,7 @@ export default function Transfers({ focusedItem } : TransferFormType) {
     const [ comment, setComment ] = useState< string >('')
     const [ accountError, setAccountError ] = useState(false)
     const [ amountError, setAmountError ] = useState(false)
+    const amountErrorRef = useRef(false)
     const [ transferFromError, setTransferFromError ] = useState(false)
     const [ transferToError, setTransferToError ] = useState(false)
 
@@ -209,6 +212,8 @@ export default function Transfers({ focusedItem } : TransferFormType) {
 
     const [ isEdit, setIsEdit ] = useState(false)
     const [ onPressWarn, setOnPressWarn ] = useState(false)
+    const [ negativeBalanceError, setNegativeBalanceError ] = useState(false)
+    const negativeBalanceErrorRef = useRef(false)
 
     async function refreashAccounts() {
         const fetchedAccounts = await getActiveAccounts()
@@ -254,8 +259,8 @@ export default function Transfers({ focusedItem } : TransferFormType) {
         }
     }
 
-    function checkValidity() {
-        if ( amount === '' ) {
+    async function checkValidity() {
+        if ( amount === '' || amount.trim().length === 0 ) {
             setAmountError(true)
         } else {
             setAmountError(false)
@@ -272,15 +277,37 @@ export default function Transfers({ focusedItem } : TransferFormType) {
         } else {
             setTransferToError(false)
         }
+
+        if ( transferFromAccount && !amountErrorRef.current ) {
+
+            const error = await checkNegativeBalance( transferFromAccount.accountId, amount, focusedItem)
+
+            setNegativeBalanceError(error)
+            negativeBalanceErrorRef.current = error
+        }
     }
 
-    function onTransferPress() {
+    function onChangeAmountText( value: string ) {
+        setAmount(value.trim())
+        setNegativeBalanceError(false)
+        negativeBalanceErrorRef.current = false
 
-        checkValidity()
+        if ( !checkTypes(value) ) {
+            setAmountError(true)
+            amountErrorRef.current = true
+        } else {
+            setAmountError(false)
+            amountErrorRef.current = false
+        }
+    }
 
-        if ( !amountError && transferFromAccount && transferToAccount ) {
+    async function onTransferPress() {
+
+        await checkValidity()
+
+        if ( !amountErrorRef.current && transferFromAccount && transferToAccount && !negativeBalanceErrorRef.current) {
             const todayDateTime = getLocalTime().toISOString()
-            addTransfer(transferFromAccount.accountId, transferToAccount.accountId, comment, focusedDate, todayDateTime, Number(amount) )
+            await addTransfer(transferFromAccount.accountId, transferToAccount.accountId, comment, focusedDate, todayDateTime, Number(amount) )
             setRecordsRefreshTrigger(inc => inc+1)
             closeStateSheetCaller()
         }
@@ -288,15 +315,15 @@ export default function Transfers({ focusedItem } : TransferFormType) {
     
     // Edit
     function updateStatesUnderFocused() {
-        if ( focusedItem ) {
+        if ( focusedItem.current ) {
             setIsEdit(true)
-            setTransferFromAccount({accountId:focusedItem.transferFrom, accountName:focusedItem.from_account_name, accountBadge:focusedItem.from_account_badge})
-            transferFromRef.current = focusedItem.transferFrom
-            setTransferToAccount({accountId:focusedItem.transferTo, accountName:focusedItem.to_account_name, accountBadge:focusedItem.to_account_badge})
-            transferToRef.current = focusedItem.transferTo
-            setAmount((focusedItem.amount / 100).toString())
-            if ( focusedItem.comment ) {
-                setComment(focusedItem.comment)
+            setTransferFromAccount({accountId:focusedItem.current.transferFrom, accountName:focusedItem.current.from_account_name, accountBadge:focusedItem.current.from_account_badge})
+            transferFromRef.current = focusedItem.current.transferFrom
+            setTransferToAccount({accountId:focusedItem.current.transferTo, accountName:focusedItem.current.to_account_name, accountBadge:focusedItem.current.to_account_badge})
+            transferToRef.current = focusedItem.current.transferTo
+            setAmount((focusedItem.current.amount / 100).toString())
+            if ( focusedItem.current.comment ) {
+                setComment(focusedItem.current.comment)
             }
             setCurrentScreen('DEFAULT')
         }
@@ -304,27 +331,27 @@ export default function Transfers({ focusedItem } : TransferFormType) {
 
     useEffect(() => {
         updateStatesUnderFocused()
-    }, [ focusedItem ])
+    }, [ focusedItem.current ])
 
     // Delete
-    function handleDelete() {
-        if ( focusedItem ) {
-            deleteTransfer(focusedItem.transferId)
+    async function handleDelete() {
+        if ( focusedItem.current ) {
+            await deleteTransfer(focusedItem.current.transferId)
         }
         setRecordsRefreshTrigger(inc => inc + 1)
         closeStateSheetCaller()
     }
 
     // update
-    function handleUpdate() {
-        checkValidity()        
+    async function handleUpdate() {
+        await checkValidity()        
 
-        if ( !amountError && transferFromAccount && transferToAccount && focusedItem ) {
-            updateTransfer(transferFromAccount.accountId, transferToAccount.accountId, Number(amount), comment, focusedItem.transferId)
+        if ( !amountErrorRef.current && transferFromAccount && transferToAccount && focusedItem.current && !negativeBalanceErrorRef.current ) {
+            await updateTransfer(transferFromAccount.accountId, transferToAccount.accountId, Number(amount), comment, focusedItem.current.transferId)
             setRecordsRefreshTrigger(inc => inc + 1)
+            closeStateSheetCaller()
         }
 
-        closeStateSheetCaller()
     }
 
     const [ currentScreen, setCurrentScreen ] = useState<'DEFAULT' | 'ACCOUNT_SELECT'>('DEFAULT')
@@ -336,10 +363,8 @@ export default function Transfers({ focusedItem } : TransferFormType) {
                             transferFromAccount={transferFromAccount}
                             transferToAccount={transferToAccount}
                             amount={amount}
-                            setAmount={setAmount}
                             accountError={accountError}
                             amountError={amountError}
-                            setAmountError={setAmountError}
                             transferFromError={transferFromError}
                             transferToError={transferToError}
                             onTransferPress={onTransferPress}
@@ -350,6 +375,8 @@ export default function Transfers({ focusedItem } : TransferFormType) {
                             setOnPressWarn={setOnPressWarn}
                             handleDelete={handleDelete}
                             handleUpdate={handleUpdate}
+                            onChangeAmountText={onChangeAmountText}
+                            negativeBalanceError={negativeBalanceError}
                         />,
 
         ACCOUNT_SELECT: () => <FormAccountWrapper

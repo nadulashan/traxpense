@@ -1,9 +1,10 @@
 import { useCheckContext } from '@/context/recordsContext';
-import { getRunningAmount } from '@/db/fundCreditAccounts/select';
 import { deleteExpense, deleteIncome } from '@/db/records/delete';
 import { addNewExpense, addNewIncome } from '@/db/records/insert';
 import { getActiveAccounts, getActiveExpenseCategories, getActiveIncomeCategories } from '@/db/records/select';
 import { updateExpenseItem, updateIncomeItem } from '@/db/records/update';
+import { checkTypes } from '@/func/bottomSheetfunc';
+import { checkNegativeBalance } from '@/func/general';
 import { getLocalTime } from '@/func/time';
 import RecordStyles from '@/styles/recordsStyles';
 import { ActiveAccountsProps, TypeProps } from '@/types/recordsTypeItemType.schema';
@@ -15,7 +16,7 @@ import FormCategoryWrapper from './recordFormCategoryWrapper';
 
 interface AddItemTypes {
   type: React.RefObject<"income" | "expense" | null>;
-  focusedItem: TypeProps | undefined;
+  focusedItem: React.RefObject<TypeProps | undefined>;
 }
 
 export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemTypes) {
@@ -79,10 +80,28 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
         }
 
         if ( selectedAccount && !amountError && type.current === 'expense' ) {
-            const runningAmount = await getRunningAmount( selectedAccount.accountId )
-            const error = !(runningAmount >= Number(amount) * 100)
+            
+            const error = await checkNegativeBalance( selectedAccount.accountId, amount, focusedItem)
             setNegativeBalanceError( error )
             negativeBalanceErrorRef.current = error
+        }
+    }
+
+    // EVENTS
+    function onAmountTextChange(value: string) {
+        if ( value === '' ) {
+            setAmountError(true)
+            setAmount( value )
+            setNegativeBalanceError( false )
+            negativeBalanceErrorRef.current = false
+        }
+        if ( checkTypes(value) ) {
+            setAmount( value )
+            setNegativeBalanceError( false )
+            negativeBalanceErrorRef.current = false
+            setAmountError(false)
+        } else {
+            setAmountError(true)
         }
     }
 
@@ -132,25 +151,25 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
 
     // Handle Edit
     function updateStatesUnderFocused() {
-        if ( focusedItem ) {
+        if ( focusedItem.current ) {
             setIsEdit(true)
-            setSelectedCategory({ categoryId:focusedItem.categoryId, name:focusedItem.name, badge:focusedItem.badge })
-            setAmount(( focusedItem.amount / 100).toString() )
-            setSelectedAccount({ accountId:focusedItem.accountId, accountName:focusedItem.accountName, accountBadge:focusedItem.accountBadge })
-            if ( focusedItem.comment ){
-                setComment(focusedItem.comment)
+            setSelectedCategory({ categoryId:focusedItem.current.categoryId, name:focusedItem.current.name, badge:focusedItem.current.badge })
+            setAmount(( focusedItem.current.amount / 100).toString() )
+            setSelectedAccount({ accountId:focusedItem.current.accountId, accountName:focusedItem.current.accountName, accountBadge:focusedItem.current.accountBadge })
+            if ( focusedItem.current.comment ){
+                setComment(focusedItem.current.comment)
             }
         }
     }
 
     useEffect(() => {
         updateStatesUnderFocused()
-    }, [ focusedItem ])
+    }, [ focusedItem.current ])
 
     // Delete
     async function handleDeletion() {
-        if ( focusedItem ) {
-            await deleteType(focusedItem.typeId, focusedItem.accountId)
+        if ( focusedItem.current ) {
+            await deleteType(focusedItem.current.typeId, focusedItem.current.accountId)
         }
         setLongPressWarn(false)
         setRecordsRefreshTrigger(inc => inc+1)
@@ -161,8 +180,8 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
         
         await checkValidity()
 
-        if ( !amountErrorRef.current && selectedAccount && selectedCategory && focusedItem && !negativeBalanceErrorRef.current) {
-            await updateType(selectedCategory.categoryId, selectedAccount.accountId, comment, Number(amount), focusedItem.typeId)
+        if ( !amountErrorRef.current && selectedAccount && selectedCategory && focusedItem.current && !negativeBalanceErrorRef.current) {
+            await updateType(selectedCategory.categoryId, selectedAccount.accountId, comment, Number(amount), focusedItem.current.typeId)
             setRecordsRefreshTrigger(inc => inc+1)
             closeStateSheetCaller()
         }
@@ -171,12 +190,10 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
     const SCREEN = {
         Form:() => <AddItemForm 
                 amount={amount}
-                setAmount={setAmount}
                 onAddPressHandler={onAddPressHandler}
                 comment={comment}
                 setComment={setComment}
                 amountError={amountError}
-                setAmountError={setAmountError}
                 handleCategorySelector={handleCategorySelector}
                 selectedCategory={selectedCategory}
                 handleAccountSelector={handleAccountSelector}
@@ -193,7 +210,7 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
                 setLongPressWarn={setLongPressWarn}
                 handleUpdate={handleUpdate}
                 negativeBalanceError={negativeBalanceError}
-                setNegativeBalanceError={setNegativeBalanceError}
+                onAmountTextChange={onAmountTextChange}
             />,
         Category: () => <FormCategoryWrapper 
                         categories={categories}

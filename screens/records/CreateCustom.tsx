@@ -7,7 +7,8 @@ import { deleteCustomExpense, deleteCustomExpenseRelationOnExpense, deleteCustom
 import { addNewCustomExpense, addNewCustomIncome, createCustomRecordOnExpense, createCustomRecordOnIncome, createRelationOnExpense, createRelationOnIncome } from '@/db/records/insert';
 import { checkCustomExpense, checkCustomIncome, getActiveAccounts, getCustomExpenses, getCustomIncomes } from '@/db/records/select';
 import { updateCustomExpense, updateCustomExpenseRelation, updateCustomIncome, updateCustomIncomeRelation } from '@/db/records/update';
-import { closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
+import { checkTypes, closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
+import { checkNegativeBalance } from '@/func/general';
 import { getLocalTime, getLongDate } from '@/func/time';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
@@ -29,10 +30,13 @@ export default function CreateCustom({route}:any){
     const [ selectedTypeAccount, setSelectedTypeAccount ] = useState<{ accountId:number, accountName:string, accountBadge:string } | null>(null)
     const [ typeComment, setTypeComment ] = useState<string>('')
     const [ typeAmountError, setTypeAmountError ] = useState(false)
+    const typeAmountErrorRef = useRef(false)
     const [ typeAmount, setTypeAmount ] = useState<string>('')
     const [ customTypeName, setCustomTypeName ] = useState('')
     const [ customTypeNameError, setCustomTypeNameError ] = useState(false)
+    const typeNameErrorRef = useRef(false)
     const [ customTypeAccountsError, setCustomTypeAccountsError ] = useState(false)
+    const typeAccountsErrorRef = useRef(false)
     
 
     const [ incomeArray, setIncomeArray ] = useState<CustomTypeProps[] | null>(null)
@@ -43,6 +47,9 @@ export default function CreateCustom({route}:any){
     const [ accounts, setAccounts ] = useState<{ accountId:number, accountName:string, accountBadge:string }[] | null>(null)
 
     const [ isIncome, setIsIncome ] = useState(true)
+
+    const [ negativeBalanceError, setNegativeBalanceError] = useState(false)
+    const negativeBalanceErrorRef = useRef(false)
 
     let addNewCustomType : ( name:string, comment:string | null, amount:number, accountId:number, date:string, createdDateTime:string ) => Promise<void>;
     let deleteCustomType: ( id: number, accountId: number ) => Promise<void>;
@@ -58,11 +65,13 @@ export default function CreateCustom({route}:any){
     }
 
     // function
-    function checkValidity() {
+    async function checkValidity() {
         if ( typeAmount === '' || typeAmount.trim().length === 0 )  {
             setTypeAmountError(true)
+            typeAmountErrorRef.current = true
         } else {
             setTypeAmountError(false)
+            typeAmountErrorRef.current = false
         }
         if ( !selectedTypeAccount ) {
             setCustomTypeAccountsError(true)
@@ -71,8 +80,17 @@ export default function CreateCustom({route}:any){
         }
         if ( customTypeName === '' || customTypeName.trim().length === 0 )  {
             setCustomTypeNameError(true)
+            typeNameErrorRef.current = true
         } else {
             setCustomTypeNameError(false)
+            typeNameErrorRef.current = false
+        }
+
+        if ( !typeAmountErrorRef.current && selectedTypeAccount && !isIncome ) {
+            const error = await checkNegativeBalance( selectedTypeAccount.accountId, typeAmount, focusedItem )
+
+            setNegativeBalanceError(error)
+            negativeBalanceErrorRef.current = error
         }
 
     }
@@ -85,10 +103,27 @@ export default function CreateCustom({route}:any){
         return total
     }
 
+    function onAmountTextChange( value: string ) {
+        if ( value === '' ) {
+            setTypeAmountError(true)
+            setTypeAmount( value )
+            setNegativeBalanceError( false )
+            negativeBalanceErrorRef.current = false
+        }
+        if ( checkTypes(value) ) {
+            setTypeAmount( value )
+            setNegativeBalanceError( false )
+            negativeBalanceErrorRef.current = false
+            setTypeAmountError(false)
+        } else {
+            setTypeAmountError(true)
+        }
+    }
+
     // Handlers
     async function onAddPressHandler() {
 
-        checkValidity()
+        await checkValidity()
 
         if ( selectedTypeAccount && !typeAmountError && !customTypeNameError && !customTypeAccountsError) {
 
@@ -218,7 +253,7 @@ export default function CreateCustom({route}:any){
 
     async function onDeletePress() {
         if ( focusedItem.current ) {
-            deleteCustomType( focusedItem.current.customTypeId, focusedItem.current.accountId )
+            await deleteCustomType( focusedItem.current.customTypeId, focusedItem.current.accountId )
             closeSheetCaller()
             await initialFetch()
             await transferToJournal()
@@ -228,10 +263,10 @@ export default function CreateCustom({route}:any){
     async function onUpdatePress() {
 
 
-        checkValidity()
+        await checkValidity()
 
         if ( selectedTypeAccount && !typeAmountError && !customTypeNameError && !customTypeAccountsError && focusedItem.current) {
-            updateCustomType( customTypeName, selectedTypeAccount?.accountId, typeComment, Number(typeAmount), focusedItem.current.customTypeId)
+            await updateCustomType( customTypeName, selectedTypeAccount?.accountId, typeComment, Number(typeAmount), focusedItem.current.customTypeId)
             closeSheetCaller()
             await initialFetch()
             await transferToJournal()
@@ -283,12 +318,10 @@ export default function CreateCustom({route}:any){
             <View style={{margin:16}}>
                 <AddItemForm
                 amount={typeAmount}
-                setAmount={setTypeAmount}
                 onAddPressHandler={onAddPressHandler}
                 comment={typeComment}
                 setComment={setTypeComment}
                 amountError={typeAmountError}
-                setAmountError={setTypeAmountError}
                 handleCategorySelector={null}
                 selectedCategory={undefined}
                 handleAccountSelector={handleAccountSelector}
@@ -304,6 +337,8 @@ export default function CreateCustom({route}:any){
                 setLongPressWarn={setLongPressWarn}
                 handleDeletion={onDeletePress}
                 handleUpdate={onUpdatePress}
+                negativeBalanceError={negativeBalanceError}
+                onAmountTextChange={onAmountTextChange}
                 />
             </View>
     }

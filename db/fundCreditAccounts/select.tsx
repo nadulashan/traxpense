@@ -32,7 +32,7 @@ export async function getCreditAccountBadges(){
 export async function getFundAccounts() {
     try{
         const db = await getDB();
-        const accounts = await db.getAllAsync<{accountId: number;accountName:string; accountBadge:string;amount:number;isActive:number;}>(`
+        const accounts = await db.getAllAsync<{accountId: number;accountName:string; accountBadge:string;amount:number;runningAmount:number;isActive:number;}>(`
                             SELECT accountId,accountName,accountBadge,amount,runningAmount,isActive 
                             FROM accounts
                             WHERE isCredit=0;
@@ -46,8 +46,8 @@ export async function getFundAccounts() {
 export async function getCreditAccounts() {
     try{
         const db = await getDB();
-        const accounts = await db.getAllAsync<{accountId: number;accountName:string; accountBadge:string;amount:number;isActive:number;}>(`
-                            SELECT accountId,accountName,accountBadge,amount,isActive 
+        const accounts = await db.getAllAsync<{accountId: number;accountName:string; accountBadge:string;amount:number;runningAmount:number;isActive:number;}>(`
+                            SELECT accountId,accountName,accountBadge,amount,runningAmount,isActive 
                             FROM accounts
                             WHERE isCredit=1;
                         `)
@@ -110,6 +110,20 @@ export async function getRunningAmount( id: number ): Promise<number> {
         } else {
             return 0
         }
+    } catch ( e ) {
+        handleDBError(e, 'Fetching Running Amount Failed')
+    }
+}
+
+export async function getCreditDetails( id: number ): Promise<{ isCredit: number, amount:number } | null > {
+    try{
+        const db = await getDB()
+        const fetch = await db.getFirstAsync<{ isCredit: number, amount:number }>(`
+                SELECT isCredit, amount
+                FROM accounts
+                WHERE accountId = ?
+            `, [ id ])
+        return fetch
     } catch ( e ) {
         handleDBError(e, 'Fetching Running Amount Failed')
     }

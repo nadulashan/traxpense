@@ -1,4 +1,3 @@
-import { checkTypes } from '@/func/bottomSheetfunc';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
 import { Pressable, Text, TextInput, View } from 'react-native';
@@ -6,11 +5,9 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 interface AddItemFormTypes {
     onAddPressHandler: () => void;
     amount:string;
-    setAmount:React.Dispatch<React.SetStateAction<string>>;
     comment:string;
     setComment:React.Dispatch<React.SetStateAction<string>>;
     amountError:boolean;
-    setAmountError:React.Dispatch<React.SetStateAction<boolean>>;
     handleCategorySelector:(() => void) | null;
     selectedCategory:{ categoryId: number; name: string; badge: string; } | undefined;
     handleAccountSelector: () => void;
@@ -27,17 +24,15 @@ interface AddItemFormTypes {
     setLongPressWarn:React.Dispatch<React.SetStateAction<boolean>> | undefined;
     handleUpdate: ( () => void ) | undefined;
     negativeBalanceError: boolean;
-    setNegativeBalanceError:React.Dispatch<React.SetStateAction<boolean>>
+    onAmountTextChange: (value: string ) => void
 }
 
 export default function AddItemForm({
     onAddPressHandler,
     amount,
-    setAmount,
     comment,
     setComment,
     amountError,
-    setAmountError,
     handleCategorySelector,
     selectedCategory,
     handleAccountSelector,
@@ -54,7 +49,7 @@ export default function AddItemForm({
     setLongPressWarn,
     handleUpdate,
     negativeBalanceError,
-    setNegativeBalanceError
+    onAmountTextChange
 }:AddItemFormTypes) {
     return  (
         <View style={RecordStyles.AddItemWrapper}>
@@ -109,18 +104,7 @@ export default function AddItemForm({
                     value={amount}
                     keyboardType='numeric'
                     onChangeText={(input) => {
-                        if ( input === '' ) {
-                            setAmountError(true)
-                            setAmount( input )
-                            setNegativeBalanceError( false )
-                        }
-                        if ( checkTypes(input) ) {
-                            setAmount( input )
-                            setNegativeBalanceError( false )
-                            setAmountError(false)
-                        } else {
-                            setAmountError(true)
-                        }
+                        onAmountTextChange(input)
                     }}
                 />
                 { amountError? <Text style={CommonStyles.NoActionDangerText}>Invalied Response</Text> : null}
@@ -159,7 +143,7 @@ export default function AddItemForm({
                 
             {
                 negativeBalanceError?
-                <Text style={[CommonStyles.NoActionDangerText, {textAlign:'center'}]}>Not Enough Funds</Text>
+                <Text style={[CommonStyles.NoActionDangerText, {textAlign:'center'}]}>Not Enough Balance</Text>
                 :
                 null
             }
