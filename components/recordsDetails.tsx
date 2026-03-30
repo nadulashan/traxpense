@@ -5,7 +5,7 @@ import { priceWithComma } from '@/func/general';
 import { getLongDate } from '@/func/time';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
-import { ExpenseTypes, IncomeTypes, TransferTypes } from '@/types/recordsTypeItemType.schema';
+import { TransferTypes, TypeProps } from '@/types/recordsTypeItemType.schema';
 import { useNavigation } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
@@ -22,8 +22,8 @@ export default function RecordsDetails() {
     const displayDate = getLongDate(focusedDate)
 
     // States
-    const [ incomes, setIncomes ] = useState<IncomeTypes[] | null>(null)
-    const [ expenses, setExpenses ] = useState<ExpenseTypes[] | null>(null)
+    const [ incomes, setIncomes ] = useState<TypeProps[] | null>(null)
+    const [ expenses, setExpenses ] = useState<TypeProps[] | null>(null)
     const [ transfers, setTransfers ] = useState<TransferTypes[] | null>(null)
     const [ recordedIncome, setRecordedIncome ] = useState(0)
     const [ recordedExpenses, setRecordedExpenses ] = useState(0)
@@ -67,11 +67,15 @@ export default function RecordsDetails() {
 
 
     useEffect(() => {
-        setIncomes(null)
-        setExpenses(null)
-        setTransfers(null)
-        fetchIncomesAndExpenses()
-        fetchTransfers()
+        async function refreshItems() {
+            setIncomes(null)
+            setExpenses(null)
+            setTransfers(null)
+            await fetchIncomesAndExpenses()
+            await fetchTransfers()
+        }
+
+        refreshItems()
     }, [focusedDate, recordsRefreshTrigger])
 
     useEffect(() => {

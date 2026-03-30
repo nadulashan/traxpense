@@ -1,12 +1,12 @@
-import { CustomTypeProps, ExpenseTypes, IncomeTypes, TransferTypes } from "@/types/recordsTypeItemType.schema";
+import { ActiveAccountsProps, CustomTypeProps, TransferTypes, TypeProps } from "@/types/recordsTypeItemType.schema";
 import handleDBError from "../dbError";
 import getDB from "../opendb";
 
 export async function getActiveAccounts(){
     try{
         const db = await getDB();
-        const accounts = await db.getAllAsync<{ accountId:number, accountName:string, accountBadge:string }>(`
-                            SELECT accountId, accountName, accountBadge
+        const accounts = await db.getAllAsync<ActiveAccountsProps>(`
+                            SELECT accountId, accountName, accountBadge, runningAmount
                             FROM accounts
                             WHERE isActive=1;
                         `)
@@ -47,7 +47,7 @@ export async function getActiveExpenseCategories(){
 export async function getIncomes(date:string) {
     try{ 
         const db = await getDB();
-        const incomes = await db.getAllAsync<IncomeTypes>(`
+        const incomes = await db.getAllAsync<TypeProps>(`
                             SELECT  typeId,
                                     accountName,
                                     accounts.accountId,
@@ -74,7 +74,7 @@ export async function getIncomes(date:string) {
 export async function getExpense(date:string) {
     try{ 
         const db = await getDB();
-        const expenses = await db.getAllAsync<ExpenseTypes>(`
+        const expenses = await db.getAllAsync<TypeProps>(`
                             SELECT  typeId,
                                     accountName,
                                     accounts.accountId,

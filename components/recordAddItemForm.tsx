@@ -26,6 +26,8 @@ interface AddItemFormTypes {
     longPressWarn: boolean | undefined;
     setLongPressWarn:React.Dispatch<React.SetStateAction<boolean>> | undefined;
     handleUpdate: ( () => void ) | undefined;
+    negativeBalanceError: boolean;
+    setNegativeBalanceError:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default function AddItemForm({
@@ -50,7 +52,9 @@ export default function AddItemForm({
     handleDeletion,
     longPressWarn,
     setLongPressWarn,
-    handleUpdate
+    handleUpdate,
+    negativeBalanceError,
+    setNegativeBalanceError
 }:AddItemFormTypes) {
     return  (
         <View style={RecordStyles.AddItemWrapper}>
@@ -108,9 +112,11 @@ export default function AddItemForm({
                         if ( input === '' ) {
                             setAmountError(true)
                             setAmount( input )
+                            setNegativeBalanceError( false )
                         }
                         if ( checkTypes(input) ) {
                             setAmount( input )
+                            setNegativeBalanceError( false )
                             setAmountError(false)
                         } else {
                             setAmountError(true)
@@ -150,6 +156,13 @@ export default function AddItemForm({
                         setComment( input )
                     }}
                 />                
+                
+            {
+                negativeBalanceError?
+                <Text style={[CommonStyles.NoActionDangerText, {textAlign:'center'}]}>Not Enough Funds</Text>
+                :
+                null
+            }
             {
                 !isEdit?
                 <Pressable 

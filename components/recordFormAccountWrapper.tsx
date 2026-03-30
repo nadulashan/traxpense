@@ -1,12 +1,13 @@
 import colors from '@/constants/colors';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
+import { ActiveAccountsProps } from '@/types/recordsTypeItemType.schema';
 import { ActivityIndicator, Text, View } from 'react-native';
 import AccountItem from './recordFormAccountItem';
 
 interface CategoryWrapperTypes {
-    accounts:{ accountId:number, accountName:string, accountBadge:string }[] | null;
-    onAccountPress:(account: { accountId:number, accountName:string, accountBadge:string }) => void;
+    accounts: ActiveAccountsProps[] | null;
+    onAccountPress:(account: ActiveAccountsProps) => void;
 }
 
 export default function FormAccountWrapper({

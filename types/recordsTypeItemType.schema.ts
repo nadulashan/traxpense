@@ -1,19 +1,10 @@
-export interface IncomeTypes{
-    typeId:number, 
+export interface ActiveAccountsProps{ 
+    accountId:number, 
     accountName:string, 
-    accountId:number,
-    isCustom:number, 
     accountBadge:string, 
-    categoryId:number,
-    name:string, 
-    badge:string,
-    comment:string | null, 
-    amount:number, 
-    createdDateTime:string, 
-    date:string 
 }
 
-export interface ExpenseTypes{
+export interface TypeProps{
     typeId:number, 
     accountName:string, 
     accountId:number,

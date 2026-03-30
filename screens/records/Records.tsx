@@ -11,7 +11,7 @@ import { FocusedDateProviderContext } from "@/context/recordsContext";
 import { getCustomExpenses, getCustomIncomes } from "@/db/records/select";
 import { closeBottomSheet, openBottomSheet } from "@/func/bottomSheetfunc";
 import { getLocalTime } from "@/func/time";
-import { CustomTypeProps, ExpenseTypes, IncomeTypes, TransferTypes } from "@/types/recordsTypeItemType.schema";
+import { CustomTypeProps, TransferTypes, TypeProps } from "@/types/recordsTypeItemType.schema";
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useCallback, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -80,9 +80,9 @@ export default function Records(){
   
 
   // FOR ITEM DETAILS SHEET
-  const [ focusedItem, setFocusedItem ] = useState<IncomeTypes | ExpenseTypes | undefined>(undefined)
+  const [ focusedItem, setFocusedItem ] = useState<TypeProps | undefined>(undefined)
 
-  async function switchItemDetail(item: IncomeTypes | ExpenseTypes, clickedType: 'income' | 'expense' ) {
+  async function switchItemDetail(item: TypeProps, clickedType: 'income' | 'expense' ) {
 
     if ( clickedType === 'income' ) {
       type.current = 'income'
