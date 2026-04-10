@@ -1,7 +1,7 @@
 import { getCreditDetails, getRunningAmount } from "@/db/fundCreditAccounts/select";
 import { CustomTypeProps, TransferTypes, TypeProps } from "@/types/recordsTypeItemType.schema";
 
-export function priceWithComma(amount:number):string{
+export function priceWithComma(amount:number):{currency: string, value: string, decimal: string}{
     const stringNumber = amount.toString()
     const arrNumber = stringNumber.split('')
     const oneHundredth = arrNumber.pop()!;
@@ -19,11 +19,10 @@ export function priceWithComma(amount:number):string{
         index++
     })
 
-    commaNumberArr.push('.')
-    commaNumberArr.push(oneTenth)
-    commaNumberArr.push(oneHundredth)
+    const decimal = `${oneTenth}${oneHundredth}`
+    const currency = 'Rs'
     const commaNum = commaNumberArr.join('')
-    return `Rs. ${commaNum}`
+    return {currency: currency, value: commaNum, decimal: decimal}
 }
 
 export function displayTimes(time:string){

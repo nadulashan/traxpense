@@ -1,13 +1,16 @@
-import { ScrollView } from 'react-native';
+import { ActivityIndicator, ScrollView, View } from 'react-native';
 import AccountCard from './accountCard';
 import Header from './sectionHeader';
 
 import colors from '@/constants/colors';
+import { AccountProps } from '@/types/settingsProps';
 import AddAccountCard from './addAccountCard';
 
-export default function AccountCardsSection(){
+interface AccountsCardSectionProps{
+    accounts: AccountProps[] | undefined;
+}
 
-    const badge = colors.light.badge;
+export default function AccountCardsSection({accounts}: AccountsCardSectionProps){
 
     const recent = [
         {
@@ -30,15 +33,29 @@ export default function AccountCardsSection(){
     return(
         <>
             <Header header='Active Accounts'/>
-            <ScrollView
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-            >
-                <AccountCard name='Wallet' color={badge.blue} balance="Rs. 3,745.00" category={recent}/>
-                <AccountCard name='Bank' color={badge.yellow} balance="Rs. 45,600.00" category={recent} />
-                <AccountCard name='Payoneer' color={badge.red} balance="Rs. 185,600.00" category={recent} />
-                <AddAccountCard />
-            </ScrollView>
+            {
+            accounts?
+                accounts.length !== 0 ?
+                <>
+                    <ScrollView
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                    >
+                    {
+                    accounts.map(account => (
+                        <AccountCard key={ account.accountId } account={account} showRecent={true} isInitialBalance={ false }/>
+                    ))
+                    }
+                    </ScrollView>
+                </>
+                :
+                <View style={{width:'100%', alignItems:'center', justifyContent:'center'}}>
+                    <AddAccountCard / >
+                </View>
+            :
+            <ActivityIndicator color={colors.light.primary} />
+
+            }
         </>
     )
 }

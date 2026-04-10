@@ -1,7 +1,7 @@
 import colors from '@/constants/colors';
-import { priceWithComma } from '@/func/general';
 import CommonStyles from '@/styles/commonStyles';
 import FundCreditAccountsStyles from '@/styles/fundCreditAccountsStyles';
+import { AccountProps } from '@/types/settingsProps';
 import { useEffect } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import AccountCard from './accountCard';
@@ -9,7 +9,7 @@ import AccountCard from './accountCard';
 type ContentWrapperProps = {
     openBottomSheet: () => void;
     isAccountsReady:boolean;
-    fetchedAccounts:{ accountId: number; accountName: string; accountBadge: string; amount: number; isActive: number; }[];
+    fetchedAccounts:AccountProps[];
     focusedAccount:{ accountId: number; accountName: string; accountBadge: string; amount: number; isActive: number; } | null;
     setFocusedAccount:React.Dispatch<React.SetStateAction<{ accountId: number; accountName: string; accountBadge: string; amount: number; isActive: number; } | null>>;
     setInputName:React.Dispatch<React.SetStateAction<string>>;
@@ -52,7 +52,7 @@ export default function FundCreditAccountsContentWrapper({
                 {
                     fetchedAccounts.map(account => (
                         <View key={account.accountId} style={FundCreditAccountsStyles.AccountButtonWrapper}>
-                            <AccountCard name={account.accountName} color={account.accountBadge? account.accountBadge:'grey'} balance={priceWithComma(account.amount)} category={null}/>
+                            <AccountCard account={account} showRecent={false} isInitialBalance={true}/>
                             <Pressable 
                                 style={FundCreditAccountsStyles.ManageButtonWrapper}
                                 onPress={() => {

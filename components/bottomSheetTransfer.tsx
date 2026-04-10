@@ -11,8 +11,10 @@ import RecordStyles from '@/styles/recordsStyles';
 import { TransferTypes } from '@/types/recordsTypeItemType.schema';
 import Feather from '@expo/vector-icons/Feather';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import FormAccountWrapper from './recordFormAccountWrapper';
+
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 
 interface Accounts{
     accountId:number;
@@ -129,7 +131,7 @@ function TransferFrom({
                 }
             </View>  
             <View>
-                <TextInput
+                <BottomSheetTextInput
                     keyboardType='numeric'
                     value={amount}
                     onChangeText={value => {
@@ -137,6 +139,7 @@ function TransferFrom({
                     }}
                     style={CommonStyles.BottomSheetInput}
                     placeholder='Enter Amount'
+                    placeholderTextColor={'grey'}
                 />  
                 {
                     amountError?
@@ -145,12 +148,13 @@ function TransferFrom({
                     null
                 }
             </View>      
-            <TextInput
+            <BottomSheetTextInput
                 multiline={true}
                 value={comment}
                 onChangeText={value => setComment(value)}
                 style={CommonStyles.BottomSheetInput}
                 placeholder='Comment ( optional )'
+                placeholderTextColor={'grey'}
             /> 
             {
                 negativeBalanceError?

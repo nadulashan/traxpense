@@ -5,6 +5,7 @@ import { addNewCreditAccount, addNewFundAccount } from '@/db/fundCreditAccounts/
 import { checkDependents, getCreditAccountBadges, getCreditAccounts, getFundAccountBadges, getFundAccounts } from '@/db/fundCreditAccounts/select';
 import { suspendAccount, updateAccount } from '@/db/fundCreditAccounts/update';
 import { badgeSorterAcc, checkTypes, closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
+import { AccountProps } from '@/types/settingsProps';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
@@ -18,7 +19,7 @@ type Props = StackScreenProps<SettingsStackParamList, 'FundCreditAccounts'>
 export default function FundCreditAccounts({route}:Props){
 
     // useState variables for child components access
-    const [ fetchedAccounts, setFetchedAccounts ] = useState<{ accountId: number; accountName: string; accountBadge: string; amount: number; isActive: number; }[]>([]);
+    const [ fetchedAccounts, setFetchedAccounts ] = useState<AccountProps[]>([]);
     const [ focusedAccount, setFocusedAccount ] = useState<{ accountId: number; accountName: string; accountBadge: string; amount: number; isActive: number; } | null>(null);
     const [ isAccountsReady, setIsAccountsReady ] = useState<boolean>(false)
     const [ inputName, setInputName ] = useState<string>('');

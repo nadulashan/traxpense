@@ -31,7 +31,9 @@ const RecentTransactionSectionStyles = StyleSheet.create({
     RecentTransactionWrapper : {
         flex:1,
         flexDirection:'row',
-        justifyContent:'space-between'
+        justifyContent:'space-between',
+        alignItems:'center',
+        marginBottom:16
     },
 
     RecentTransactionLeft : {
@@ -43,7 +45,6 @@ const RecentTransactionSectionStyles = StyleSheet.create({
         height:44,
         width:44,
         borderRadius:22,
-        backgroundColor:colors.light.primary,
         justifyContent:'center',
         alignItems:'center'
     },
@@ -69,7 +70,9 @@ const RecentTransactionSectionStyles = StyleSheet.create({
         height:16,
         width:16,
         borderRadius:8,
-        backgroundColor:colors.light.badge.blue
+        // for transfer half badge
+        flexDirection:'row',
+        overflow:'hidden'
     },
 
     RecentTransactionLeftDate : {
@@ -79,7 +82,16 @@ const RecentTransactionSectionStyles = StyleSheet.create({
     RecentTransactionRight : {
         fontFamily:fonts.semiBold,
         fontSize:16,
-        color:colors.light.red
+    },
+
+    RecentTransactionRightDeciaml: {
+        fontFamily:fonts.light,
+        fontSize:14
+    },
+
+    RecentTransactionLeftRightBadgeHalf: {
+        height:16,
+        width:8,
     }
 })
 

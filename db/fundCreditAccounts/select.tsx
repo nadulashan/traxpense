@@ -1,3 +1,4 @@
+import { AccountProps } from "@/types/settingsProps";
 import handleDBError from "../dbError";
 import getDB from "../opendb";
 
@@ -32,7 +33,7 @@ export async function getCreditAccountBadges(){
 export async function getFundAccounts() {
     try{
         const db = await getDB();
-        const accounts = await db.getAllAsync<{accountId: number;accountName:string; accountBadge:string;amount:number;runningAmount:number;isActive:number;}>(`
+        const accounts = await db.getAllAsync<AccountProps>(`
                             SELECT accountId,accountName,accountBadge,amount,runningAmount,isActive 
                             FROM accounts
                             WHERE isCredit=0;

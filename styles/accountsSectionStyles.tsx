@@ -38,6 +38,16 @@ const AccountsSection = StyleSheet.create({
         fontFamily:fonts.semiBold,
         color:'#fff'
     },
+    AccountCardBalanceCurrency: {
+        color:colors.light.primaryLight,
+        fontFamily:fonts.light
+    },
+
+    AccountCardBalanceDecimal: {
+        color:colors.light.primaryLight,
+        fontSize:16,
+        fontFamily:fonts.light
+    },
 
     AccountCardRecentContainer:{
         marginLeft:24,
@@ -67,6 +77,12 @@ const AccountsSection = StyleSheet.create({
        fontSize:12,
        marginLeft:4 // to make it have the same initial margin as arrow icon
     },
+
+    AccountCardRecentBottomTextDecimal: {
+        fontFamily:fonts.light,
+        fontSize:10
+    },
+
     AddAccountCard: {
         backgroundColor:colors.light.primaryLight,
         borderRadius:8,

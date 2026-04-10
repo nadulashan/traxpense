@@ -1,6 +1,7 @@
 import CommonStyles from '@/styles/commonStyles';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { useCallback, useEffect } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 
 type BottomSheetWrapperProps = {
@@ -76,7 +77,7 @@ export default function BottomSheetWrapper({
                         {suspendNotification? <Text style={CommonStyles.NoActionDangerText}>This action is irreversable. Long Press on the button to continue</Text>:null}
                         {areDependentsPresent? <Text style={CommonStyles.NoActionDangerText}>Cannot suspend because there are one or more dependent Recurring Item(s). Update them to another Active account or suspend them first.</Text>:null}
                         <Text style={CommonStyles.BottomSheetFieldText}>Account Name:</Text>
-                        <TextInput
+                        <BottomSheetTextInput
                             value={inputName}
                             onChangeText={name => {
                                 if ( name === '' || name.trim().length === 0 ) {
@@ -96,7 +97,7 @@ export default function BottomSheetWrapper({
                     <View>
                         {type == 'fund'? <Text  style={CommonStyles.BottomSheetFieldText}>Initial Balance:</Text>: <Text  style={CommonStyles.BottomSheetFieldText}>Credit limit</Text>}
                         
-                        <TextInput
+                        <BottomSheetTextInput
                             value={inputBalance}
                             onChangeText={balance => {                            
                                 if (checkTypes(balance)){

@@ -18,7 +18,7 @@ export default function TabNavigation(){
 
     return (
         <Tab.Navigator 
-            initialRouteName="RecordsStack" 
+            initialRouteName="HomeStack" 
             screenOptions={{
                 headerShown:false,
                 tabBarShowLabel:false,
@@ -34,7 +34,7 @@ export default function TabNavigation(){
                 options={{
                     tabBarIcon: ({ focused, size, color }) => {
                        return focused ? <Octicons name="home-fill" size={size} color={color} /> : <Octicons name="home" size={size} color={color} />
-                    }
+                    },
                 }}
                 />
             <Tab.Screen 

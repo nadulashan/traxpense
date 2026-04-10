@@ -1,6 +1,7 @@
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { Pressable, Text, View } from 'react-native';
 
 interface AddItemFormTypes {
     onAddPressHandler: () => void;
@@ -62,7 +63,7 @@ export default function AddItemForm({
             {
                 isCustomForm && setCustomName?
                 <>
-                <TextInput 
+                <BottomSheetTextInput 
                     style={CommonStyles.BottomSheetInput} 
                     placeholder='Enter Name'
                     value={customName}
@@ -98,9 +99,10 @@ export default function AddItemForm({
             }
             <View style={RecordStyles.AddItemAmountAccountWrapper}>
                 <View style={RecordStyles.AddItemSelectAmountWrapper}>
-                <TextInput 
+                <BottomSheetTextInput 
                     style={[CommonStyles.BottomSheetInput, RecordStyles.AddItemSelectAmount]}
                     placeholder='Enter Amount'
+                    placeholderTextColor={'grey'}
                     value={amount}
                     keyboardType='numeric'
                     onChangeText={(input) => {
@@ -131,9 +133,10 @@ export default function AddItemForm({
                     }
                 </View>
             </View>
-                <TextInput 
+                <BottomSheetTextInput 
                     style={[CommonStyles.BottomSheetInput, RecordStyles.AddItemSelectAmount, {minHeight:50}]}
                     placeholder='Comment (optional)'
+                    placeholderTextColor={'grey'}
                     value={comment}
                     multiline={true}
                     onChangeText={(input) => {

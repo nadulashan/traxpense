@@ -1,6 +1,7 @@
 import CommonStyles from '@/styles/commonStyles';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { useCallback } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 
 type BottomSheetCategoriesProps = {
@@ -53,7 +54,7 @@ export default function BottomSheetCategories({
                         {showDangerText? <Text style={CommonStyles.NoActionDangerText}>This action is irreversable. Long Press on the button to continue</Text>:null}
                         <View>
                             <Text style={CommonStyles.BottomSheetFieldText}>Category Name:</Text>
-                            <TextInput 
+                            <BottomSheetTextInput 
                                 style={CommonStyles.BottomSheetInput}
                                 value={inputName}
                                 readOnly={ focusedCategory?.isActive == 0? true : false}
