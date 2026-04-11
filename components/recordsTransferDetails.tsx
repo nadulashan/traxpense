@@ -1,7 +1,8 @@
 import colors from '@/constants/colors';
-import { priceWithComma } from '@/func/general';
+import { displayTimes, priceWithComma } from '@/func/general';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
+import { PriceWithCommaProps } from '@/types/homeProps';
 import { TransferTypes } from '@/types/recordsTypeItemType.schema';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
@@ -16,9 +17,13 @@ export default function TransferDetails({
     onEditPress
 }:ItemDetailsTypes) {
 
-    // Setup date time for display
-    const dateTime = item.current?.createdDateTime.split('.')[0].split('T')
-    const displayDateTime = dateTime?.join(' @ ')
+    
+    let amount: PriceWithCommaProps;
+    if ( item.current ) {
+        amount = priceWithComma(item.current.amount)
+    } else {
+        amount = { currency: 'NON', value: '00', decimal: '00'}
+    }
 
     return (
         <View style={RecordStyles.DetailsWrapper}>
@@ -32,10 +37,10 @@ export default function TransferDetails({
                                 <Fontisto name="arrow-right-l" size={24} color="black" /> 
                                 <Text style={RecordStyles.DetailsHeaderMediumText}>{item.current.to_account_name}</Text>
                             </View>
-                            <Text style={RecordStyles.DetailsHeaderLightText}>{displayDateTime}</Text>
+                            <Text style={RecordStyles.DetailsHeaderLightText}>{displayTimes(item.current.createdDateTime)}</Text>
                         </View>
                         <View style={RecordStyles.DetailsHeaderItem}>
-                            <Text style={RecordStyles.DetailsHeaderMediumText}>{priceWithComma(item.current.amount)}</Text>
+                            <Text style={RecordStyles.DetailsHeaderMediumText}>{ `${amount.currency}. ${amount.value}.${amount.decimal}` }</Text>
                         </View>
                     </View>
                     <View style={RecordStyles.DetailsComment}>

@@ -35,9 +35,7 @@ export default function AccountCard({ account, showRecent, isInitialBalance }: C
 
     async function fetchRecents() {
         const recent = await getRecentAccountRecords( account.accountId )
-        console.log(recent)
         setRecentRecords(recent)
-        // console.log( await getTransfer('2026-04-07'))
     }
 
     useEffect(() => {

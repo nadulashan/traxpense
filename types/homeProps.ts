@@ -31,3 +31,9 @@ export interface RecentAccountRecordsProps {
     name: string;
     type: 'income' | 'expense' | 'transfer'
 }
+
+export interface PriceWithCommaProps{
+    currency: string,
+    value: string, 
+    decimal: string
+}

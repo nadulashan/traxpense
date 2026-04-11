@@ -1,7 +1,8 @@
 import { getCreditDetails, getRunningAmount } from "@/db/fundCreditAccounts/select";
+import { PriceWithCommaProps } from "@/types/homeProps";
 import { CustomTypeProps, TransferTypes, TypeProps } from "@/types/recordsTypeItemType.schema";
 
-export function priceWithComma(amount:number):{currency: string, value: string, decimal: string}{
+export function priceWithComma(amount:number):PriceWithCommaProps{
     const stringNumber = amount.toString()
     const arrNumber = stringNumber.split('')
     const oneHundredth = arrNumber.pop()!;

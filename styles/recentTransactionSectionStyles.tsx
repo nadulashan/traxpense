@@ -4,11 +4,14 @@ import { StyleSheet } from "react-native";
 
 const RecentTransactionSectionStyles = StyleSheet.create({
     RecentTransactionFilter : {
-        // backgroundColor:colors.light.primary,
         borderRadius:16,
         marginLeft:24,
         borderWidth:1,
         borderColor:colors.light.primary
+    },
+
+    RecentTransactionFilterActive: {
+        backgroundColor:colors.light.primary,
     },
 
     RecentTransactionFilterText : {
@@ -17,8 +20,12 @@ const RecentTransactionSectionStyles = StyleSheet.create({
         paddingLeft:24,
         paddingRight:24,
         fontFamily:fonts.light,
-        // color:'white',
         fontSize:12
+    },
+
+    RecentTransactionFilterTextActive: {
+        color:'white',
+        fontFamily:fonts.semiBold
     },
 
     RecentTransactionsWrapper : {

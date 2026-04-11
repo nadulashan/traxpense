@@ -12,23 +12,6 @@ interface AccountsCardSectionProps{
 
 export default function AccountCardsSection({accounts}: AccountsCardSectionProps){
 
-    const recent = [
-        {
-            type:'spend',
-            amount:800,
-            category:'Fees'
-        },
-        {
-            type:'spend',
-            amount:50,
-            category:'Transport'
-        },
-        {
-            type:'income',
-            amount:1200,
-            category:'Bank'
-        }
-    ]
 
     return(
         <>

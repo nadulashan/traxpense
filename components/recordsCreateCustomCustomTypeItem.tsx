@@ -21,7 +21,7 @@ export default function CreateCustomCustomTypeItem({
                 <Text style={RecordStyles.TypeItemText}>{ item.name }</Text>
                 { item.comment? <EvilIcons name="comment" size={14} color="black" /> : null}
             </View>
-            <Text style={RecordStyles.TypeItemText}>{priceWithComma(item.amount)}</Text>
+            <Text style={RecordStyles.TypeItemText}>{priceWithComma(item.amount).value}</Text>
         </Pressable>
     )
 }

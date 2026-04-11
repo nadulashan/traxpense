@@ -66,6 +66,7 @@ export default function AddItemForm({
                 <BottomSheetTextInput 
                     style={CommonStyles.BottomSheetInput} 
                     placeholder='Enter Name'
+                    placeholderTextColor={'grey'}
                     value={customName}
                     onChangeText={name => setCustomName(name)}
                 />

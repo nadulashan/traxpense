@@ -17,6 +17,7 @@ export default function TypeItem({
 }:TypeItemTypes){
 
     const { switchItemDetail, switchCustom } = useCheckContext() 
+    const amount = priceWithComma(item.amount)
 
     return (
         <Pressable 
@@ -30,7 +31,7 @@ export default function TypeItem({
                 { item.comment? <FontAwesome6 name="comment-alt" size={10} color="black" />  : null}
                 { item.isCustom? <Entypo name="chevron-right" size={14} color="black" /> : null}
             </View>
-            <Text style={RecordStyles.TypeItemText}>{priceWithComma(item.amount)}</Text>
+            <Text style={RecordStyles.TypeItemText}>{ `${amount.value}.${amount.decimal}` }</Text>
         </Pressable>
     )
 }

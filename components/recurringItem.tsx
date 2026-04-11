@@ -95,7 +95,7 @@ export default function RecurringItem({
                 <Text  style={RecurringStyles.ExecutionText}>Last Execution: {lastOccurance? displayTimes(lastOccurance) : '-'}</Text>
                 <Text style={RecurringStyles.ExecutionText}>Next Execution: {nextOccurance? displayTimes(nextOccurance) : '-'}</Text>
             </View>
-            <Text style={RecurringStyles.AmountText}>{priceWithComma(amount)}</Text>
+            <Text style={RecurringStyles.AmountText}>{priceWithComma(amount).value}</Text>
             </Pressable>
             {
                 category.isActive === 1 ?

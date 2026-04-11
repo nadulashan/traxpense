@@ -5,6 +5,7 @@ import { priceWithComma } from '@/func/general';
 import { getLongDate } from '@/func/time';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
+import { PriceWithCommaProps } from '@/types/homeProps';
 import { TransferTypes, TypeProps } from '@/types/recordsTypeItemType.schema';
 import { useNavigation } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -25,8 +26,8 @@ export default function RecordsDetails() {
     const [ incomes, setIncomes ] = useState<TypeProps[] | null>(null)
     const [ expenses, setExpenses ] = useState<TypeProps[] | null>(null)
     const [ transfers, setTransfers ] = useState<TransferTypes[] | null>(null)
-    const [ recordedIncome, setRecordedIncome ] = useState(0)
-    const [ recordedExpenses, setRecordedExpenses ] = useState(0)
+    const [ recordedIncome, setRecordedIncome ] = useState< PriceWithCommaProps | undefined >(undefined)
+    const [ recordedExpenses, setRecordedExpenses ] = useState< PriceWithCommaProps | undefined >(undefined)
 
     // Fetch
     async function fetchIncomesAndExpenses() {
@@ -50,7 +51,7 @@ export default function RecordsDetails() {
             incomes.forEach(income => {
                 total = total + income.amount
             })
-            setRecordedIncome(total)
+            setRecordedIncome(priceWithComma(total))
         }
     }
 
@@ -61,7 +62,7 @@ export default function RecordsDetails() {
             expenses.forEach(expense => {
                 total = total + expense.amount
             })
-            setRecordedExpenses(total)
+            setRecordedExpenses(priceWithComma(total))
         }
     }
 
@@ -117,10 +118,10 @@ export default function RecordsDetails() {
                     </View>
                 </View>
                 {
-                    incomes?.length !== 0 ?
+                    incomes?.length !== 0 && recordedIncome?
                     <View style={RecordStyles.RecordedTypeWrapper}>
                         <Text style={RecordStyles.RecordedTypeText}>Recorded Income</Text>
-                        <Text style={RecordStyles.RecordedTypeText}>{priceWithComma(recordedIncome)}</Text>
+                        <Text style={RecordStyles.RecordedTypeText}>{ `${recordedIncome.currency}. ${recordedIncome.value}.${recordedIncome.decimal}` }</Text>
                     </View>
                     : 
                     null
@@ -142,10 +143,10 @@ export default function RecordsDetails() {
                     </View>
                 </View>
                 {
-                    expenses?.length !== 0 ?
+                    expenses?.length !== 0 && recordedExpenses ?
                     <View style={RecordStyles.RecordedTypeWrapper}>
                         <Text style={RecordStyles.RecordedTypeText}>Recorded Expenses</Text>
-                        <Text style={RecordStyles.RecordedTypeText}>{priceWithComma(recordedExpenses)}</Text>
+                        <Text style={RecordStyles.RecordedTypeText}>{ `${recordedExpenses.currency}. ${recordedExpenses.value}.${recordedExpenses.decimal}` }</Text>
                     </View>
                     :
                     null

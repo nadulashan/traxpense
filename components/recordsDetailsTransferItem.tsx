@@ -14,6 +14,7 @@ export default function TransferItem({
 }:TransferItemTypes) {
 
     const { switchTransferDetails } = useCheckContext()
+    const amount = priceWithComma(item.amount)
 
     return (
         <Pressable
@@ -32,7 +33,7 @@ export default function TransferItem({
                     </View>
                 </View>
             </View>
-            <Text style={RecordStyles.TypeItemText}>{priceWithComma(item.amount)}</Text>
+            <Text style={RecordStyles.TypeItemText}>{ `${amount.value}.${amount.decimal}` }</Text>
         </Pressable>
     )
 }

@@ -1,18 +1,20 @@
 import colors from "@/constants/colors";
 import { priceWithComma } from "@/func/general";
 import RecentTransactionSectionStyles from "@/styles/recentTransactionSectionStyles";
+import { RecordsProps } from "@/types/homeProps";
+import Entypo from '@expo/vector-icons/Entypo';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Octicons from '@expo/vector-icons/Octicons';
 import { Text, View } from "react-native";
 
 interface RecentTransactionProps {
-    transaction: any;
+    transaction: RecordsProps;
 }
 
 export default function RecentTransaction({ transaction }: RecentTransactionProps){
 
     const amount = priceWithComma(transaction.amount)
-
     return (
         <View style={RecentTransactionSectionStyles.RecentTransactionWrapper}>
             <View style={RecentTransactionSectionStyles.RecentTransactionLeft}>
@@ -32,13 +34,24 @@ export default function RecentTransaction({ transaction }: RecentTransactionProp
                         {
                             transaction.type === 'transfer'?
                             <View style={RecentTransactionSectionStyles.RecentTransactionLeftRightBadge}>
-                                <View style={[ RecentTransactionSectionStyles.RecentTransactionLeftRightBadgeHalf, { backgroundColor: transaction.primaryAccountBadge } ]}></View>
-                                <View style={[ RecentTransactionSectionStyles.RecentTransactionLeftRightBadgeHalf, { backgroundColor: transaction.secondaryAccountBadge } ]}></View>
+                                <View style={[ 
+                                    RecentTransactionSectionStyles.RecentTransactionLeftRightBadgeHalf, {  backgroundColor: transaction.primaryAccountBadge } ]}></View>
+                                {
+                                    transaction.secondaryAccountBadge?
+                                        <View style={[ RecentTransactionSectionStyles.RecentTransactionLeftRightBadgeHalf, { backgroundColor: transaction.secondaryAccountBadge } ]}></View>
+                                    :
+                                    null
+                                }
                             </View>
                             :
-                            <View style={[ RecentTransactionSectionStyles.RecentTransactionLeftRightBadge, { backgroundColor: transaction.primaryAccountBadge } ]}></View>
+                            <View style={[ RecentTransactionSectionStyles.RecentTransactionLeftRightBadge, 
+                                    transaction.primaryAccountBadge? {  backgroundColor: transaction.primaryAccountBadge } : { backgroundColor:'grey' }
+                            ]}></View>
                         }
-                        <Text style={RecentTransactionSectionStyles.RecentTransactionLeftName}>{ transaction.name }</Text>
+                        <Text style={RecentTransactionSectionStyles.RecentTransactionLeftName}>{ transaction.name? transaction.name : 'Custom' }</Text>
+
+                        { transaction.isCustom? <Entypo name="chevron-right" size={14} color="black" /> : null}
+                        { transaction.comment? <FontAwesome6 name="comment-alt" size={10} color="black" />  : null}
 
                     </View>
                     <Text style={RecentTransactionSectionStyles.RecentTransactionLeftDate}>{ transaction.date }</Text>

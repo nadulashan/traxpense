@@ -1,28 +1,27 @@
-import { useCheckContext } from '@/context/recordsContext';
 import { priceWithComma } from '@/func/general';
 import RecordStyles from '@/styles/recordsStyles';
-import { CustomExpenseTypes, CustomIncomeTypes } from '@/types/recordsTypeItemType.schema';
+import { CustomTypeProps } from '@/types/recordsTypeItemType.schema';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 interface TypeItemTypes{
-    item:CustomIncomeTypes | CustomExpenseTypes;
+    item:CustomTypeProps;
 }
 
 export default function CustomTypeItem({
     item
 }:TypeItemTypes){
 
-    const { switchItemDetail } = useCheckContext()
+    const amount = priceWithComma(item.amount)
 
     return (
-        <Pressable style={RecordStyles.TypeItem} onPress={() => switchItemDetail(item)}>
+        <View style={RecordStyles.TypeItem}>
             <View style={RecordStyles.TypeItemBadgeName}>
                 <View style={[RecordStyles.TypeItemBadge, {backgroundColor:item.accountBadge}]}></View>
                 <Text style={RecordStyles.TypeItemText}>{ item.name }</Text>
                 { item.comment? <EvilIcons name="comment" size={14} color="black" /> : null}
             </View>
-            <Text style={RecordStyles.TypeItemText}>{priceWithComma(item.amount)}</Text>
-        </Pressable>
+            <Text style={RecordStyles.TypeItemText}>{ `${amount.currency}. ${amount.value}.${amount.decimal}` }</Text>
+        </View>
     )
 }

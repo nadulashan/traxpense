@@ -20,6 +20,9 @@ export default function CustomIncomeExpenseDetails({
     customItemsSum,
     isCustomIncome
 }:RecordCustomIncomeExpenseDetailsTypes) {
+
+    const amount = priceWithComma(customItemsSum)
+
     return(
         <View  style={{margin:16}}>
                 <View style={RecordStyles.TypeWrapper}>
@@ -52,7 +55,7 @@ export default function CustomIncomeExpenseDetails({
                     
                 <View style={RecordStyles.RecordedTypeWrapper}>
                     <Text style={RecordStyles.RecordedTypeText}>Recorded {isCustomIncome? 'Income' : 'Expenses'}</Text>
-                    <Text style={RecordStyles.RecordedTypeText}>{priceWithComma(customItemsSum)}</Text>
+                    <Text style={RecordStyles.RecordedTypeText}>{ `${amount.currency}. ${amount.value}.${amount.decimal}` }</Text>
                 </View>
 
                 <Text style={RecordStyles.InfoText}>Balance is transferred to {isCustomIncome? 'Income' : 'Expenses'}</Text>
