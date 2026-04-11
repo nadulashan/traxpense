@@ -67,14 +67,20 @@ export default function Records(){
 
     Transfer: () => <Transfers focusedItem={transferItem} />,
 
-    
-    ItemDetails: () => <ItemDetails passedItem={focusedItem.current} onEditPress={onEditPress} passedItemFromRecent={undefined}/>,
+    // passed item is what is passed that can be edited (TypeItem) 
+    // passedItemFromRecent has differenct types than passed item and cannot be edited
+    // nonEditablePassedItem is items from custom journal which cannot be edited
+    ItemDetails: () => <ItemDetails goBack={goBack} passedItem={focusedItem.current} onEditPress={onEditPress} nonEditablePassedItem={nonEditablePassedItemRef.current} passedItemFromRecent={undefined}/>,
 
-    TransferDetails: () => <TransferDetails passedItem={transferItem.current} itemFromRecent={undefined} onEditPress={onEditPress}/>
+    TransferDetails: () => <TransferDetails passedItem={transferItem.current} itemFromRecent={undefined} onEditPress={onEditPress}/>,
+    CustomIncomeExpense: () => < CustomIncomeExpenseDetails 
+                                        customTypeItem={customTypeItem}
+                                        isCustomIncome={isCustomIncome.current}
+                                        onCustomItemPress={switchNonEditableItem}/>,
 
 
   }
-  const [ currentSheetState, setCurrentSheetState ] = useState< 'CreationMenu' | 'AddItem' | 'Transfer'  | 'ItemDetails' | 'TransferDetails' >('CreationMenu')
+  const [ currentSheetState, setCurrentSheetState ] = useState< 'CreationMenu' | 'AddItem' | 'Transfer'  | 'ItemDetails' | 'TransferDetails' | 'CustomIncomeExpense'>('CreationMenu')
   
   const SheetContent = BOTTOMSHEET_STATE[currentSheetState]
   
@@ -83,7 +89,7 @@ export default function Records(){
   const focusedItem  = useRef<TypeProps | undefined>(undefined)
 
   async function switchItemDetail(item: TypeProps, clickedType: 'income' | 'expense' ) {
-
+    nonEditablePassedItemRef.current = undefined
     if ( clickedType === 'income' ) {
       type.current = 'income'
     } else {
@@ -93,6 +99,21 @@ export default function Records(){
     setCurrentSheetState( 'ItemDetails' )
     focusedItem.current = item
     openStateSheetCaller()
+  }
+
+  // Item Details for custom Items
+  const nonEditablePassedItemRef = useRef<CustomTypeProps | undefined>(undefined)
+
+  function switchNonEditableItem ( item: CustomTypeProps ) {
+    focusedItem.current = undefined
+    console.log('runs')
+    setCurrentSheetState( 'ItemDetails' )
+    nonEditablePassedItemRef.current = item
+    openStateSheetCaller()
+  }
+
+  function goBack(){
+    setCurrentSheetState('CustomIncomeExpense')
   }
 
   // FOR TRANSFER DETAILS
@@ -109,16 +130,17 @@ export default function Records(){
 
 
   // Handle Multiple ref of bottom sheet - Ref
-  const BOTTOM_REF = {
+  // const BOTTOM_REF = {
 
-    CustomIncomeExpense: () => < CustomIncomeExpenseDetails 
-                                        customTypeItem={customTypeItem}
-                                        isCustomIncome={isCustomIncome.current}/>,
-  }
+  //   CustomIncomeExpense: () => < CustomIncomeExpenseDetails 
+  //                                       customTypeItem={customTypeItem}
+  //                                       isCustomIncome={isCustomIncome.current}
+  //                                       onCustomItemPress={switchNonEditableItem}/>,
+  // }
 
-  const [ currentSheetRef, setCurrentSheetRef ]= useState< 'CustomIncomeExpense'>('CustomIncomeExpense')
+  // const [ currentSheetRef, setCurrentSheetRef ]= useState< 'CustomIncomeExpense'>('CustomIncomeExpense')
 
-  const SheetRefContent = BOTTOM_REF[currentSheetRef]  
+  // const SheetRefContent = BOTTOM_REF[currentSheetRef]  
 
   // FOR CUSTOM INCOME EXPENSE
   const [ customTypeItem, setCustomTypeItem ] = useState<CustomTypeProps[] | null>(null)
@@ -126,7 +148,7 @@ export default function Records(){
   
   // Open Custom Sheet
   async function switchCustom( type:'income' | 'expense' ) {        
-    setCurrentSheetRef( 'CustomIncomeExpense' )
+    setCurrentSheetState( 'CustomIncomeExpense' )
 
     let fetchedCustomType: CustomTypeProps[];
     if ( type === 'income' ) {
@@ -138,7 +160,7 @@ export default function Records(){
     }
     setCustomTypeItem(fetchedCustomType)
     
-    openRefSheetCaller()
+    openStateSheetCaller()
   }
 
   // NAVIGATORS
@@ -165,13 +187,13 @@ export default function Records(){
   }
 
   // Open and Close Sheet Caller - Ref
-  function openRefSheetCaller() {
-    openBottomSheet(refSheetRef)
-  }
+  // function openRefSheetCaller() {
+  //   openBottomSheet(refSheetRef)
+  // }
   
-  function closeRefSheetCaller(){
-    closeBottomSheet(refSheetRef)
-  }
+  // function closeRefSheetCaller(){
+  //   closeBottomSheet(refSheetRef)
+  // }
   
   // Bottom Sheet things including backdrop - State
   const stateSheetRef= useRef<BottomSheet>(null);
@@ -188,18 +210,18 @@ export default function Records(){
   ),[])
 
   // Bottom Sheet things including backdrop - Ref
-  const refSheetRef = useRef<BottomSheet>(null);
-  const refBackDrop = useCallback(( props:BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop
-          {...props}
-          disappearsOnIndex={-1}
-          appearsOnIndex={0}
-          opacity={0.5}
-          onPress={() => {
-              closeRefSheetCaller()
-          }}  
-      />
-  ),[])
+  // const refSheetRef = useRef<BottomSheet>(null);
+  // const refBackDrop = useCallback(( props:BottomSheetBackdropProps) => (
+  //     <BottomSheetBackdrop
+  //         {...props}
+  //         disappearsOnIndex={-1}
+  //         appearsOnIndex={0}
+  //         opacity={0.5}
+  //         onPress={() => {
+  //             closeRefSheetCaller()
+  //         }}  
+  //     />
+  // ),[])
 
   return (
       <SafeAreaView style={{backgroundColor:'#ffffff', flexDirection:'row', height:'100%'}} edges={['top', 'left', 'right']}>
@@ -216,7 +238,7 @@ export default function Records(){
 
           <AddRecordButton openSheetCaller={openStateSheetCaller} />
           
-          <BottomSheet 
+          {/* <BottomSheet 
               index={-1} 
               enableDynamicSizing={true}
               enablePanDownToClose={true}
@@ -226,7 +248,7 @@ export default function Records(){
               <BottomSheetView>
                 {SheetRefContent()}
               </BottomSheetView>
-          </BottomSheet>
+          </BottomSheet> */}
           <BottomSheet 
               index={-1} 
               enableDynamicSizing={true}

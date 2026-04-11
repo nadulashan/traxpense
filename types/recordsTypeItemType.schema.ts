@@ -28,6 +28,7 @@ export interface CustomTypeProps{
     comment:string | null, 
     createdDateTime:string, 
     amount:number, 
+    date:string;
 }
 
 export interface TransferTypes{

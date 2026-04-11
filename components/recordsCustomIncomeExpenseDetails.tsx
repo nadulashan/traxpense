@@ -9,12 +9,14 @@ import CustomTypeItem from './recordsDetailsCustomTypeItem';
 
 interface RecordCustomIncomeExpenseDetailsTypes{
     customTypeItem:CustomTypeProps[] |  null;
-    isCustomIncome:boolean
+    isCustomIncome:boolean;
+    onCustomItemPress: (item: CustomTypeProps ) => void;
 }
 
 export default function CustomIncomeExpenseDetails({
     customTypeItem,
-    isCustomIncome
+    isCustomIncome,
+    onCustomItemPress
 }:RecordCustomIncomeExpenseDetailsTypes) {
 
     let customItemsSum = 0   
@@ -34,7 +36,7 @@ export default function CustomIncomeExpenseDetails({
                         customTypeItem ?
                             customTypeItem.length !== 0 ?
                             customTypeItem.map((items) => (
-                                <CustomTypeItem key={items.customTypeId} item={items} />
+                                <CustomTypeItem onPress={onCustomItemPress} key={items.customTypeId} item={items} />
                             ))
                             :
                             <Text style={CommonStyles.NoActionText}>No Records</Text>

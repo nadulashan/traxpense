@@ -109,7 +109,8 @@ export async function getCustomIncomes(date:string) {
                                     customIncome.name, 
                                     comment, 
                                     customIncome.amount,
-                                    createdDateTime
+                                    createdDateTime,
+                                    date
                             FROM    customIncome, accounts
                             WHERE   accounts.accountId = customIncome.accountId AND 
                                     date = ?
@@ -131,7 +132,8 @@ export async function getCustomExpenses(date:string) {
                                     customExpenses.name, 
                                     comment, 
                                     customExpenses.amount,
-                                    createdDateTime
+                                    createdDateTime,
+                                    date
                             FROM    customExpenses, accounts
                             WHERE   accounts.accountId = customExpenses.accountId AND 
                                     date = ?

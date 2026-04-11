@@ -36,6 +36,7 @@ export default function Home(){
     const offset = useRef(0)
 
     async function fetchRecords( typeFunction:(offset: number) => Promise<RecordsProps[]> ) {
+        // console.log('fetching')
         if ( isBusyRef.current ) return
         if ( isAllRef.current ) return
         isBusyRef.current  = true
@@ -147,9 +148,6 @@ export default function Home(){
         setFilterItems(updatedItems)
 
     }
-
-    
-
     
     async function initialFetch(){
         await fetchAccounts()
@@ -186,26 +184,39 @@ export default function Home(){
     const [ focusedTransferTypeItem, setFocusedTransferTypeItem ] = useState<RecordsProps | undefined>(undefined)
 
     const SHEETS = {
-        TypeItemDetails: () => <ItemDetails passedItem={undefined} passedItemFromRecent={focusedTypeItem} onEditPress={undefined}/>,
-        CustomTypeItemDetails: () => <CustomIncomeExpenseDetails customTypeItem={focusedCustomTypeItem} isCustomIncome={isIncome}/>,
+        TypeItemDetails: () => <ItemDetails goBack={goBack} passedItem={undefined} passedItemFromRecent={focusedTypeItem} nonEditablePassedItem={nonEditablePassedItemRef.current} onEditPress={undefined}/>,
+        CustomTypeItemDetails: () => <CustomIncomeExpenseDetails onCustomItemPress={openNonEditableTypeItem} customTypeItem={focusedCustomTypeItem} isCustomIncome={isIncome}/>,
         TransferItemDetails: () => <TransferDetails passedItem={undefined} itemFromRecent={focusedTransferTypeItem} onEditPress={undefined} />
     }
 
-    const  currentSheet = useRef< 'TypeItemDetails' | 'CustomTypeItemDetails' | 'TransferItemDetails'>('TypeItemDetails')
+    const  [ currentSheet, setCurrentSheet] = useState< 'TypeItemDetails' | 'CustomTypeItemDetails' | 'TransferItemDetails'>('TypeItemDetails')
 
-    const SheetContent = SHEETS[currentSheet.current]
+    const SheetContent = SHEETS[currentSheet]
 
     // TypeItem
     function openTypeItem( tr:RecordsProps ) {
-        currentSheet.current = 'TypeItemDetails'
+        setCurrentSheet( 'TypeItemDetails' )
         setFocusedTypeItem( tr )
         openSheetCaller()
-        
+    }
+
+    // Type Item for custom
+    const nonEditablePassedItemRef = useRef< CustomTypeProps | undefined >(undefined) 
+ 
+    function openNonEditableTypeItem( item: CustomTypeProps ) {
+        setCurrentSheet('TypeItemDetails')
+        setFocusedTypeItem(undefined)
+        nonEditablePassedItemRef.current = item
+        openSheetCaller()
+    }
+
+    function goBack() {
+        setCurrentSheet('CustomTypeItemDetails')
     }
 
     // CustomTypeItem
     async function openCustomTypeItem( tr:RecordsProps, isIncome: boolean ) {
-        currentSheet.current = 'CustomTypeItemDetails'
+        setCurrentSheet('CustomTypeItemDetails')
 
         let fetchedItems: CustomTypeProps[];
         if ( isIncome ) {
@@ -220,7 +231,7 @@ export default function Home(){
 
     // TransferTypeItem
     function openTransferTypeItem( tr:RecordsProps ) {
-        currentSheet.current = 'TransferItemDetails'
+        setCurrentSheet('TransferItemDetails')
 
         setFocusedTransferTypeItem( tr )
         openSheetCaller()

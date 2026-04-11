@@ -122,6 +122,28 @@ const CommonStyles = StyleSheet.create({
         fontFamily:fonts.semiBold,
         color:colors.light.primary,
         textAlign:'center'
+    },
+
+    GoBackWrapper: {
+        flexDirection:'column',
+    },
+
+    GoBackButton: {
+        alignSelf:'flex-end',
+        flexDirection:'row',
+        alignItems:'center',
+        backgroundColor:colors.light.primary,
+        paddingTop:8,
+        paddingBottom:8,
+        paddingLeft:16,
+        paddingRight:16,
+        borderRadius:8
+    },
+
+    GoBackButtonText: {
+        fontFamily:fonts.medium,
+        fontSize:12,
+        color:colors.light.white
     }
 })
 

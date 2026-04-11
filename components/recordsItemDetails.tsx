@@ -3,24 +3,29 @@ import { displayTimes, priceWithComma } from '@/func/general';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
 import { PriceWithCommaProps, RecordsProps } from '@/types/homeProps';
-import { TypeProps } from '@/types/recordsTypeItemType.schema';
+import { CustomTypeProps, TypeProps } from '@/types/recordsTypeItemType.schema';
+import Entypo from '@expo/vector-icons/Entypo';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import InfoText from './infoText';
 
 interface ItemDetailsTypes {
     passedItem: TypeProps | undefined;
     passedItemFromRecent: RecordsProps | undefined;
+    nonEditablePassedItem: CustomTypeProps | undefined
     onEditPress: ( () => void ) | undefined;
+    goBack: () => void;
 }
 
 export default function ItemDetails({
     passedItem,
     passedItemFromRecent,
-    onEditPress
+    nonEditablePassedItem,
+    onEditPress,
+    goBack
 }:ItemDetailsTypes) {
 
 
-    let item: TypeProps;
+    let item: TypeProps | CustomTypeProps;
     if ( passedItemFromRecent ) {
         item = {
             typeId:passedItemFromRecent.id, 
@@ -36,8 +41,10 @@ export default function ItemDetails({
             categoryId:0,
             accountId:0
         }
+    } else if (passedItem) {
+        item = passedItem
     } else {
-        item = passedItem!
+        item = nonEditablePassedItem!
     }
     
     let amount: PriceWithCommaProps;
@@ -75,14 +82,28 @@ export default function ItemDetails({
                     </View>
                     <View style={CommonStyles.BottomSheetButtonWrapper}>
                         {
-                            onEditPress?
+                            onEditPress && passedItem?
                             <Pressable 
                                 onPress={onEditPress}
                                 style={[CommonStyles.BottomSheetButton, CommonStyles.BottomSheetPrimaryButton]}>
                                 <Text style={CommonStyles.BottomSheetButtonText}>Edit</Text>
                             </Pressable>
                             :
-                            <InfoText text={`A Record from the Journal of ${item.date}`} />
+                                passedItemFromRecent? 
+                                <InfoText text={`A Record from the Journal of ${item.date}`} />
+                                :                            
+                                <InfoText text={`A Record from the Custom Journal of ${item.date}`} />
+                        }
+                    </View>
+                    <View style={CommonStyles.GoBackWrapper}>
+                        {
+                            nonEditablePassedItem?
+                            <Pressable onPress={goBack} style={CommonStyles.GoBackButton}>
+                                <Entypo name="chevron-left" size={20} color={colors.light.white} />
+                                <Text style={CommonStyles.GoBackButtonText}> Back</Text>
+                            </Pressable>
+                            :
+                            null
                         }
                     </View>
                 </>
