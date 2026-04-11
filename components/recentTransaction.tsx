@@ -1,22 +1,36 @@
 import colors from "@/constants/colors";
 import { priceWithComma } from "@/func/general";
 import RecentTransactionSectionStyles from "@/styles/recentTransactionSectionStyles";
-import { RecordsProps } from "@/types/homeProps";
+import { onPressFunctionsProps, RecordsProps } from "@/types/homeProps";
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Octicons from '@expo/vector-icons/Octicons';
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 interface RecentTransactionProps {
     transaction: RecordsProps;
+    onPressFunctions: onPressFunctionsProps
 }
 
-export default function RecentTransaction({ transaction }: RecentTransactionProps){
+export default function RecentTransaction({ 
+    transaction,
+    onPressFunctions }: RecentTransactionProps){
 
     const amount = priceWithComma(transaction.amount)
+
     return (
-        <View style={RecentTransactionSectionStyles.RecentTransactionWrapper}>
+        <Pressable 
+            onPress={() => {
+                if ( transaction.type === 'transfer' ) {
+                    onPressFunctions.openTransferTypeItem( transaction )
+                } else if ( transaction.isCustom ) {
+                    onPressFunctions.openCustomTypeItem( transaction, transaction.type === 'income' )
+                } else {
+                    onPressFunctions.openTypeItem( transaction )
+                }
+            }}
+            style={RecentTransactionSectionStyles.RecentTransactionWrapper}>
             <View style={RecentTransactionSectionStyles.RecentTransactionLeft}>
                 <View style={[ RecentTransactionSectionStyles.RecentTransactionLeftIcon, 
                     transaction.type === 'income'? { backgroundColor: colors.light.incomeBackground } 
@@ -63,6 +77,6 @@ export default function RecentTransaction({ transaction }: RecentTransactionProp
                     : { color: colors.light.primary } ]}> { amount.value }
                         <Text style={ RecentTransactionSectionStyles.RecentTransactionRightDeciaml}>.{amount.decimal}</Text>
             </Text>
-        </View>  
+        </Pressable>  
     )
 }

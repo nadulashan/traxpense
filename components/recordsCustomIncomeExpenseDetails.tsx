@@ -8,19 +8,21 @@ import CustomTypeItem from './recordsDetailsCustomTypeItem';
 
 
 interface RecordCustomIncomeExpenseDetailsTypes{
-    incomeItems:CustomTypeProps[] |  null;
-    expenseItems:CustomTypeProps[] | null;
-    customItemsSum:number;
+    customTypeItem:CustomTypeProps[] |  null;
     isCustomIncome:boolean
 }
 
 export default function CustomIncomeExpenseDetails({
-    incomeItems,
-    expenseItems,
-    customItemsSum,
+    customTypeItem,
     isCustomIncome
 }:RecordCustomIncomeExpenseDetailsTypes) {
 
+    let customItemsSum = 0   
+    if ( customTypeItem ) {
+        customTypeItem.forEach(item => {
+            customItemsSum = customItemsSum + item.amount
+        })
+    }
     const amount = priceWithComma(customItemsSum)
 
     return(
@@ -29,26 +31,16 @@ export default function CustomIncomeExpenseDetails({
                     <Text style={RecordStyles.TypeText}>{isCustomIncome? 'Custom Income' : 'Custom Expense'}</Text>
                     <View style={RecordStyles.TypeItemsWrapper}>                    
                     {
-                        isCustomIncome?
-                            incomeItems ?
-                                incomeItems.length !== 0 ?
-                                incomeItems.map((items) => (
-                                    <CustomTypeItem key={items.customTypeId} item={items} />
-                                ))
-                                :
-                                <Text style={CommonStyles.NoActionText}>No Records</Text>
+                        customTypeItem ?
+                            customTypeItem.length !== 0 ?
+                            customTypeItem.map((items) => (
+                                <CustomTypeItem key={items.customTypeId} item={items} />
+                            ))
                             :
-                            <ActivityIndicator size={'small'} color={colors.light.primary}/>
+                            <Text style={CommonStyles.NoActionText}>No Records</Text>
                         :
-                            expenseItems ?
-                                expenseItems.length !== 0 ?
-                                expenseItems.map((items) => (
-                                    <CustomTypeItem key={items.customTypeId} item={items} />
-                                ))
-                                :
-                                <Text style={CommonStyles.NoActionText}>No Records</Text>
-                            :
-                            <ActivityIndicator size={'small'} color={colors.light.primary}/>
+                        <ActivityIndicator size={'small'} color={colors.light.primary}/>
+        
                     }
                     </View>
                 </View>

@@ -17,6 +17,7 @@ export interface RecordsProps {
     comment: string;
     amount:number;
     date: string;
+    createdDateTime: string;
     type: 'income' | 'expense' | 'transfer';
 }
 
@@ -36,4 +37,11 @@ export interface PriceWithCommaProps{
     currency: string,
     value: string, 
     decimal: string
+}
+
+
+export interface onPressFunctionsProps {
+    openTypeItem: ( tr: RecordsProps ) => void;
+    openCustomTypeItem: ( tr: RecordsProps, isIncome: boolean ) => void;
+    openTransferTypeItem: ( tr: RecordsProps ) => void;
 }

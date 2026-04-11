@@ -4,9 +4,16 @@ import AccountCardsSection from '../../components/accountCardSection';
 import User from '../../components/user';
 
 import RecentTransactionSection from '@/components/recentTransactionSection';
+import CustomIncomeExpenseDetails from '@/components/recordsCustomIncomeExpenseDetails';
+import ItemDetails from '@/components/recordsItemDetails';
+import TransferDetails from '@/components/recordsTransferDetails';
 import { getAccountDetails, getRecords, getRecordsExpenses, getRecordsIncome, getRecordsTransfer } from '@/db/home/select';
+import { getCustomExpenses, getCustomIncomes } from '@/db/records/select';
+import { closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
 import { RecordsProps } from '@/types/homeProps';
+import { CustomTypeProps } from '@/types/recordsTypeItemType.schema';
 import { AccountProps } from '@/types/settingsProps';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView } from 'react-native';
@@ -169,6 +176,78 @@ export default function Home(){
         },[])
     )
 
+
+    // BottomSheet
+    const [ focusedTypeItem, setFocusedTypeItem ] = useState<RecordsProps | undefined>(undefined)
+
+    const [ focusedCustomTypeItem, setFocusedCustomTypeItem ] = useState<CustomTypeProps[] | null>(null)
+    const [ isIncome, setIsIncome ] = useState(true)
+
+    const [ focusedTransferTypeItem, setFocusedTransferTypeItem ] = useState<RecordsProps | undefined>(undefined)
+
+    const SHEETS = {
+        TypeItemDetails: () => <ItemDetails passedItem={undefined} passedItemFromRecent={focusedTypeItem} onEditPress={undefined}/>,
+        CustomTypeItemDetails: () => <CustomIncomeExpenseDetails customTypeItem={focusedCustomTypeItem} isCustomIncome={isIncome}/>,
+        TransferItemDetails: () => <TransferDetails passedItem={undefined} itemFromRecent={focusedTransferTypeItem} onEditPress={undefined} />
+    }
+
+    const  currentSheet = useRef< 'TypeItemDetails' | 'CustomTypeItemDetails' | 'TransferItemDetails'>('TypeItemDetails')
+
+    const SheetContent = SHEETS[currentSheet.current]
+
+    // TypeItem
+    function openTypeItem( tr:RecordsProps ) {
+        currentSheet.current = 'TypeItemDetails'
+        setFocusedTypeItem( tr )
+        openSheetCaller()
+        
+    }
+
+    // CustomTypeItem
+    async function openCustomTypeItem( tr:RecordsProps, isIncome: boolean ) {
+        currentSheet.current = 'CustomTypeItemDetails'
+
+        let fetchedItems: CustomTypeProps[];
+        if ( isIncome ) {
+            fetchedItems = await getCustomIncomes( tr.date )
+        } else {
+            fetchedItems = await getCustomExpenses( tr.date )
+        }
+        setIsIncome(isIncome)
+        setFocusedCustomTypeItem(fetchedItems)
+        openSheetCaller()
+    }
+
+    // TransferTypeItem
+    function openTransferTypeItem( tr:RecordsProps ) {
+        currentSheet.current = 'TransferItemDetails'
+
+        setFocusedTransferTypeItem( tr )
+        openSheetCaller()
+    }
+
+    // Bottom Sheet things including backdrop - Ref
+    const sheetRef = useRef<BottomSheet>(null);
+    const backDrop = useCallback(( props:BottomSheetBackdropProps) => (
+        <BottomSheetBackdrop
+            {...props}
+            disappearsOnIndex={-1}
+            appearsOnIndex={0}
+            opacity={0.5}
+            onPress={() => {
+                closeSheetCaller()
+            }}  
+        />
+    ),[])
+
+    function openSheetCaller() {
+        openBottomSheet(sheetRef)
+    }
+    
+    function closeSheetCaller(){
+        closeBottomSheet(sheetRef)
+    }
+
     return (
         <SafeAreaView style={{backgroundColor:'#ffffff', minHeight:'100%'}} edges={['top', 'left', 'right']}>
             <ScrollView 
@@ -176,8 +255,28 @@ export default function Home(){
             >
                 <User />
                 < AccountCardsSection accounts={accounts}/>
-                <RecentTransactionSection records={records} fetchRecords={fetchRecordsAgainRef.current} filterItems={filterItems}/>
+                <RecentTransactionSection 
+                    records={records} 
+                    fetchRecords={fetchRecordsAgainRef.current} 
+                    filterItems={filterItems}
+                    onPressFunctions={{
+                        openTypeItem: openTypeItem,
+                        openCustomTypeItem: openCustomTypeItem,
+                        openTransferTypeItem: openTransferTypeItem
+                    }}
+                    />
             </ScrollView>
+          <BottomSheet 
+              index={-1} 
+              enableDynamicSizing={true}
+              enablePanDownToClose={true}
+              ref={sheetRef}
+              backdropComponent={backDrop}
+              >
+              <BottomSheetView>
+                {SheetContent()}
+              </BottomSheetView>
+          </BottomSheet>
         </SafeAreaView>
     )
 }

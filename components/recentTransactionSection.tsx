@@ -1,5 +1,5 @@
 import RecentTransactionSectionStyles from '@/styles/recentTransactionSectionStyles';
-import { RecordsProps } from '@/types/homeProps';
+import { onPressFunctionsProps, RecordsProps } from '@/types/homeProps';
 import { FlashList } from '@shopify/flash-list';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
 import InfoText from './infoText';
@@ -10,13 +10,15 @@ import SectionHeader from "./sectionHeader";
 interface RecentTransactionSectionProps{
     records:RecordsProps[] | undefined;
     fetchRecords: () => void;
-    filterItems: {key:number, name: string, isActive: boolean, onPress: () => void }[]
+    filterItems: {key:number, name: string, isActive: boolean, onPress: () => void }[];
+    onPressFunctions: onPressFunctionsProps
 }
 
 export default function RecentTransactionSection({
     records,
     fetchRecords,
-    filterItems
+    filterItems,
+    onPressFunctions
 }: RecentTransactionSectionProps){
     return(
         <>
@@ -37,7 +39,9 @@ export default function RecentTransactionSection({
                         records.length !== 0 ?
                         <FlashList
                             data={records}
-                            renderItem={ ({ item }) => <RecentTransaction key={item.id} transaction={item} /> }
+                            renderItem={ ({ item }) => <RecentTransaction 
+                                                            key={item.id} transaction={item} 
+                                                            onPressFunctions={onPressFunctions}/> }
                             onEndReached={fetchRecords} // The Trigger
                             onEndReachedThreshold={0.3} // Trigger when 30% from the bottom
                         />

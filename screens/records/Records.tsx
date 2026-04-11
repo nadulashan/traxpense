@@ -68,9 +68,9 @@ export default function Records(){
     Transfer: () => <Transfers focusedItem={transferItem} />,
 
     
-    ItemDetails: () => <ItemDetails item={focusedItem} onEditPress={onEditPress}/>,
+    ItemDetails: () => <ItemDetails passedItem={focusedItem.current} onEditPress={onEditPress} passedItemFromRecent={undefined}/>,
 
-    TransferDetails: () => <TransferDetails item={transferItem} onEditPress={onEditPress}/>
+    TransferDetails: () => <TransferDetails passedItem={transferItem.current} itemFromRecent={undefined} onEditPress={onEditPress}/>
 
 
   }
@@ -112,9 +112,7 @@ export default function Records(){
   const BOTTOM_REF = {
 
     CustomIncomeExpense: () => < CustomIncomeExpenseDetails 
-                                        incomeItems={customIncomeItems}
-                                        expenseItems={customExpenseItems}
-                                        customItemsSum={customItemsSum.current}
+                                        customTypeItem={customTypeItem}
                                         isCustomIncome={isCustomIncome.current}/>,
   }
 
@@ -123,33 +121,22 @@ export default function Records(){
   const SheetRefContent = BOTTOM_REF[currentSheetRef]  
 
   // FOR CUSTOM INCOME EXPENSE
-  const [ customIncomeItems, setCustomIncomeItems ] = useState<CustomTypeProps[] | null>(null)
-  const [ customExpenseItems, setCustomExpenseItems ] = useState<CustomTypeProps[] | null>(null)
+  const [ customTypeItem, setCustomTypeItem ] = useState<CustomTypeProps[] | null>(null)
   const isCustomIncome = useRef(false)
-  const customItemsSum = useRef(0)
   
   // Open Custom Sheet
   async function switchCustom( type:'income' | 'expense' ) {        
     setCurrentSheetRef( 'CustomIncomeExpense' )
+
+    let fetchedCustomType: CustomTypeProps[];
     if ( type === 'income' ) {
-        customItemsSum.current = 0
         isCustomIncome.current = true
-        const fetchedCustomIncomes = await getCustomIncomes(focusedDate)
-        setCustomIncomeItems(fetchedCustomIncomes)
-        setCustomExpenseItems(null)
-        fetchedCustomIncomes.forEach(item => {
-            customItemsSum.current = customItemsSum.current + item.amount
-        })
+        fetchedCustomType = await getCustomIncomes(focusedDate)
     } else {
-        customItemsSum.current = 0
         isCustomIncome.current = false
-        const fetchedCustomExpenses = await getCustomExpenses(focusedDate)
-        setCustomExpenseItems(fetchedCustomExpenses)
-        setCustomIncomeItems(null)
-        fetchedCustomExpenses.forEach(item => {
-            customItemsSum.current = customItemsSum.current + item.amount
-        })
+        fetchedCustomType = await getCustomExpenses(focusedDate)
     }
+    setCustomTypeItem(fetchedCustomType)
     
     openRefSheetCaller()
   }
