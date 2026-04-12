@@ -15,7 +15,7 @@ export default function AccountCardsSection({accounts}: AccountsCardSectionProps
 
     return(
         <>
-            <Header header='Active Accounts'/>
+            <Header header='Active Accounts' button={undefined}/>
             {
             accounts?
                 accounts.length !== 0 ?

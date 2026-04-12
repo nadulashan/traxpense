@@ -8,12 +8,17 @@ import Entypo from '@expo/vector-icons/Entypo';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import InfoText from './infoText';
 
+interface GoBackProps{
+    show: boolean;
+    onPress: () => void
+}
+
 interface ItemDetailsTypes {
     passedItem: TypeProps | undefined;
     passedItemFromRecent: RecordsProps | undefined;
     nonEditablePassedItem: CustomTypeProps | undefined
     onEditPress: ( () => void ) | undefined;
-    goBack: () => void;
+    goBack: GoBackProps | undefined;
 }
 
 export default function ItemDetails({
@@ -97,8 +102,8 @@ export default function ItemDetails({
                     </View>
                     <View style={CommonStyles.GoBackWrapper}>
                         {
-                            nonEditablePassedItem?
-                            <Pressable onPress={goBack} style={CommonStyles.GoBackButton}>
+                            goBack?.show?
+                            <Pressable onPress={goBack.onPress} style={CommonStyles.GoBackButton}>
                                 <Entypo name="chevron-left" size={20} color={colors.light.white} />
                                 <Text style={CommonStyles.GoBackButtonText}> Back</Text>
                             </Pressable>

@@ -4,9 +4,16 @@ import fonts from '../constants/fonts';
 
 const universal = StyleSheet.create({
     screenWrapper: {
-        marginLeft:24,
-        marginRight:24,
-        marginTop:24,
+        paddingLeft:24,
+        paddingRight:24,
+        // marginTop:24,
+    },
+
+    headerWrapper: {
+        flexDirection:'row',
+        justifyContent:'space-between',
+        alignItems:'center',
+        // backgroundColor:'pink'
     },
 
     sectionHeader: {
@@ -15,7 +22,9 @@ const universal = StyleSheet.create({
         color:colors.light.primary,
         marginTop:24,
         marginBottom:24
-    }
+    },
+
+
 })
 
 

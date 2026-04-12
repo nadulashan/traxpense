@@ -70,7 +70,7 @@ export default function Records(){
     // passed item is what is passed that can be edited (TypeItem) 
     // passedItemFromRecent has differenct types than passed item and cannot be edited
     // nonEditablePassedItem is items from custom journal which cannot be edited
-    ItemDetails: () => <ItemDetails goBack={goBack} passedItem={focusedItem.current} onEditPress={onEditPress} nonEditablePassedItem={nonEditablePassedItemRef.current} passedItemFromRecent={undefined}/>,
+    ItemDetails: () => <ItemDetails goBack={{show:showGoBack, onPress: goBack}} passedItem={focusedItem.current} onEditPress={onEditPress} nonEditablePassedItem={nonEditablePassedItemRef.current} passedItemFromRecent={undefined}/>,
 
     TransferDetails: () => <TransferDetails passedItem={transferItem.current} itemFromRecent={undefined} onEditPress={onEditPress}/>,
     CustomIncomeExpense: () => < CustomIncomeExpenseDetails 
@@ -87,9 +87,11 @@ export default function Records(){
 
   // FOR ITEM DETAILS SHEET
   const focusedItem  = useRef<TypeProps | undefined>(undefined)
+  const [ showGoBack, setShowGoBack ] = useState(false)
 
   async function switchItemDetail(item: TypeProps, clickedType: 'income' | 'expense' ) {
     nonEditablePassedItemRef.current = undefined
+    setShowGoBack(false) // in case user fold the sheet by hand
     if ( clickedType === 'income' ) {
       type.current = 'income'
     } else {
@@ -106,7 +108,7 @@ export default function Records(){
 
   function switchNonEditableItem ( item: CustomTypeProps ) {
     focusedItem.current = undefined
-    console.log('runs')
+    setShowGoBack(true)
     setCurrentSheetState( 'ItemDetails' )
     nonEditablePassedItemRef.current = item
     openStateSheetCaller()
@@ -184,6 +186,7 @@ export default function Records(){
     transferItem.current = undefined
     isTransfer.current = false
     setCurrentSheetState('CreationMenu')
+    setShowGoBack(false)
   }
 
   // Open and Close Sheet Caller - Ref

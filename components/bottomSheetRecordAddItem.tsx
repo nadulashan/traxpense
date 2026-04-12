@@ -155,7 +155,7 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
             setIsEdit(true)
             setSelectedCategory({ categoryId:focusedItem.current.categoryId, name:focusedItem.current.name, badge:focusedItem.current.badge })
             setAmount(( focusedItem.current.amount / 100).toString() )
-            setSelectedAccount({ accountId:focusedItem.current.accountId, accountName:focusedItem.current.accountName, accountBadge:focusedItem.current.accountBadge })
+            setSelectedAccount({ accountId:focusedItem.current.accountId, accountName:focusedItem.current.accountName, accountBadge:focusedItem.current.accountBadge }) // fix when checking for balance before spending
             if ( focusedItem.current.comment ){
                 setComment(focusedItem.current.comment)
             }
@@ -225,7 +225,7 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
     const ScreenContent = SCREEN[currentScreen]
 
     return (
-        <View style={RecordStyles.MenuSheetWrapper}>
+        <View style={RecordStyles.AddItemWrapper}>
             {ScreenContent()}
         </View>
     )

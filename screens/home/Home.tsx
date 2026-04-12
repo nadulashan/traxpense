@@ -4,14 +4,15 @@ import AccountCardsSection from '../../components/accountCardSection';
 import User from '../../components/user';
 
 import RecentTransactionSection from '@/components/recentTransactionSection';
+import FormAccountWrapper from '@/components/recordFormAccountWrapper';
 import CustomIncomeExpenseDetails from '@/components/recordsCustomIncomeExpenseDetails';
 import ItemDetails from '@/components/recordsItemDetails';
 import TransferDetails from '@/components/recordsTransferDetails';
 import { getAccountDetails, getRecords, getRecordsExpenses, getRecordsIncome, getRecordsTransfer } from '@/db/home/select';
-import { getCustomExpenses, getCustomIncomes } from '@/db/records/select';
+import { getActiveAccounts, getCustomExpenses, getCustomIncomes } from '@/db/records/select';
 import { closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
 import { RecordsProps } from '@/types/homeProps';
-import { CustomTypeProps } from '@/types/recordsTypeItemType.schema';
+import { ActiveAccountsProps, CustomTypeProps } from '@/types/recordsTypeItemType.schema';
 import { AccountProps } from '@/types/settingsProps';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useFocusEffect } from '@react-navigation/native';
@@ -23,7 +24,7 @@ export default function Home(){
     // Accounts
     const [ accounts, setAccounts ] = useState< AccountProps[] | undefined>()
     
-    async function fetchAccounts() {
+    async function fetchAccountsDetails() {
         const accounts = await getAccountDetails()
         setAccounts(accounts)
     }
@@ -150,7 +151,7 @@ export default function Home(){
     }
     
     async function initialFetch(){
-        await fetchAccounts()
+        await fetchAccountsDetails()
         await fetchAll()
     }
 
@@ -174,6 +175,26 @@ export default function Home(){
         },[])
     )
 
+    // Account Filter
+    const [ activeAccounts, setActiveAccounts ] = useState< ActiveAccountsProps[] | null >(null) 
+    const [ filterAccount, setFilterAccount ] = useState< ActiveAccountsProps | undefined >(undefined)
+
+    async function fetchAccounts() {
+        const fetch = await getActiveAccounts()
+        setActiveAccounts(fetch)
+    }
+
+    function openActiveAccountSheet() {
+        fetchAccounts()
+        setCurrentSheet('ActiveAccountSheet')
+        openSheetCaller()
+    }
+
+    function updateFilterAccount( acc: ActiveAccountsProps ) {
+        setFilterAccount(acc)
+        closeSheetCaller()
+    }
+
 
     // BottomSheet
     const [ focusedTypeItem, setFocusedTypeItem ] = useState<RecordsProps | undefined>(undefined)
@@ -183,18 +204,22 @@ export default function Home(){
 
     const [ focusedTransferTypeItem, setFocusedTransferTypeItem ] = useState<RecordsProps | undefined>(undefined)
 
+    const [ showGoBack, setShowGoBack ] = useState(false)
+
     const SHEETS = {
-        TypeItemDetails: () => <ItemDetails goBack={goBack} passedItem={undefined} passedItemFromRecent={focusedTypeItem} nonEditablePassedItem={nonEditablePassedItemRef.current} onEditPress={undefined}/>,
+        TypeItemDetails: () => <ItemDetails goBack={{show: showGoBack, onPress: goBack}} passedItem={undefined} passedItemFromRecent={focusedTypeItem} nonEditablePassedItem={nonEditablePassedItemRef.current} onEditPress={undefined}/>,
         CustomTypeItemDetails: () => <CustomIncomeExpenseDetails onCustomItemPress={openNonEditableTypeItem} customTypeItem={focusedCustomTypeItem} isCustomIncome={isIncome}/>,
-        TransferItemDetails: () => <TransferDetails passedItem={undefined} itemFromRecent={focusedTransferTypeItem} onEditPress={undefined} />
+        TransferItemDetails: () => <TransferDetails passedItem={undefined} itemFromRecent={focusedTransferTypeItem} onEditPress={undefined} />,
+        ActiveAccountSheet: () => <FormAccountWrapper accounts={activeAccounts} onAccountPress={updateFilterAccount}/>
     }
 
-    const  [ currentSheet, setCurrentSheet] = useState< 'TypeItemDetails' | 'CustomTypeItemDetails' | 'TransferItemDetails'>('TypeItemDetails')
+    const  [ currentSheet, setCurrentSheet] = useState< 'TypeItemDetails' | 'CustomTypeItemDetails' | 'TransferItemDetails' | 'ActiveAccountSheet' >('TypeItemDetails')
 
     const SheetContent = SHEETS[currentSheet]
 
     // TypeItem
     function openTypeItem( tr:RecordsProps ) {
+        setShowGoBack(false) // in case user fold the sheet by hand
         setCurrentSheet( 'TypeItemDetails' )
         setFocusedTypeItem( tr )
         openSheetCaller()
@@ -205,6 +230,7 @@ export default function Home(){
  
     function openNonEditableTypeItem( item: CustomTypeProps ) {
         setCurrentSheet('TypeItemDetails')
+        setShowGoBack(true)
         setFocusedTypeItem(undefined)
         nonEditablePassedItemRef.current = item
         openSheetCaller()
@@ -256,6 +282,7 @@ export default function Home(){
     }
     
     function closeSheetCaller(){
+        setShowGoBack(false)
         closeBottomSheet(sheetRef)
     }
 
@@ -275,6 +302,7 @@ export default function Home(){
                         openCustomTypeItem: openCustomTypeItem,
                         openTransferTypeItem: openTransferTypeItem
                     }}
+                    filterButtonPress={openActiveAccountSheet}
                     />
             </ScrollView>
           <BottomSheet 

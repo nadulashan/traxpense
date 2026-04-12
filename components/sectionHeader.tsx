@@ -1,11 +1,29 @@
-import { Text } from 'react-native';
+import { ReactElement } from 'react';
+import { Pressable, Text, View } from 'react-native';
 import { default as Headerstyles, default as universal } from '../styles/universal';
-type PropTypes = {
-    header : string;
+
+interface ButtonProps{
+    icon: ReactElement<any, any>;
+    onPress: () => void;
 }
 
-export default function SectionHeader({header}:PropTypes){
+type PropTypes = {
+    header : string;
+    button: ButtonProps | undefined; 
+}
+
+export default function SectionHeader({ header, button }:PropTypes){
     return (
-        <Text style={[Headerstyles.sectionHeader,universal.screenWrapper]} >{header}</Text>
+        <View style={[universal.screenWrapper, universal.headerWrapper]}>
+            <Text style={Headerstyles.sectionHeader} >{header}</Text>
+            {
+                button?
+                <Pressable onPress={button.onPress}>
+                    {button.icon}
+                </Pressable>
+                :
+                null
+            }
+        </View>
     )
 }

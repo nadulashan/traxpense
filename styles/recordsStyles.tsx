@@ -108,9 +108,15 @@ const RecordStyles = StyleSheet.create({
 
     // Add Income/Expense
     AddItemWrapper: {
+        flexDirection:'column',
+        gap:16,
+    },
+
+    AddItemFormWrapper: {
         width:'100%',
         flexDirection:'column',
-        gap:16
+        gap:16,
+        padding:16
     },
 
     AddItemAmountAccountWrapper: {
@@ -147,8 +153,8 @@ const RecordStyles = StyleSheet.create({
     },
 
     CategoryElementWrapper: {
-        padding:8,
-        gap:8
+        gap:8,
+        padding:16
     },
 
     CategoryElement: {

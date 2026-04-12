@@ -53,7 +53,7 @@ export default function AddItemForm({
     onAmountTextChange
 }:AddItemFormTypes) {
     return  (
-        <View style={RecordStyles.AddItemWrapper}>
+        <View style={RecordStyles.AddItemFormWrapper}>
             {
                 longPressWarn?
                 <Text style={[CommonStyles.NoActionDangerText, {textAlign:'center'}]}>This Action is irreversible. Long Press to continue</Text>
