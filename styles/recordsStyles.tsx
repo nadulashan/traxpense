@@ -162,15 +162,26 @@ const RecordStyles = StyleSheet.create({
         padding:8,
         borderRadius:8,
         backgroundColor:colors.light.primaryLight,
+        borderWidth:1,
+        borderColor:colors.light.primaryLight,
         flexDirection:'row',
         gap:8,
         alignItems:'center',
         overflow:'hidden'
     },
 
+    CategoryElementSelected: {
+        borderColor: colors.light.primaryLight,
+        backgroundColor: colors.light.white
+    },
+
     CategoryElementText: {
         fontSize:14,
         fontFamily:fonts.regular,
+    },
+
+    CategoryElementTextSelected: {
+      //
     },
 
     // Record Details

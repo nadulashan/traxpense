@@ -177,7 +177,7 @@ export default function Home(){
 
     // Account Filter
     const [ activeAccounts, setActiveAccounts ] = useState< ActiveAccountsProps[] | null >(null) 
-    const [ filterAccount, setFilterAccount ] = useState< ActiveAccountsProps | undefined >(undefined)
+    const selectedAccounts = useRef<number[]>([])
 
     async function fetchAccounts() {
         const fetch = await getActiveAccounts()
@@ -190,8 +190,23 @@ export default function Home(){
         openSheetCaller()
     }
 
-    function updateFilterAccount( acc: ActiveAccountsProps ) {
-        setFilterAccount(acc)
+    function updateFilterList( acc: ActiveAccountsProps ){
+        let found = false
+        let index = 0
+        selectedAccounts.current.forEach( id => {
+            if ( id === acc.accountId ) {
+                found = true
+                selectedAccounts.current.splice(index,1)
+            }
+            index ++
+        })
+        if ( !found ) {
+            selectedAccounts.current.push(acc.accountId)
+        }
+    }
+
+    function updateFetch( accIds: number[] ) {
+        //
         closeSheetCaller()
     }
 
@@ -210,7 +225,7 @@ export default function Home(){
         TypeItemDetails: () => <ItemDetails goBack={{show: showGoBack, onPress: goBack}} passedItem={undefined} passedItemFromRecent={focusedTypeItem} nonEditablePassedItem={nonEditablePassedItemRef.current} onEditPress={undefined}/>,
         CustomTypeItemDetails: () => <CustomIncomeExpenseDetails onCustomItemPress={openNonEditableTypeItem} customTypeItem={focusedCustomTypeItem} isCustomIncome={isIncome}/>,
         TransferItemDetails: () => <TransferDetails passedItem={undefined} itemFromRecent={focusedTransferTypeItem} onEditPress={undefined} />,
-        ActiveAccountSheet: () => <FormAccountWrapper accounts={activeAccounts} onAccountPress={updateFilterAccount}/>
+        ActiveAccountSheet: () => <FormAccountWrapper accounts={activeAccounts} onAccountPress={updateFilterList} multiSelect={{available: true, primaryButtonFunction: updateFetch, secondaryButtonFunction: closeSheetCaller }}/>
     }
 
     const  [ currentSheet, setCurrentSheet] = useState< 'TypeItemDetails' | 'CustomTypeItemDetails' | 'TransferItemDetails' | 'ActiveAccountSheet' >('TypeItemDetails')
