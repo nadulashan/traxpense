@@ -7,6 +7,8 @@ export interface AccountDetailsProps{
 
 export interface RecordsProps {
     id: number;
+    primaryAccountId: number;
+    secondaryAccountId: number | null;
     primaryAccountName: string;
     primaryAccountBadge: string;
     secondaryAccountName: string | null;

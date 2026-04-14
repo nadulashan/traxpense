@@ -1,6 +1,8 @@
+import colors from '@/constants/colors';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
 import { ActiveAccountsProps } from '@/types/recordsTypeItemType.schema';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
@@ -30,9 +32,18 @@ export default function AccountItem({
                 }
                 onAccountPress(account)
             }}
-            style={[ RecordStyles.CategoryElement, selected? RecordStyles.CategoryElementSelected : null ]}> 
-            <View style={[CommonStyles.badge, {backgroundColor:badge}]}></View>
-            <Text style={[ RecordStyles.CategoryElementText, selected? RecordStyles.CategoryElementTextSelected : null ]}>{name}</Text>
+            style={[ RecordStyles.CategoryElement]}> 
+            <View style={{height:20, overflow:'hidden'}}>            
+                <View style={[CommonStyles.badge, {backgroundColor:badge, alignItems:'center', justifyContent:'center'}]}>
+                {
+                    selected?
+                    <FontAwesome5 name="check" size={12} color={colors.light.primaryLight} />
+                    :
+                    null
+                }
+                </View>
+            </View>
+            <Text style={[ RecordStyles.CategoryElementText]}>{name}</Text>
         </Pressable>
     )
 }

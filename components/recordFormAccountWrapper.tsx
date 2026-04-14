@@ -2,12 +2,12 @@ import colors from '@/constants/colors';
 import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
 import { ActiveAccountsProps } from '@/types/recordsTypeItemType.schema';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import AccountItem from './recordFormAccountItem';
 
 interface MultiSelectProps{
     available: boolean;
-    primaryButtonFunction: ( accIds: number[] ) => void;
+    primaryButtonFunction: () => void;
     secondaryButtonFunction: () => void;
 }
 
@@ -43,6 +43,23 @@ export default function FormAccountWrapper({
                 <Text style={CommonStyles.NoActionText}>Looks like there aren't active acounts you are looking for</Text>
             :
             <ActivityIndicator size={'small'} color={colors.light.primary} />
+        }
+        {
+            multiSelect?
+            <View style={[ CommonStyles.BottomSheetButtonWrapper, {marginTop:16} ]}>
+                <Pressable 
+                    onPress={multiSelect.secondaryButtonFunction}
+                    style={[ CommonStyles.BottomSheetButton, CommonStyles.BottomSheetSecondaryButton ]}>
+                    <Text style={CommonStyles.BottomSheetButtonText}>Close</Text>
+                </Pressable>
+                <Pressable 
+                    onPress={multiSelect.primaryButtonFunction}
+                    style={[ CommonStyles.BottomSheetButton, CommonStyles.BottomSheetPrimaryButton ]}>
+                    <Text style={CommonStyles.BottomSheetButtonText}>Filter</Text>
+                </Pressable>
+            </View>
+            :
+            null
         }
         </View>
     )

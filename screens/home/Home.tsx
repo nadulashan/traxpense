@@ -11,13 +11,23 @@ import TransferDetails from '@/components/recordsTransferDetails';
 import { getAccountDetails, getRecords, getRecordsExpenses, getRecordsIncome, getRecordsTransfer } from '@/db/home/select';
 import { getActiveAccounts, getCustomExpenses, getCustomIncomes } from '@/db/records/select';
 import { closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
+import Octicons from '@expo/vector-icons/Octicons';
+
 import { RecordsProps } from '@/types/homeProps';
 import { ActiveAccountsProps, CustomTypeProps } from '@/types/recordsTypeItemType.schema';
 import { AccountProps } from '@/types/settingsProps';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView } from 'react-native';
+
+// Filteration
+// I have two recent transactions filters. by account and by type
+// each type has its own db fetch method
+// fetching of records is always done by 'fetchRecords' function which always stores them in a Ref
+// after storing 'fetchRecords' run 'accountFilteration'. 
+// 'accountFilteration' looks if theres any 'selectedAccounts' filter transactions and update the records state accordingly.
+// code also maintains a 'isInitialFetch' to either add transactions to the ref or rewrite it. each type selection will trigger 'isInitialFetch' = true
 
 export default function Home(){
     
@@ -32,6 +42,7 @@ export default function Home(){
     // Recents
     const [ records, setRecords ] = useState<RecordsProps[] | undefined >(undefined)
     const recordsRef = useRef< RecordsProps[]  >([])
+    const isInitialFetch = useRef(true)
     const fetchRecordsAgainRef = useRef(() => fetchRecords(getRecordsIncome))
     const isBusyRef = useRef(false)
     const isAllRef = useRef(false)
@@ -44,11 +55,17 @@ export default function Home(){
         isBusyRef.current  = true
         const records = await typeFunction(offset.current)
         if ( records.length !== 0 ) {
-            recordsRef.current = [ ...recordsRef.current, ...records ]
+            if ( isInitialFetch.current ) {
+                recordsRef.current =  [ ...records ]
+                isInitialFetch.current = false
+            } else {
+                recordsRef.current =  [ ...recordsRef.current, ...records ]
+            }
             offset.current = offset.current + 10
         } else {
             isAllRef.current = true
-        }
+        }     
+        accountFilteration()
         isBusyRef.current  = false
     }
 
@@ -93,11 +110,8 @@ export default function Home(){
         setFilterItems(updatedItems)
     }
 
-    function performFilter( type: 'income' | 'expense' | 'transfer' ) {
-        return recordsRef.current.filter( item => item.type === type )
-    }
-
     async function fetchAll(){
+        isInitialFetch.current = true
         withdrawFocus()
         updateFilterTypeList(1)
 
@@ -105,42 +119,35 @@ export default function Home(){
         await fetchRecords(getRecords)
         fetchRecordsAgainRef.current = () => fetchRecords(getRecords)
 
-        // Filter
-        setRecords(old => [...( old?? [] ), ...recordsRef.current ])
-
     }
 
     async function fetchIncome(){
+        isInitialFetch.current = true
         withdrawFocus()
         updateFilterTypeList(2)
 
         // Fetch amd store in ref
         await fetchRecords(getRecordsIncome)
         fetchRecordsAgainRef.current = () => fetchRecords(getRecordsIncome)
-
-        // Filter
-        const filteredList = performFilter( 'income' )
-        setRecords( old => [ ...(old?? [] ), ...filteredList])
     }
 
     async function fetchExpense(){
+        isInitialFetch.current = true
         withdrawFocus()
         updateFilterTypeList(3)
 
 
         await fetchRecords(getRecordsExpenses)
         fetchRecordsAgainRef.current = () => fetchRecords(getRecordsExpenses)
-
-
     }
 
     async function fetchTransfer(){
+        isInitialFetch.current = true
         withdrawFocus()
         updateFilterTypeList(4)
 
         await fetchRecords(getRecordsTransfer)
         fetchRecordsAgainRef.current = () => fetchRecords(getRecordsTransfer)
-
 
     }
     
@@ -171,6 +178,7 @@ export default function Home(){
 
     // Account Filter
     const [ activeAccounts, setActiveAccounts ] = useState< ActiveAccountsProps[] | null >(null) 
+    const [ headerIcon, setHeaderIcon ] = useState< ReactElement> (<Octicons name="filter-remove" size={20} color="black" />)
     const selectedAccounts = useRef<number[]>([])
 
     async function fetchAccounts() {
@@ -199,8 +207,27 @@ export default function Home(){
         }
     }
 
-    function updateFetch( accIds: number[] ) {
-        //
+    function performAccountsFilter( toBeFilterd: RecordsProps[] ) {
+        if ( selectedAccounts.current.length === 0 ){ 
+            setHeaderIcon(<Octicons name="filter-remove" size={20} color="black" />)
+            return toBeFilterd
+        }
+        setHeaderIcon(<Octicons name="filter" size={20} color="black" />)
+        const filteredList = toBeFilterd.filter( item => {
+            let found = false
+            selectedAccounts.current.forEach( accId => {
+                if ( item.primaryAccountId === accId || item.secondaryAccountId === accId ) {
+                    found = true
+                }
+            })
+            return found
+        })
+        return filteredList
+    }
+
+    function accountFilteration() {
+        const filtered = performAccountsFilter( recordsRef.current )
+        setRecords(filtered)
         closeSheetCaller()
     }
 
@@ -219,7 +246,7 @@ export default function Home(){
         TypeItemDetails: () => <ItemDetails goBack={{show: showGoBack, onPress: goBack}} passedItem={undefined} passedItemFromRecent={focusedTypeItem} nonEditablePassedItem={nonEditablePassedItemRef.current} onEditPress={undefined}/>,
         CustomTypeItemDetails: () => <CustomIncomeExpenseDetails onCustomItemPress={openNonEditableTypeItem} customTypeItem={focusedCustomTypeItem} isCustomIncome={isIncome}/>,
         TransferItemDetails: () => <TransferDetails passedItem={undefined} itemFromRecent={focusedTransferTypeItem} onEditPress={undefined} />,
-        ActiveAccountSheet: () => <FormAccountWrapper accounts={activeAccounts} onAccountPress={updateFilterAccountList} multiSelect={{available: true, primaryButtonFunction: updateFetch, secondaryButtonFunction: closeSheetCaller }}/>
+        ActiveAccountSheet: () => <FormAccountWrapper accounts={activeAccounts} onAccountPress={updateFilterAccountList} multiSelect={{available: true, primaryButtonFunction: accountFilteration, secondaryButtonFunction: closeSheetCaller }}/>
     }
 
     const  [ currentSheet, setCurrentSheet] = useState< 'TypeItemDetails' | 'CustomTypeItemDetails' | 'TransferItemDetails' | 'ActiveAccountSheet' >('TypeItemDetails')
@@ -312,6 +339,7 @@ export default function Home(){
                         openTransferTypeItem: openTransferTypeItem
                     }}
                     filterButtonPress={openActiveAccountSheet}
+                    icon={headerIcon}
                     />
             </ScrollView>
           <BottomSheet 

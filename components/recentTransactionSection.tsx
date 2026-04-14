@@ -1,7 +1,7 @@
 import RecentTransactionSectionStyles from '@/styles/recentTransactionSectionStyles';
 import { onPressFunctionsProps, RecordsProps } from '@/types/homeProps';
-import Feather from '@expo/vector-icons/Feather';
 import { FlashList } from '@shopify/flash-list';
+import { ReactElement } from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
 import InfoText from './infoText';
 import RecentTransaction from './recentTransaction';
@@ -14,6 +14,7 @@ interface RecentTransactionSectionProps{
     filterItems: {key:number, name: string, isActive: boolean, onPress: () => void }[];
     onPressFunctions: onPressFunctionsProps,
     filterButtonPress: () => void;
+    icon: ReactElement
 }
 
 export default function RecentTransactionSection({
@@ -21,11 +22,12 @@ export default function RecentTransactionSection({
     fetchRecords,
     filterItems,
     onPressFunctions,
-    filterButtonPress
+    filterButtonPress,
+    icon
 }: RecentTransactionSectionProps){
     return(
         <>
-            <SectionHeader header="Recent Transactions" button={{ icon:<Feather name="filter" size={20} color="black" />, onPress: filterButtonPress}} />
+            <SectionHeader header="Recent Transactions" button={{ icon:icon, onPress: filterButtonPress}} />
             <ScrollView
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}

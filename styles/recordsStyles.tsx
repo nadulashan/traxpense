@@ -162,7 +162,7 @@ const RecordStyles = StyleSheet.create({
         padding:8,
         borderRadius:8,
         backgroundColor:colors.light.primaryLight,
-        borderWidth:1,
+        borderWidth:2,
         borderColor:colors.light.primaryLight,
         flexDirection:'row',
         gap:8,
@@ -171,8 +171,8 @@ const RecordStyles = StyleSheet.create({
     },
 
     CategoryElementSelected: {
-        borderColor: colors.light.primaryLight,
-        backgroundColor: colors.light.white
+        borderColor: colors.light.primary,
+        backgroundColor: colors.light.primary
     },
 
     CategoryElementText: {
@@ -181,7 +181,7 @@ const RecordStyles = StyleSheet.create({
     },
 
     CategoryElementTextSelected: {
-      //
+      color:colors.light.white
     },
 
     // Record Details

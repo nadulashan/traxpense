@@ -21,11 +21,13 @@ export async function getRecords( offset: number ) {
         const db = await getDB()
         const fetch = await db.getAllAsync<any>(`
                 SELECT  typeId AS id,
+                        income.accountId AS primaryAccountId,
+                        NULL AS secondaryAccountId,
                         accountName AS primaryAccountName,
                         NULL AS secondaryAccountName,
-                        isCustom,
                         accountBadge AS primaryAccountBadge,
                         NULL AS secondaryAccountBadge,
+                        isCustom,
                         incomeCategories.name,
                         incomeCategories.badge,
                         comment,
@@ -40,11 +42,13 @@ export async function getRecords( offset: number ) {
                 UNION ALL
 
                 SELECT  typeId AS id,
+                        expenses.accountId AS primaryAccountId,
+                        NULL AS secondaryAccountId,
                         accountName AS primaryAccountName,
                         NULL AS secondaryAccountName,
-                        isCustom,
                         accountBadge AS primaryAccountBadge,
                         NULL AS secondaryAccountBadge,
+                        isCustom,
                         expensesCategories.name,
                         expensesCategories.badge,
                         comment,
@@ -59,11 +63,13 @@ export async function getRecords( offset: number ) {
                 UNION ALL
 
                 SELECT  tr.transferId AS id,
+                        fr.accountId AS primaryAccountId,
+                        t.accountId AS secondaryAccountId,
                         fr.accountName AS primaryAccountName,
                         t.accountName AS secondaryAccountName,
-                        NULL AS isCustom,
                         fr.accountBadge AS primaryAccountBadge,
                         t.accountBadge AS secondaryAccountBadge,
+                        NULL AS isCustom,
                         'Transfer' AS name,
                         NULL AS badge,
                         tr.comment,
@@ -147,11 +153,13 @@ export async function getRecordsIncome( offset: number ) {
         const db = await getDB()
         const fetch = await db.getAllAsync<any>(`
                 SELECT  typeId AS id,
+                        income.accountId AS primaryAccountId,
+                        NULL AS secondaryAccountId,
                         accountName AS primaryAccountName,
                         NULL AS secondaryAccountName,
-                        isCustom,
                         accountBadge AS primaryAccountBadge,
                         NULL AS secondaryAccountBadge,
+                        isCustom,
                         incomeCategories.name,
                         incomeCategories.badge,
                         comment,
@@ -179,11 +187,13 @@ export async function getRecordsExpenses( offset: number ) {
         const db = await getDB()
         const fetch = await db.getAllAsync<any>(`
                 SELECT  typeId AS id,
+                        expenses.accountId AS primaryAccountId,
+                        NULL AS secondaryAccountId,
                         accountName AS primaryAccountName,
                         NULL AS secondaryAccountName,
-                        isCustom,
                         accountBadge AS primaryAccountBadge,
                         NULL AS secondaryAccountBadge,
+                        isCustom,
                         expensesCategories.name,
                         expensesCategories.badge,
                         comment,
@@ -211,11 +221,13 @@ export async function getRecordsTransfer( offset: number ) {
         const db = await getDB()
         const fetch = await db.getAllAsync<any>(`
                 SELECT  tr.transferId AS id,
+                        fr.accountId AS primaryAccountId,
+                        t.accountId AS secondaryAccountId,
                         fr.accountName AS primaryAccountName,
                         t.accountName AS secondaryAccountName,
-                        NULL AS isCustom,
                         fr.accountBadge AS primaryAccountBadge,
                         t.accountBadge AS secondaryAccountBadge,
+                        NULL AS isCustom,
                         'Transfer' AS name,
                         NULL AS badge,
                         tr.comment,
