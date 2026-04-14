@@ -31,6 +31,7 @@ export default function Home(){
 
     // Recents
     const [ records, setRecords ] = useState<RecordsProps[] | undefined >(undefined)
+    const recordsRef = useRef< RecordsProps[]  >([])
     const fetchRecordsAgainRef = useRef(() => fetchRecords(getRecordsIncome))
     const isBusyRef = useRef(false)
     const isAllRef = useRef(false)
@@ -43,7 +44,7 @@ export default function Home(){
         isBusyRef.current  = true
         const records = await typeFunction(offset.current)
         if ( records.length !== 0 ) {
-            setRecords(prev => [ ...( prev?? [] ), ...records ])
+            recordsRef.current = [ ...recordsRef.current, ...records ]
             offset.current = offset.current + 10
         } else {
             isAllRef.current = true
@@ -79,74 +80,67 @@ export default function Home(){
         },
     ])
 
-    async function fetchAll(){
-        withdrawFocus()
+    function updateFilterTypeList( id: number ) {
+        // Modify Filter Items
         const updatedItems = [...filterItems]
         updatedItems.forEach( item => {
-            if ( item.key === 1 ) {
+            if ( item.key === id ) {
                 item.isActive = true
             } else {
                 item.isActive = false
             }
         })
+        setFilterItems(updatedItems)
+    }
 
+    function performFilter( type: 'income' | 'expense' | 'transfer' ) {
+        return recordsRef.current.filter( item => item.type === type )
+    }
+
+    async function fetchAll(){
+        withdrawFocus()
+        updateFilterTypeList(1)
+
+        // Fetch Records and store in ref
         await fetchRecords(getRecords)
         fetchRecordsAgainRef.current = () => fetchRecords(getRecords)
 
-        setFilterItems(updatedItems)
+        // Filter
+        setRecords(old => [...( old?? [] ), ...recordsRef.current ])
+
     }
 
     async function fetchIncome(){
         withdrawFocus()
-        const updatedItems = [...filterItems]
-        updatedItems.forEach( item => {
-            if ( item.key === 2 ) {
-                item.isActive = true
-            } else {
-                item.isActive = false
-            }
-        })
+        updateFilterTypeList(2)
 
+        // Fetch amd store in ref
         await fetchRecords(getRecordsIncome)
         fetchRecordsAgainRef.current = () => fetchRecords(getRecordsIncome)
 
-        setFilterItems(updatedItems)
-
+        // Filter
+        const filteredList = performFilter( 'income' )
+        setRecords( old => [ ...(old?? [] ), ...filteredList])
     }
 
     async function fetchExpense(){
         withdrawFocus()
-        const updatedItems = [...filterItems]
-        updatedItems.forEach( item => {
-            if ( item.key === 3 ) {
-                item.isActive = true
-            } else {
-                item.isActive = false
-            }
-        })
+        updateFilterTypeList(3)
+
 
         await fetchRecords(getRecordsExpenses)
         fetchRecordsAgainRef.current = () => fetchRecords(getRecordsExpenses)
 
-        setFilterItems(updatedItems)
 
     }
 
     async function fetchTransfer(){
         withdrawFocus()
-        const updatedItems = [...filterItems]
-        updatedItems.forEach( item => {
-            if ( item.key === 4 ) {
-                item.isActive = true
-            } else {
-                item.isActive = false
-            }
-        })
+        updateFilterTypeList(4)
 
         await fetchRecords(getRecordsTransfer)
         fetchRecordsAgainRef.current = () => fetchRecords(getRecordsTransfer)
 
-        setFilterItems(updatedItems)
 
     }
     
@@ -190,7 +184,7 @@ export default function Home(){
         openSheetCaller()
     }
 
-    function updateFilterList( acc: ActiveAccountsProps ){
+    function updateFilterAccountList( acc: ActiveAccountsProps ){
         let found = false
         let index = 0
         selectedAccounts.current.forEach( id => {
@@ -225,7 +219,7 @@ export default function Home(){
         TypeItemDetails: () => <ItemDetails goBack={{show: showGoBack, onPress: goBack}} passedItem={undefined} passedItemFromRecent={focusedTypeItem} nonEditablePassedItem={nonEditablePassedItemRef.current} onEditPress={undefined}/>,
         CustomTypeItemDetails: () => <CustomIncomeExpenseDetails onCustomItemPress={openNonEditableTypeItem} customTypeItem={focusedCustomTypeItem} isCustomIncome={isIncome}/>,
         TransferItemDetails: () => <TransferDetails passedItem={undefined} itemFromRecent={focusedTransferTypeItem} onEditPress={undefined} />,
-        ActiveAccountSheet: () => <FormAccountWrapper accounts={activeAccounts} onAccountPress={updateFilterList} multiSelect={{available: true, primaryButtonFunction: updateFetch, secondaryButtonFunction: closeSheetCaller }}/>
+        ActiveAccountSheet: () => <FormAccountWrapper accounts={activeAccounts} onAccountPress={updateFilterAccountList} multiSelect={{available: true, primaryButtonFunction: updateFetch, secondaryButtonFunction: closeSheetCaller }}/>
     }
 
     const  [ currentSheet, setCurrentSheet] = useState< 'TypeItemDetails' | 'CustomTypeItemDetails' | 'TransferItemDetails' | 'ActiveAccountSheet' >('TypeItemDetails')

@@ -236,3 +236,66 @@ export async function getRecordsTransfer( offset: number ) {
         handleDBError(e, 'Fetching transfer records for home screen failed')
     }
 }
+
+export async function getRecordsFiltered( offset: number, ids: number[] ) {
+    try {
+        const db = await getDB()
+        let records: any = [];
+
+        ids.forEach(async id => {
+            const fetch = await db.getAllAsync(`
+                SELECT  typeId AS id,
+                        incomeCategories.name AS primaryAccountName,
+                        NULL AS secondaryAccountName,
+                        income.amount,
+                        createdDateTime,
+                        income.accountId AS primaryAccountId,
+                        NULL AS secondaryAccountId,
+                        'income' AS type
+                FROM    income
+                LEFT JOIN incomeCategories ON income.categoryId =  incomeCategories.categoryId
+                LEFT JOIN accounts ON income.accountId  = accounts.accountId
+                WHERE primaryAccountId = ?
+                
+                UNION ALL
+
+                SELECT  typeId AS id,
+                        expensesCategories.name AS primaryAccountName,
+                        NULL AS secondaryAccountName,
+                        expenses.amount,
+                        createdDateTime,
+                        expenses.accountId AS primaryAccountId,
+                        NULL AS secondaryAccountId,
+                        'expense' AS type
+                FROM    expenses
+                LEFT JOIN expensesCategories ON expenses.categoryId =  expensesCategories.categoryId
+                LEFT JOIN accounts ON expenses.accountId  = accounts.accountId
+                WHERE primaryAccountId = ?
+
+                UNION ALL
+
+                SELECT  tr.transferId AS id,
+                        fr.accountName AS primaryAccountName,
+                        t.accountName AS secondaryAccountName,
+                        tr.amount,
+                        tr.createdDateTime,
+                        tr.transferFrom AS primaryAccountId,
+                        tr.transferTo AS secondaryAccountId,
+                        'transfer' AS type
+                FROM    transfers tr
+                JOIN    accounts fr ON tr.transferFrom = fr.accountId
+                JOIN    accounts t ON tr.transferTo = t.accountId
+                WHERE   primaryAccountId = ? OR secondaryAccountId = ?
+
+                ORDER BY createdDateTime DESC
+                LIMIT 3
+
+            `, [ id,id,id,id,id ] ) 
+            records = [ ...records, ...fetch ]
+        })
+        console.log(records)
+
+    } catch (e) {
+        handleDBError( e, 'Fetching records by id failed' )
+    }
+}
