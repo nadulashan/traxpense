@@ -144,6 +144,37 @@ const CommonStyles = StyleSheet.create({
         fontFamily:fonts.medium,
         fontSize:12,
         color:colors.light.white
+    },
+
+    BottomSheetHeaderWrapper: {
+        flexDirection:'row',
+        // backgroundColor:'pink',
+        justifyContent:'space-between',
+        alignItems:'center',
+        marginBottom:24
+    },
+
+    BottomSheetHeaderButton: {
+        // height:44,
+        // width:44,
+        // borderRadius:22,
+        // borderWidth:2,
+        // borderColor:colors.light.accent,
+        alignItems:'center',
+        justifyContent:'center'
+    },
+
+    BottomSheetHeaderText: {
+        fontFamily:fonts.semiBold,
+        fontSize:16
+    },
+
+    BottomSheetHeaderBreaker: {
+        height:2,
+        width: '100%',
+        backgroundColor:'black',
+        borderRadius:8,
+        marginBottom:16
     }
 })
 

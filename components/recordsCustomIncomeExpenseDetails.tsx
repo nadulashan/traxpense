@@ -30,7 +30,6 @@ export default function CustomIncomeExpenseDetails({
     return(
         <View  style={{margin:16}}>
                 <View style={RecordStyles.TypeWrapper}>
-                    <Text style={RecordStyles.TypeText}>{isCustomIncome? 'Custom Income' : 'Custom Expense'}</Text>
                     <View style={RecordStyles.TypeItemsWrapper}>                    
                     {
                         customTypeItem ?

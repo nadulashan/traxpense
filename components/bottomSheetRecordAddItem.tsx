@@ -3,23 +3,30 @@ import { deleteExpense, deleteIncome } from '@/db/records/delete';
 import { addNewExpense, addNewIncome } from '@/db/records/insert';
 import { getActiveAccounts, getActiveExpenseCategories, getActiveIncomeCategories } from '@/db/records/select';
 import { updateExpenseItem, updateIncomeItem } from '@/db/records/update';
-import { checkTypes } from '@/func/bottomSheetfunc';
+import { checkTypes, sheetNavigationDuplicationIdentify } from '@/func/bottomSheetfunc';
 import { checkNegativeBalance } from '@/func/general';
 import { getLocalTime } from '@/func/time';
 import RecordStyles from '@/styles/recordsStyles';
 import { ActiveAccountsProps, TypeProps } from '@/types/recordsTypeItemType.schema';
-import { useEffect, useRef, useState } from 'react';
+import { SetStateAction, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import AddItemForm from './recordAddItemForm';
 import FormAccountWrapper from './recordFormAccountWrapper';
 import FormCategoryWrapper from './recordFormCategoryWrapper';
 
 interface AddItemTypes {
-  type: React.RefObject<"income" | "expense" | null>;
+  type: "income" | "expense" | null;
   focusedItem: React.RefObject<TypeProps | undefined>;
+  setTitle: React.Dispatch<SetStateAction<string>>
+  prevStates: React.RefObject<( () => void )[]>;
+
+  // Lifted state - to make THIS components multilple screens compatible with parent component's back functionality
+  currentScreen: 'Form' | 'Category' | 'Account';
+  setCurrentScreen: React.Dispatch<SetStateAction< 'Form' | 'Category' | 'Account' >>;
+  goToAddItem: () => void;
 }
 
-export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemTypes) {
+export default function BottomSheetRecordAddItem({ type, focusedItem, setTitle, prevStates, currentScreen, setCurrentScreen, goToAddItem }: AddItemTypes) {
 
     const { closeStateSheetCaller, focusedDate, setRecordsRefreshTrigger } = useCheckContext()
 
@@ -27,7 +34,7 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
     let addNewType:(categoryId:number, accountId:number, comment:string | null, date:string, time:string, amount:number) => Promise<void>;
     let deleteType: (id: number, accoundId: number) => Promise<void>;
     let updateType: (categoryId:number, accountId:number, comment:string | null, amount:number, id:number) => Promise<void>;
-    if ( type.current === 'income' ){
+    if ( type === 'income' ){
         getActiveTypeCategories = getActiveIncomeCategories
         addNewType = addNewIncome;
         deleteType = deleteIncome;
@@ -55,7 +62,6 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
     const [ negativeBalanceError, setNegativeBalanceError ] = useState(false)
     const negativeBalanceErrorRef = useRef(false)
 
-    const [ currentScreen, setCurrentScreen ] = useState<'Form' | 'Category' | 'Account'>('Form')
 
     // functions
     async function checkValidity() {
@@ -79,7 +85,7 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
             setCategoryError(false)
         }
 
-        if ( selectedAccount && !amountError && type.current === 'expense' ) {
+        if ( selectedAccount && !amountError && type === 'expense' ) {
             
             const error = await checkNegativeBalance( selectedAccount.accountId, amount, focusedItem)
             setNegativeBalanceError( error )
@@ -130,23 +136,23 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
     }
 
     function handleCategorySelector() {
-        setCurrentScreen('Category')
+        goToCategory()
         refreshCategories()
     }
 
     function handleAccountSelector() {
-        setCurrentScreen('Account')
+        goToAccount()
         refreshAccounts()
     }
 
     function onCategoryPress(category:{ categoryId:number, name:string, badge:string }) {
         setSelectedCategory(category)
-        setCurrentScreen('Form')
+        goToAddItem()
     }
 
     function onAccountPress(account: ActiveAccountsProps) {
         setSelectedAccount(account)
-        setCurrentScreen('Form')
+        goToAddItem()
     }
 
     // Handle Edit
@@ -219,10 +225,28 @@ export default function BottomSheetRecordAddItem({ type, focusedItem }: AddItemT
         Account: () => <FormAccountWrapper
                         accounts={accounts}
                         onAccountPress={onAccountPress}
+                        multiSelect={undefined}
                         />
     }
 
     const ScreenContent = SCREEN[currentScreen]
+
+    // Navigators
+    function goToCategory(){
+        console.log('Cat Ran')
+
+        setCurrentScreen('Category')
+        setTitle('Select Category')
+        prevStates.current =  sheetNavigationDuplicationIdentify(prevStates.current, goToCategory )
+    }
+
+    function goToAccount(){
+        console.log('Acc Ran')
+
+        setCurrentScreen('Account')
+        setTitle('Select Account')
+        prevStates.current =  sheetNavigationDuplicationIdentify(prevStates.current, goToAccount )
+    }
 
     return (
         <View style={RecordStyles.AddItemWrapper}>

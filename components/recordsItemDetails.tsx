@@ -4,29 +4,21 @@ import CommonStyles from '@/styles/commonStyles';
 import RecordStyles from '@/styles/recordsStyles';
 import { PriceWithCommaProps, RecordsProps } from '@/types/homeProps';
 import { CustomTypeProps, TypeProps } from '@/types/recordsTypeItemType.schema';
-import Entypo from '@expo/vector-icons/Entypo';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import InfoText from './infoText';
-
-interface GoBackProps{
-    show: boolean;
-    onPress: () => void
-}
 
 interface ItemDetailsTypes {
     passedItem: TypeProps | undefined;
     passedItemFromRecent: RecordsProps | undefined;
     nonEditablePassedItem: CustomTypeProps | undefined
     onEditPress: ( () => void ) | undefined;
-    goBack: GoBackProps | undefined;
 }
 
 export default function ItemDetails({
     passedItem,
     passedItemFromRecent,
     nonEditablePassedItem,
-    onEditPress,
-    goBack
+    onEditPress
 }:ItemDetailsTypes) {
 
 
@@ -98,17 +90,6 @@ export default function ItemDetails({
                                 <InfoText text={`A Record from the Journal of ${item.date}`} />
                                 :                            
                                 <InfoText text={`A Record from the Custom Journal of ${item.date}`} />
-                        }
-                    </View>
-                    <View style={CommonStyles.GoBackWrapper}>
-                        {
-                            goBack?.show?
-                            <Pressable onPress={goBack.onPress} style={CommonStyles.GoBackButton}>
-                                <Entypo name="chevron-left" size={20} color={colors.light.white} />
-                                <Text style={CommonStyles.GoBackButtonText}> Back</Text>
-                            </Pressable>
-                            :
-                            null
                         }
                     </View>
                 </>

@@ -74,7 +74,6 @@ const RecordStyles = StyleSheet.create({
     MenuSheetWrapper: {
         flexDirection:'column',
         gap:16,
-        padding:16
     },
 
     MenuAddItem: {
@@ -116,7 +115,6 @@ const RecordStyles = StyleSheet.create({
         width:'100%',
         flexDirection:'column',
         gap:16,
-        padding:16
     },
 
     AddItemAmountAccountWrapper: {
@@ -154,7 +152,6 @@ const RecordStyles = StyleSheet.create({
 
     CategoryElementWrapper: {
         gap:8,
-        padding:16
     },
 
     CategoryElement: {
@@ -331,8 +328,8 @@ const RecordStyles = StyleSheet.create({
     DetailsWrapper: {
         flexDirection:'column',
         gap:16,
-        margin:16,
-        minHeight:120
+        minHeight:120,
+        margin:16
     },
 
     DetailsHeaderWrapper: {

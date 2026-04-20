@@ -31,7 +31,7 @@ export default function FormAccountWrapper({
     } 
 
     return (
-        <View style={RecordStyles.CategoryElementWrapper}>
+        <View style={[RecordStyles.CategoryElementWrapper]}>
         {
             accounts?
             

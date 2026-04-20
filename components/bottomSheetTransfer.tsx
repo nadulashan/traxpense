@@ -386,13 +386,14 @@ export default function Transfers({ focusedItem } : TransferFormType) {
         ACCOUNT_SELECT: () => <FormAccountWrapper
                                     accounts={accounts}
                                     onAccountPress={handleAccountPress}
+                                    multiSelect={undefined}
                             />
     }
 
     const renderScreen = SCREENS[currentScreen]
 
     return (
-        <View style={{padding:16}}>
+        <View>
             {renderScreen()}
         </View>
     )

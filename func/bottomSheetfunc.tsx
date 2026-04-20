@@ -42,3 +42,10 @@ export function checkTypes(input: string): boolean {
     if (input.trim() === "") return false;
     return Number.isFinite(Number(input));
 }
+
+export function sheetNavigationDuplicationIdentify( stack: ( () => void )[], func: () => void ) {
+    if ( stack[ stack.length - 1 ] !== func ) {
+        return [ ...stack, func ]
+    }
+    return stack
+}

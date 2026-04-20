@@ -19,7 +19,7 @@ import { AccountProps } from '@/types/settingsProps';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useFocusEffect } from '@react-navigation/native';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 // Filteration
 // I have two recent transactions filters. by account and by type
@@ -243,10 +243,10 @@ export default function Home(){
     const [ showGoBack, setShowGoBack ] = useState(false)
 
     const SHEETS = {
-        TypeItemDetails: () => <ItemDetails goBack={{show: showGoBack, onPress: goBack}} passedItem={undefined} passedItemFromRecent={focusedTypeItem} nonEditablePassedItem={nonEditablePassedItemRef.current} onEditPress={undefined}/>,
+        TypeItemDetails: () => <ItemDetails passedItem={undefined} passedItemFromRecent={focusedTypeItem} nonEditablePassedItem={nonEditablePassedItemRef.current} onEditPress={undefined}/>,
         CustomTypeItemDetails: () => <CustomIncomeExpenseDetails onCustomItemPress={openNonEditableTypeItem} customTypeItem={focusedCustomTypeItem} isCustomIncome={isIncome}/>,
         TransferItemDetails: () => <TransferDetails passedItem={undefined} itemFromRecent={focusedTransferTypeItem} onEditPress={undefined} />,
-        ActiveAccountSheet: () => <FormAccountWrapper accounts={activeAccounts} onAccountPress={updateFilterAccountList} multiSelect={{available: true, primaryButtonFunction: accountFilteration, secondaryButtonFunction: closeSheetCaller }}/>
+        ActiveAccountSheet: () => <View style={{margin:16 }}><FormAccountWrapper accounts={activeAccounts} onAccountPress={updateFilterAccountList} multiSelect={{available: true, primaryButtonFunction: accountFilteration, secondaryButtonFunction: closeSheetCaller }}/></View> 
     }
 
     const  [ currentSheet, setCurrentSheet] = useState< 'TypeItemDetails' | 'CustomTypeItemDetails' | 'TransferItemDetails' | 'ActiveAccountSheet' >('TypeItemDetails')

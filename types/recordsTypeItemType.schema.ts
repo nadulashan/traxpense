@@ -2,7 +2,6 @@ export interface ActiveAccountsProps{
     accountId:number, 
     accountName:string, 
     accountBadge:string, 
-    runningAmount:number,
 }
 
 export interface TypeProps{
