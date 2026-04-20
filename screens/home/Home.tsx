@@ -10,16 +10,17 @@ import ItemDetails from '@/components/recordsItemDetails';
 import TransferDetails from '@/components/recordsTransferDetails';
 import { getAccountDetails, getRecords, getRecordsExpenses, getRecordsIncome, getRecordsTransfer } from '@/db/home/select';
 import { getActiveAccounts, getCustomExpenses, getCustomIncomes } from '@/db/records/select';
-import { closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
+import { closeBottomSheet, openBottomSheet, sheetNavigationDuplicationIdentify } from '@/func/bottomSheetfunc';
 import Octicons from '@expo/vector-icons/Octicons';
 
+import UniversalSheetWrapper from '@/components/bottomSheetWrapper';
 import { RecordsProps } from '@/types/homeProps';
 import { ActiveAccountsProps, CustomTypeProps } from '@/types/recordsTypeItemType.schema';
 import { AccountProps } from '@/types/settingsProps';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useFocusEffect } from '@react-navigation/native';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView } from 'react-native';
 
 // Filteration
 // I have two recent transactions filters. by account and by type
@@ -188,7 +189,7 @@ export default function Home(){
 
     function openActiveAccountSheet() {
         fetchAccounts()
-        setCurrentSheet('ActiveAccountSheet')
+        goToActiveAccountSheet()
         openSheetCaller()
     }
 
@@ -246,17 +247,55 @@ export default function Home(){
         TypeItemDetails: () => <ItemDetails passedItem={undefined} passedItemFromRecent={focusedTypeItem} nonEditablePassedItem={nonEditablePassedItemRef.current} onEditPress={undefined}/>,
         CustomTypeItemDetails: () => <CustomIncomeExpenseDetails onCustomItemPress={openNonEditableTypeItem} customTypeItem={focusedCustomTypeItem} isCustomIncome={isIncome}/>,
         TransferItemDetails: () => <TransferDetails passedItem={undefined} itemFromRecent={focusedTransferTypeItem} onEditPress={undefined} />,
-        ActiveAccountSheet: () => <View style={{margin:16 }}><FormAccountWrapper accounts={activeAccounts} onAccountPress={updateFilterAccountList} multiSelect={{available: true, primaryButtonFunction: accountFilteration, secondaryButtonFunction: closeSheetCaller }}/></View> 
+        ActiveAccountSheet: () => <FormAccountWrapper accounts={activeAccounts} onAccountPress={updateFilterAccountList} multiSelect={{available: true, primaryButtonFunction: accountFilteration, secondaryButtonFunction: closeSheetCaller }}/>
     }
 
     const  [ currentSheet, setCurrentSheet] = useState< 'TypeItemDetails' | 'CustomTypeItemDetails' | 'TransferItemDetails' | 'ActiveAccountSheet' >('TypeItemDetails')
+    const [ title, setTitle ] = useState('')
+    const prevStates = useRef< ( () => void )[] >([])
+    const Type = useRef< 'Income' | 'Expense' >('Income')
 
     const SheetContent = SHEETS[currentSheet]
 
+    //
+    function setIncomeRef( isIncome: boolean ) {
+        if ( isIncome ) {
+            Type.current = "Income"
+        } else {
+            Type.current = "Expense"
+        }
+    }
+
+    // navigation
+    function goToTypeItem() {
+        setCurrentSheet('TypeItemDetails')
+        setTitle(`${Type.current}`)
+        prevStates.current = sheetNavigationDuplicationIdentify( prevStates.current, goToTypeItem)
+    }
+    function goToCustomTypeItemDetail() {
+        setCurrentSheet('CustomTypeItemDetails')
+        setTitle(`Custom ${Type.current}`)
+        prevStates.current = sheetNavigationDuplicationIdentify( prevStates.current, goToCustomTypeItemDetail)
+    }
+    function goToTransferItemDetails() {
+        setCurrentSheet('TransferItemDetails')
+        setTitle('Transfer')
+        prevStates.current = sheetNavigationDuplicationIdentify( prevStates.current, goToTransferItemDetails)
+    }
+    function goToActiveAccountSheet() {
+        setCurrentSheet('ActiveAccountSheet')
+        setTitle('Select Filter Accounts')
+        prevStates.current = sheetNavigationDuplicationIdentify( prevStates.current, goToActiveAccountSheet)
+    }
+    function goBack() {
+        prevStates.current.pop()
+        prevStates.current[prevStates.current.length - 1]()
+    }
+
     // TypeItem
     function openTypeItem( tr:RecordsProps ) {
-        setShowGoBack(false) // in case user fold the sheet by hand
-        setCurrentSheet( 'TypeItemDetails' )
+        setIncomeRef( tr.type === 'income' )
+        goToTypeItem()
         setFocusedTypeItem( tr )
         openSheetCaller()
     }
@@ -265,20 +304,17 @@ export default function Home(){
     const nonEditablePassedItemRef = useRef< CustomTypeProps | undefined >(undefined) 
  
     function openNonEditableTypeItem( item: CustomTypeProps ) {
-        setCurrentSheet('TypeItemDetails')
+        goToTypeItem()
         setShowGoBack(true)
         setFocusedTypeItem(undefined)
         nonEditablePassedItemRef.current = item
         openSheetCaller()
     }
 
-    function goBack() {
-        setCurrentSheet('CustomTypeItemDetails')
-    }
-
     // CustomTypeItem
     async function openCustomTypeItem( tr:RecordsProps, isIncome: boolean ) {
-        setCurrentSheet('CustomTypeItemDetails')
+        setIncomeRef(isIncome)
+        goToCustomTypeItemDetail()
 
         let fetchedItems: CustomTypeProps[];
         if ( isIncome ) {
@@ -293,7 +329,7 @@ export default function Home(){
 
     // TransferTypeItem
     function openTransferTypeItem( tr:RecordsProps ) {
-        setCurrentSheet('TransferItemDetails')
+        goToTransferItemDetails()
 
         setFocusedTransferTypeItem( tr )
         openSheetCaller()
@@ -320,6 +356,7 @@ export default function Home(){
     function closeSheetCaller(){
         setShowGoBack(false)
         closeBottomSheet(sheetRef)
+        prevStates.current = []
     }
 
     return (
@@ -350,7 +387,9 @@ export default function Home(){
               backdropComponent={backDrop}
               >
               <BottomSheetView>
-                {SheetContent()}
+                <UniversalSheetWrapper title={title} onBackPress={goBack} goBackavailable={prevStates.current.length > 1} onCrossPress={closeSheetCaller}  >
+                    {SheetContent()}
+                </UniversalSheetWrapper>
               </BottomSheetView>
           </BottomSheet>
         </SafeAreaView>

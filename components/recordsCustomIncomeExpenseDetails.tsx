@@ -28,7 +28,7 @@ export default function CustomIncomeExpenseDetails({
     const amount = priceWithComma(customItemsSum)
 
     return(
-        <View  style={{margin:16}}>
+        <View>
                 <View style={RecordStyles.TypeWrapper}>
                     <View style={RecordStyles.TypeItemsWrapper}>                    
                     {

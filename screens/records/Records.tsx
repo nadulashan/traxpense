@@ -133,10 +133,8 @@ export default function Records(){
   }
 
   function onBackPress(){
-    console.log(`Prev ${prevSheetStates.current}`)
     prevSheetStates.current.pop()
     prevSheetStates.current[prevSheetStates.current.length - 1]()
-    console.log(`After ${prevSheetStates.current}`)
   }
 
   function goToCustomIncomeExpense() {    

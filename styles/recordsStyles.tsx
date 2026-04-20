@@ -329,7 +329,6 @@ const RecordStyles = StyleSheet.create({
         flexDirection:'column',
         gap:16,
         minHeight:120,
-        margin:16
     },
 
     DetailsHeaderWrapper: {
