@@ -74,6 +74,14 @@ const CommonStyles = StyleSheet.create({
         paddingBottom:16,
     },
 
+    BottomSheetSelect: {
+        backgroundColor:colors.light.primaryLight,
+        borderRadius:8,
+        fontSize:16,
+        height:50,
+        justifyContent:'center',
+    },
+
     BottomSheetButtonText:{
         fontFamily:fonts.semiBold,
         color:colors.light.white,

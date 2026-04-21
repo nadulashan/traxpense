@@ -10,8 +10,7 @@ import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheet
 import { StackScreenProps } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView, View } from 'react-native';
 import { SettingsStackParamList } from './SettingsStackNavigation';
 
 type Props = StackScreenProps<SettingsStackParamList, 'FundCreditAccounts'>
@@ -189,6 +188,38 @@ export default function FundCreditAccounts({route}:Props){
         setIsAccountsReady(true)
     }
 
+    // MultiScreen sheet
+    const SCREENS = {
+        Form: () => <BottomSheetWrapper
+                            valiedBadges={valiedBadges}
+                            inputName={inputName}
+                            inputBalance={inputBalance}
+                            inputBadge={inputBadge}
+                            setInputName= {setInputName}
+                            setInputBalance = {setInputBalance}
+                            setInputBadge = {setInputBadge}
+                            renderBottomSheet = {renderBottomSheet}
+                            checkTypes={checkTypes}
+                            inputNameError={inputNameError}
+                            setInputNameError={setInputNameError}
+                            inputBalanceError={inputBalanceError}
+                            setInputBalanceError={setInputBalanceError}
+                            type={type}
+                            focusedAccount={focusedAccount}
+                            suspendAccountHandler={suspendAccountHandler}
+                            updateAccountHandler={updateAccountHandler}                            
+                            suspendNotification={suspendNotification}
+                            setSuspendNotification={setSuspendNotification}
+                            saveAccountHandler = {saveAccountHandler}
+                            areDependentsPresent = { areDependentsPresent }
+                        />,
+        Badges: () => <></>
+    }
+
+    const [ currentScreen, setCurrentScreen ] = useState< 'Form' | 'Badges' >('Form')
+
+    const SheetScreen = SCREENS[currentScreen] 
+
     // Bottom Sheet things including backdrop
     const sheetRef = useRef<BottomSheet>(null);
     const backDrop = useCallback(( props:BottomSheetBackdropProps) => (
@@ -205,7 +236,7 @@ export default function FundCreditAccounts({route}:Props){
     
     return (
         <>
-            <SafeAreaView style={{backgroundColor:'#ffffff', flex:1}} edges={['top', 'left', 'right']}>
+            <View style={{backgroundColor:'#ffffff', flex:1}}>
                 <ScrollView showsVerticalScrollIndicator={false}>
 
                 {/* {notification} */}
@@ -236,33 +267,11 @@ export default function FundCreditAccounts({route}:Props){
                     // onChange={handleSuspendNotificationState}
                     >
                     <BottomSheetView>
-                        <BottomSheetWrapper
-                            valiedBadges={valiedBadges}
-                            inputName={inputName}
-                            inputBalance={inputBalance}
-                            inputBadge={inputBadge}
-                            setInputName= {setInputName}
-                            setInputBalance = {setInputBalance}
-                            setInputBadge = {setInputBadge}
-                            renderBottomSheet = {renderBottomSheet}
-                            checkTypes={checkTypes}
-                            inputNameError={inputNameError}
-                            setInputNameError={setInputNameError}
-                            inputBalanceError={inputBalanceError}
-                            setInputBalanceError={setInputBalanceError}
-                            type={type}
-                            focusedAccount={focusedAccount}
-                            suspendAccountHandler={suspendAccountHandler}
-                            updateAccountHandler={updateAccountHandler}                            
-                            suspendNotification={suspendNotification}
-                            setSuspendNotification={setSuspendNotification}
-                            saveAccountHandler = {saveAccountHandler}
-                            areDependentsPresent = { areDependentsPresent }
-                        />
+                        { SheetScreen() }
                     </BottomSheetView>
                 </BottomSheet>
 
-            </SafeAreaView>
+            </View>
         </>
 
     )

@@ -2,7 +2,6 @@ import CommonStyles from '@/styles/commonStyles';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { useCallback, useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { Dropdown } from 'react-native-element-dropdown';
 
 type BottomSheetWrapperProps = {
     valiedBadges:{ label: null; badge: string; }[];
@@ -123,7 +122,7 @@ export default function BottomSheetWrapper({
                     :                    
                     <View style={CommonStyles.BottomSheetBadgeWrapper}>
                         <Text  style={CommonStyles.BottomSheetFieldText}>Account Badge:</Text>
-                        <Dropdown
+                        {/* <Dropdown
                             data= {valiedBadges}
                             labelField={'label'}
                             valueField={'value'}
@@ -135,7 +134,17 @@ export default function BottomSheetWrapper({
                             renderItem={item => (
                                 <View style={{width:24, height:24, borderRadius:12, margin:8, backgroundColor:item.badge}}></View>
                             )}
-                        />
+                        /> */}
+                        <Pressable
+                            style={CommonStyles.BottomSheetSelect}
+                        >
+                            {
+                                inputBadge === ''?
+                                <Text>Select a Badge</Text>
+                                :
+                                <View style={[CommonStyles.badge, {backgroundColor:inputBadge, marginLeft:16, marginRight:16}]}></View>
+                            }
+                        </Pressable>
                     </View>}
                     <View style={CommonStyles.BottomSheetButtonWrapper}>
                         {focusedAccount?

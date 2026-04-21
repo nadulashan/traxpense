@@ -9,8 +9,7 @@ import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheet
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView, View } from 'react-native';
 import { SettingsStackParamList } from './SettingsStackNavigation';
 
 type Props = StackScreenProps<SettingsStackParamList, 'IncomeExpenseCategory'>
@@ -221,7 +220,7 @@ export default function IncomeExpenseCategory({route}:Props){
 
     return (
         <>
-            <SafeAreaView style={{backgroundColor:'#ffffff', flex:1}} edges={['top', 'left', 'right']}>
+            <View style={{backgroundColor:'#ffffff', flex:1}}>
                 <ScrollView showsVerticalScrollIndicator={false}>
 
                     <CategoryContentWrapper 
@@ -262,7 +261,7 @@ export default function IncomeExpenseCategory({route}:Props){
                     </BottomSheetView>
                 </BottomSheet>
 
-            </SafeAreaView>
+            </View>
         </>
         
     )
