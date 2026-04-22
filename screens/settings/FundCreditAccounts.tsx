@@ -85,7 +85,7 @@ export default function FundCreditAccounts({route}:Props){
     // Functions
     function openSheetCaller(){
         openBottomSheet(sheetRef)
-        prevScreens.current = sheetNavigationDuplicationIdentify( prevScreens.current, goToForm)
+        goToForm()
     }
 
     function closeSheetCaller(){
@@ -165,9 +165,7 @@ export default function FundCreditAccounts({route}:Props){
     }
 
     function handleBadgePress( badge: string) {
-        console.log(badge)
         setInputBadge(badge)
-        console.log(inputBadge)
         goBack()
     }
 

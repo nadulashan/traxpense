@@ -2,7 +2,6 @@ import CommonStyles from '@/styles/commonStyles';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { useCallback } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { Dropdown } from 'react-native-element-dropdown';
 
 type BottomSheetCategoriesProps = {
     valiedBadges:{ label: null; badge: string; }[];
@@ -20,6 +19,7 @@ type BottomSheetCategoriesProps = {
     updateHandler:() => void;
     showDangerText : boolean;
     setShowDangerText:React.Dispatch<React.SetStateAction<boolean>>;
+    openBadgeScreen: () => void;
 }
 
 export default function BottomSheetCategories({
@@ -37,7 +37,8 @@ export default function BottomSheetCategories({
     suspendHandler,
     updateHandler,
     showDangerText,
-    setShowDangerText
+    setShowDangerText,
+    openBadgeScreen
 }:BottomSheetCategoriesProps){
     
     
@@ -77,19 +78,13 @@ export default function BottomSheetCategories({
                         <View style={CommonStyles.BottomSheetBadgeWrapper}>
                             <Text style={CommonStyles.BottomSheetFieldText}>Category Badge</Text>
                             
-                            <Dropdown
-                                data={valiedBadges}
-                                labelField={'label'}
-                                valueField={'value'}
-                                value={inputBadge}
-                                placeholder=''
-                                onChange={badge => setInputBadge(badge.badge)}
-                                showsVerticalScrollIndicator={false}
-                                renderLeftIcon={renderIcon}
-                                renderItem={item => (
-                                    <View style={{width:24, height:24, borderRadius:12, margin:8, backgroundColor:item.badge}}></View>
-                                )}
-                            />
+                            
+                            <Pressable
+                                style={CommonStyles.BottomSheetSelect}
+                                onPress={openBadgeScreen}
+                            >
+                                <View style={[CommonStyles.badge, {backgroundColor:inputBadge, marginLeft:16, marginRight:16}]}></View>
+                            </Pressable>
                         </View>
                         }
                         

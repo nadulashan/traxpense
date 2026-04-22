@@ -119,29 +119,11 @@ export default function BottomSheetWrapper({
                     :                    
                     <View style={CommonStyles.BottomSheetBadgeWrapper}>
                         <Text  style={CommonStyles.BottomSheetFieldText}>Account Badge:</Text>
-                        {/* <Dropdown
-                            data= {valiedBadges}
-                            labelField={'label'}
-                            valueField={'value'}
-                            value={inputBadge}
-                            placeholder=''
-                            onChange={badge => setInputBadge(badge.badge)}
-                            showsVerticalScrollIndicator={false}
-                            renderLeftIcon={renderIcon}
-                            renderItem={item => (
-                                <View style={{width:24, height:24, borderRadius:12, margin:8, backgroundColor:item.badge}}></View>
-                            )}
-                        /> */}
                         <Pressable
                             style={CommonStyles.BottomSheetSelect}
                             onPress={openBadgeScreen}
                         >
-                            {
-                                inputBadge !== ''?
-                                <View style={[CommonStyles.badge, {backgroundColor:inputBadge, marginLeft:16, marginRight:16}]}></View>
-                                :
-                                <Text>Select a badge</Text>
-                            }
+                            <View style={[CommonStyles.badge, {backgroundColor:inputBadge, marginLeft:16, marginRight:16}]}></View>
                         </Pressable>
                     </View>}
                     <View style={CommonStyles.BottomSheetButtonWrapper}>

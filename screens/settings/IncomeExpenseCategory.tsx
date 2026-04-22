@@ -1,10 +1,12 @@
 import AddCategoryButton from '@/components/addCategoryButton';
 import BottomSheetCategories from '@/components/bottomSheetCategories';
+import OptionsDisplay from '@/components/bottomSheetOptionsDisplay';
+import UniversalSheetWrapper from '@/components/bottomSheetWrapper';
 import CategoryContentWrapper from '@/components/categoryContentWrapper';
 import { addNewExpenseCategory, addNewIncomeCategory } from '@/db/incomeExpenseCategories/insert';
 import { getExpenseBadges, getExpenseCategories, getIncomeBadges, getIncomeCategories } from '@/db/incomeExpenseCategories/select';
 import { suspendExpenseCategory, suspendIncomeCategory, updateExpenseCategory, updateIncomeCategory } from '@/db/incomeExpenseCategories/update';
-import { badgeSorter, closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
+import { badgeSorter, closeBottomSheet, openBottomSheet, sheetNavigationDuplicationIdentify } from '@/func/bottomSheetfunc';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -31,60 +33,60 @@ export default function IncomeExpenseCategory({route}:Props){
     const [ focusedCategory, setFocusedCategory ] = useState<undefined | {categoryId:number, name:string; badge:string; isActive:number}>()
     const [ showDangerText, setShowDangerText ] = useState(false)
     const incomeBadges = [
-        {label:null, badge:'#1F3A5F'},
-        {label:null, badge:'#274C77'},
-        {label:null, badge:'#2F5D8A'},
-        {label:null, badge:'#356F9D'},
-        {label:null, badge:'#3C82AF'},
-        {label:null, badge:'#4695C1'},
-        {label:null, badge:'#4FA8D3'},
-        {label:null, badge:'#5ABBDD'},
-        {label:null, badge:'#67CEE6'},
-        {label:null, badge:'#74E1EF'},
-        {label:null, badge:'#3A3F7F'},
-        {label:null, badge:'#4B4FA1'},
-        {label:null, badge:'#5D60C3'},
-        {label:null, badge:'#6F72E5'},
-        {label:null, badge:'#8184FF'},
-        {label:null, badge:'#2E6F6D'},
-        {label:null, badge:'#3A8F8B'},
-        {label:null, badge:'#4FB0AA'},
-        {label:null, badge:'#66D1C8'},
-        {label:null, badge:'#7FF2E6'},
+        {id: 1, label:null, badge:'#1F3A5F'},
+        {id: 2, label:null, badge:'#274C77'},
+        {id: 3, label:null, badge:'#2F5D8A'},
+        {id: 4, label:null, badge:'#356F9D'},
+        {id: 5, label:null, badge:'#3C82AF'},
+        {id: 6, label:null, badge:'#4695C1'},
+        {id: 7, label:null, badge:'#4FA8D3'},
+        {id: 8, label:null, badge:'#5ABBDD'},
+        {id: 9, label:null, badge:'#67CEE6'},
+        {id: 10, label:null, badge:'#74E1EF'},
+        {id: 11, label:null, badge:'#3A3F7F'},
+        {id: 12, label:null, badge:'#4B4FA1'},
+        {id: 13, label:null, badge:'#5D60C3'},
+        {id: 14, label:null, badge:'#6F72E5'},
+        {id: 15, label:null, badge:'#8184FF'},
+        {id: 16, label:null, badge:'#2E6F6D'},
+        {id: 17, label:null, badge:'#3A8F8B'},
+        {id: 18, label:null, badge:'#4FB0AA'},
+        {id: 19, label:null, badge:'#66D1C8'},
+        {id: 20, label:null, badge:'#7FF2E6'},
     ]
     const expenseBadges = [
-        {label:null, badge:'#5C1A1A'},
-        {label:null, badge:'#7A1F1F'},
-        {label:null, badge:'#992525'},
-        {label:null, badge:'#B82B2B'},
-        {label:null, badge:'#D63131'},
-        {label:null, badge:'#7A2E00'},
-        {label:null, badge:'#9C3B00'},
-        {label:null, badge:'#BE4800'},
-        {label:null, badge:'#E05500'},
-        {label:null, badge:'#FF6200'},
-        {label:null, badge:'#7A0044'},
-        {label:null, badge:'#9A0057'},
-        {label:null, badge:'#BA006A'},
-        {label:null, badge:'#DA007D'},
-        {label:null, badge:'#FF0090'},
-        {label:null, badge:'#7A3F00'},
-        {label:null, badge:'#9E5200'},
-        {label:null, badge:'#C26600'},
-        {label:null, badge:'#E67A00'},
-        {label:null, badge:'#FF8F00'},
+        {id: 1, label:null, badge:'#5C1A1A'},
+        {id: 2, label:null, badge:'#7A1F1F'},
+        {id: 3, label:null, badge:'#992525'},
+        {id: 4, label:null, badge:'#B82B2B'},
+        {id: 5, label:null, badge:'#D63131'},
+        {id: 6, label:null, badge:'#7A2E00'},
+        {id: 7, label:null, badge:'#9C3B00'},
+        {id: 8, label:null, badge:'#BE4800'},
+        {id: 9, label:null, badge:'#E05500'},
+        {id: 10, label:null, badge:'#FF6200'},
+        {id: 11, label:null, badge:'#7A0044'},
+        {id: 12, label:null, badge:'#9A0057'},
+        {id: 13, label:null, badge:'#BA006A'},
+        {id: 14, label:null, badge:'#DA007D'},
+        {id: 15, label:null, badge:'#FF0090'},
+        {id: 16, label:null, badge:'#7A3F00'},
+        {id: 17, label:null, badge:'#9E5200'},
+        {id: 18, label:null, badge:'#C26600'},
+        {id: 19, label:null, badge:'#E67A00'},
+        {id: 20, label:null, badge:'#FF8F00'},
     ]
 
     // settting up variables according to the screen
-    let type: 'expense' | 'income';
-    let valiedTypeBadges:{label:null; badge:string}[];
+    let type: 'Expense' | 'Income';
+    let valiedTypeBadges:{id: number, label:null; badge:string}[];
     let fetchTypeBadges:() => Promise<{ badge: string; }[]>;
     let addTypeCategory:(name: string, badge: string) => Promise<void>;
     let fetchTypeCategories:() => Promise<{ categoryId: number; name: string; badge: string; isActive: number; }[]>;
     let suspendTypeCategory:(id:number) => void;
     let updateTypeCategory:(id:number, name:string, badge:string) => void;
     if ( screen == 'Income Categories' ){
-        type = 'income'
+        type = 'Income'
         valiedTypeBadges = incomeBadges;
         fetchTypeBadges = getIncomeBadges;
         addTypeCategory = addNewIncomeCategory
@@ -92,7 +94,7 @@ export default function IncomeExpenseCategory({route}:Props){
         suspendTypeCategory = suspendIncomeCategory;
         updateTypeCategory = updateIncomeCategory;
     } else {
-        type = 'expense'
+        type = 'Expense'
         valiedTypeBadges = expenseBadges;
         fetchTypeBadges = getExpenseBadges;
         addTypeCategory = addNewExpenseCategory
@@ -132,6 +134,7 @@ export default function IncomeExpenseCategory({route}:Props){
     // Callers
     function openSheetCaller(){
         openBottomSheet(sheetRef)
+        goToForm()
     }
 
     function closeSheetCaller(){
@@ -139,6 +142,7 @@ export default function IncomeExpenseCategory({route}:Props){
         setInputNameError(false)
         setFocusedCategory(undefined)
         setShowDangerText(false)
+        prevScreens.current = []
     }
 
     // Button handlers
@@ -182,6 +186,53 @@ export default function IncomeExpenseCategory({route}:Props){
             resetFields()
         }
         setAsyncDisabled(false)
+    }
+
+    function handleBadgePress( value: string ) {
+        setInputBadge(value)
+        goBack()
+    }
+
+    // Sheets 
+    const SCREENS = {
+        Form: () => <BottomSheetCategories
+                            valiedBadges = {valiedBadges}
+                            inputBadge = {inputBadge}
+                            setInputBadge = {setInputBadge}
+                            inputName = {inputName}
+                            setInputName = {setInputName}
+                            inputNameError = {inputNameError}
+                            setInputNameError = {setInputNameError}
+                            saveHandler = {saveHandler}
+                            asyncDisabled = {asyncDisabled}
+                            isSheetReady= {isSheetReady}
+                            focusedCategory={focusedCategory}
+                            suspendHandler = {suspendHandler}
+                            updateHandler = {updateHandler}
+                            showDangerText = {showDangerText}
+                            setShowDangerText = {setShowDangerText}
+                            openBadgeScreen={goToBadges}
+                        />,
+        Badges: () => <OptionsDisplay itemsPerRow={5} options={valiedBadges} isBadges={true} onOptionPress={handleBadgePress}/>
+    }
+    const [ currentScreen, setCurrentScreen ] = useState< 'Form' | 'Badges' >('Form')
+    const prevScreens = useRef<( () => void )[]>([])
+    const [ title, setTitle ] = useState('')
+    const Screen = SCREENS[currentScreen]
+
+    function goToForm(){
+        setCurrentScreen('Form')
+        setTitle(`Add ${type} Category`)
+        prevScreens.current = sheetNavigationDuplicationIdentify( prevScreens.current, goToForm )
+    }
+    function goToBadges(){
+        setCurrentScreen('Badges')
+        setTitle('Select a Badge')
+        prevScreens.current = sheetNavigationDuplicationIdentify( prevScreens.current, goToBadges )
+    }    
+    function goBack(){
+        prevScreens.current.pop()
+        prevScreens.current[prevScreens.current.length - 1]()
     }
     
     const sheetRef = useRef<BottomSheet>(null);
@@ -241,23 +292,9 @@ export default function IncomeExpenseCategory({route}:Props){
                     // onChange={handleSuspendNotificationState}
                     >
                     <BottomSheetView>
-                        <BottomSheetCategories
-                            valiedBadges = {valiedBadges}
-                            inputBadge = {inputBadge}
-                            setInputBadge = {setInputBadge}
-                            inputName = {inputName}
-                            setInputName = {setInputName}
-                            inputNameError = {inputNameError}
-                            setInputNameError = {setInputNameError}
-                            saveHandler = {saveHandler}
-                            asyncDisabled = {asyncDisabled}
-                            isSheetReady= {isSheetReady}
-                            focusedCategory={focusedCategory}
-                            suspendHandler = {suspendHandler}
-                            updateHandler = {updateHandler}
-                            showDangerText = {showDangerText}
-                            setShowDangerText = {setShowDangerText}
-                        />
+                        <UniversalSheetWrapper onBackPress={goBack} onCrossPress={closeSheetCaller} title={title} goBackavailable={prevScreens.current.length !== 1}>
+                            {Screen()}
+                        </UniversalSheetWrapper>
                     </BottomSheetView>
                 </BottomSheet>
 
