@@ -12,7 +12,7 @@ export function closeBottomSheet(sheetRef:React.RefObject<BottomSheet | null>){
     },500)
 }
 
-export function badgeSorterAcc(valiedBadges:{ label: null; badge: string; }[], fetchedBadges:{ accountBadge: string; }[]):{ label: null; badge: string; }[] {
+export function badgeSorterAcc(valiedBadges:{ id: number, label: null; badge: string; }[], fetchedBadges:{ accountBadge: string; }[]):{ id: number, label: null; badge: string; }[] {
     const sortedBadges = valiedBadges.filter(badge => {
                             let isValied = true;
                             fetchedBadges.forEach(fetchedBadge => {
@@ -24,7 +24,7 @@ export function badgeSorterAcc(valiedBadges:{ label: null; badge: string; }[], f
                         })
     return sortedBadges
 }
-export function badgeSorter(valiedBadges:{ label: null; badge: string; }[], fetchedBadges:{ badge: string; }[]):{ label: null; badge: string; }[] {
+export function badgeSorter(valiedBadges:{ id: number, label: null; badge: string; }[], fetchedBadges:{ badge: string; }[]):{ id: number, label: null; badge: string; }[] {
     const sortedBadges = valiedBadges.filter(badge => {
                             let isValied = true;
                             fetchedBadges.forEach(fetchedBadge => {

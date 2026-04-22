@@ -1,6 +1,6 @@
 import CommonStyles from '@/styles/commonStyles';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 type BottomSheetWrapperProps = {
@@ -25,6 +25,7 @@ type BottomSheetWrapperProps = {
     saveAccountHandler:() => void;
     suspendAccountHandler:() => void;
     areDependentsPresent: boolean;
+    openBadgeScreen: () => void;
 }
 
 export default function BottomSheetWrapper({
@@ -48,15 +49,11 @@ export default function BottomSheetWrapper({
     setSuspendNotification,
     saveAccountHandler,
     suspendAccountHandler,
-    areDependentsPresent
+    areDependentsPresent,
+    openBadgeScreen
     }:BottomSheetWrapperProps){
 
 
-    useEffect(() => {
-        if (!focusedAccount && renderBottomSheet && valiedBadges.length !== 0) {
-            setInputBadge(valiedBadges[0].badge)
-        }
-    },[renderBottomSheet, focusedAccount])
 
     const renderIcon = useCallback(() => (
         <View style= {{height:24, width:24,borderWidth:1, borderRadius:12, backgroundColor:inputBadge, borderColor:inputBadge}}></View>
@@ -137,12 +134,13 @@ export default function BottomSheetWrapper({
                         /> */}
                         <Pressable
                             style={CommonStyles.BottomSheetSelect}
+                            onPress={openBadgeScreen}
                         >
                             {
-                                inputBadge === ''?
-                                <Text>Select a Badge</Text>
-                                :
+                                inputBadge !== ''?
                                 <View style={[CommonStyles.badge, {backgroundColor:inputBadge, marginLeft:16, marginRight:16}]}></View>
+                                :
+                                <Text>Select a badge</Text>
                             }
                         </Pressable>
                     </View>}

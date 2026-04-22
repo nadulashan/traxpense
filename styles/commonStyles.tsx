@@ -35,7 +35,6 @@ const CommonStyles = StyleSheet.create({
     },
     
     BottomSheetWrapper: {
-        margin:16,
         gap:16
     },
 

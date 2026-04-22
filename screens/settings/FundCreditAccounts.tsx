@@ -1,10 +1,12 @@
 import AddAccountButton from '@/components/addaccountbutton';
 import BottomSheetWrapper from '@/components/bottomSheetAccounts';
+import OptionsDisplay from '@/components/bottomSheetOptionsDisplay';
+import UniversalSheetWrapper from '@/components/bottomSheetWrapper';
 import FundCreditAccountsContentWrapper from '@/components/fundCreditAccountsContentWrapper';
 import { addNewCreditAccount, addNewFundAccount } from '@/db/fundCreditAccounts/insert';
 import { checkDependents, getCreditAccountBadges, getCreditAccounts, getFundAccountBadges, getFundAccounts } from '@/db/fundCreditAccounts/select';
 import { suspendAccount, updateAccount } from '@/db/fundCreditAccounts/update';
-import { badgeSorterAcc, checkTypes, closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
+import { badgeSorterAcc, checkTypes, closeBottomSheet, openBottomSheet, sheetNavigationDuplicationIdentify } from '@/func/bottomSheetfunc';
 import { AccountProps } from '@/types/settingsProps';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -30,35 +32,35 @@ export default function FundCreditAccounts({route}:Props){
     const [ suspendNotification, setSuspendNotification ] = useState<boolean>(false)
     const [ areDependentsPresent, setAreDependentsPresent ] = useState(false)
     const valiedFundBadges = [
-        {label:null, badge:'#4A6FA5'},
-        {label:null, badge:'#5E8C61'},
-        {label:null, badge:'#C9A227'},
-        {label:null, badge:'#6B5C8A'},
-        {label:null, badge:'#3F6E8C'},
-        {label:null, badge:'#C56A2D'},
-        {label:null, badge:'#2F3E4E'},
-        {label:null, badge:'#8C4F5A'},
-        {label:null, badge:'#4F7C82'},
-        {label:null, badge:'#A05C7B'},
-        {label:null, badge:'#7A8C3B'},
-        {label:null, badge:'#B05E3C'},
-        {label:null, badge:'#4C6A5A'},
-        {label:null, badge:'#7C5A4F'},
-        {label:null, badge:'#3E5C76'}
+        {id: 1, label:null, badge:'#4A6FA5'},
+        {id: 2, label:null, badge:'#5E8C61'},
+        {id: 3, label:null, badge:'#C9A227'},
+        {id: 4, label:null, badge:'#6B5C8A'},
+        {id: 5, label:null, badge:'#3F6E8C'},
+        {id: 6, label:null, badge:'#C56A2D'},
+        {id: 7, label:null, badge:'#2F3E4E'},
+        {id: 8, label:null, badge:'#8C4F5A'},
+        {id: 9, label:null, badge:'#4F7C82'},
+        {id: 10, label:null, badge:'#A05C7B'},
+        {id: 11, label:null, badge:'#7A8C3B'},
+        {id: 12, label:null, badge:'#B05E3C'},
+        {id: 13, label:null, badge:'#4C6A5A'},
+        {id: 14, label:null, badge:'#7C5A4F'},
+        {id: 15, label:null, badge:'#3E5C76'}
     ];
     const valiedCreditBadges= [
-        {label:null, badge:'#B04A4A'},
-        {label:null, badge:'#9E3F44'},
-        {label:null, badge:'#C2554A'},
-        {label:null, badge:'#8F3A3A'},
-        {label:null, badge:'#A64D4D'},
-        {label:null, badge:'#B65C5C'},
-        {label:null, badge:'#7E3439'},
-        {label:null, badge:'#C06A5A'},
-        {label:null, badge:'#9C474F'},
-        {label:null, badge:'#B0483F'}
+        {id: 1, label:null, badge:'#B04A4A'},
+        {id: 2, label:null, badge:'#9E3F44'},
+        {id: 3, label:null, badge:'#C2554A'},
+        {id: 4, label:null, badge:'#8F3A3A'},
+        {id: 5, label:null, badge:'#A64D4D'},
+        {id: 6, label:null, badge:'#B65C5C'},
+        {id: 7, label:null, badge:'#7E3439'},
+        {id: 8, label:null, badge:'#C06A5A'},
+        {id: 9, label:null, badge:'#9C474F'},
+        {id: 10, label:null, badge:'#B0483F'}
     ];
-    const [ valiedBadges, setValiedBadges ] = useState<{ label: null; badge: string; }[]>([])
+    const [ valiedBadges, setValiedBadges ] = useState<{ id: number, label: null; badge: string; }[]>([])
 
     // Set Screen header title and define the screen type 
     const navigation = useNavigation()
@@ -83,6 +85,7 @@ export default function FundCreditAccounts({route}:Props){
     // Functions
     function openSheetCaller(){
         openBottomSheet(sheetRef)
+        prevScreens.current = sheetNavigationDuplicationIdentify( prevScreens.current, goToForm)
     }
 
     function closeSheetCaller(){
@@ -91,6 +94,8 @@ export default function FundCreditAccounts({route}:Props){
         setInputNameError(false)
         setInputBalanceError(false)
         setAreDependentsPresent(false)
+        goToForm()
+        prevScreens.current = []
     }
 
     function resetInputs(){
@@ -159,6 +164,13 @@ export default function FundCreditAccounts({route}:Props){
         }       
     }
 
+    function handleBadgePress( badge: string) {
+        console.log(badge)
+        setInputBadge(badge)
+        console.log(inputBadge)
+        goBack()
+    }
+
     // Database fetch action callers
     async function refreshValiedBadges(){
         let fetchedBadges;
@@ -184,7 +196,6 @@ export default function FundCreditAccounts({route}:Props){
             accounts = await getCreditAccounts()
         }
         setFetchedAccounts(accounts)
-        console.log(accounts)
         setIsAccountsReady(true)
     }
 
@@ -212,13 +223,46 @@ export default function FundCreditAccounts({route}:Props){
                             setSuspendNotification={setSuspendNotification}
                             saveAccountHandler = {saveAccountHandler}
                             areDependentsPresent = { areDependentsPresent }
+                            openBadgeScreen={ goToBadges }
                         />,
-        Badges: () => <></>
+        Badges: () => <OptionsDisplay itemsPerRow={5} options={valiedBadges} onOptionPress={handleBadgePress} isBadges={true} />
     }
 
     const [ currentScreen, setCurrentScreen ] = useState< 'Form' | 'Badges' >('Form')
+    const [ title, setTitle ] = useState('')
 
     const SheetScreen = SCREENS[currentScreen] 
+
+    const prevScreens = useRef<( () => void )[] >([])
+
+    //navigation
+    function goToForm(){
+        let Type
+        if ( type === 'fund' ){
+            Type = 'Fund'
+        } else {
+            Type = 'Credit'
+        }
+        setTitle(`Add ${Type} Account`)
+        setCurrentScreen('Form')
+        prevScreens.current = sheetNavigationDuplicationIdentify( prevScreens.current, goToForm )
+    }
+    function goToBadges(){
+        setTitle(`Select a Badge`)
+        setCurrentScreen('Badges')
+        prevScreens.current = sheetNavigationDuplicationIdentify( prevScreens.current, goToBadges )
+    }
+    function goBack(){
+        prevScreens.current.pop()
+        prevScreens.current[prevScreens.current.length - 1]()
+    }
+
+    
+    useEffect(() => {
+        if (!focusedAccount && renderBottomSheet && valiedBadges.length !== 0) {
+            setInputBadge(valiedBadges[0].badge)
+        }
+    },[renderBottomSheet, focusedAccount])
 
     // Bottom Sheet things including backdrop
     const sheetRef = useRef<BottomSheet>(null);
@@ -267,7 +311,9 @@ export default function FundCreditAccounts({route}:Props){
                     // onChange={handleSuspendNotificationState}
                     >
                     <BottomSheetView>
-                        { SheetScreen() }
+                        <UniversalSheetWrapper goBackavailable={ prevScreens.current.length !== 1 } onCrossPress={ closeSheetCaller } onBackPress={goBack} title={title}>
+                            { SheetScreen() }
+                        </UniversalSheetWrapper>
                     </BottomSheetView>
                 </BottomSheet>
 
