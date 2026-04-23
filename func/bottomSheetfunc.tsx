@@ -12,11 +12,11 @@ export function closeBottomSheet(sheetRef:React.RefObject<BottomSheet | null>){
     },500)
 }
 
-export function badgeSorterAcc(valiedBadges:{ id: number, label: null; badge: string; }[], fetchedBadges:{ accountBadge: string; }[]):{ id: number, label: null; badge: string; }[] {
+export function badgeSorterAcc(valiedBadges:{ id: number, label: null; value: string; }[], fetchedBadges:{ accountBadge: string; }[]):{ id: number, label: null; value: string; }[] {
     const sortedBadges = valiedBadges.filter(badge => {
                             let isValied = true;
                             fetchedBadges.forEach(fetchedBadge => {
-                                if ( fetchedBadge.accountBadge == badge.badge )  {
+                                if ( fetchedBadge.accountBadge == badge.value )  {
                                     isValied = false;
                                 }
                             })
@@ -24,11 +24,11 @@ export function badgeSorterAcc(valiedBadges:{ id: number, label: null; badge: st
                         })
     return sortedBadges
 }
-export function badgeSorter(valiedBadges:{ id: number, label: null; badge: string; }[], fetchedBadges:{ badge: string; }[]):{ id: number, label: null; badge: string; }[] {
+export function badgeSorter(valiedBadges:{ id: number, label: null; value: string; }[], fetchedBadges:{ badge: string; }[]):{ id: number, label: null; value: string; }[] {
     const sortedBadges = valiedBadges.filter(badge => {
                             let isValied = true;
                             fetchedBadges.forEach(fetchedBadge => {
-                                if ( fetchedBadge.badge == badge.badge )  {
+                                if ( fetchedBadge.badge == badge.value )  {
                                     isValied = false;
                                 }
                             })

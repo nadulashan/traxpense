@@ -1,3 +1,4 @@
+import { ActiveAccountsProps } from "@/types/recordsTypeItemType.schema";
 import { RecurringCategory } from "@/types/recurring.schema";
 import handleDBError from "../dbError";
 import getDB from "./opendb";
@@ -32,13 +33,13 @@ export async function getExpenseRecurringBadges(){
 
 export async function getActiveAccounts(){
     try{
-        const db = await getDB();
-        const accounts = await db.getAllAsync<{accountId:number,accountName:string}>(`
-                            SELECT accountId, accountName 
-                            FROM accounts
-                            WHERE isActive=1;
-                        `)
-        return accounts
+            const db = await getDB();
+            const accounts = await db.getAllAsync<ActiveAccountsProps>(`
+                                SELECT accountId, accountName, accountBadge, runningAmount
+                                FROM accounts
+                                WHERE isActive=1;
+                            `)
+            return accounts
     } catch (e){
         handleDBError(e,'Fetching active accounts for recurring failed')
     }

@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 type BottomSheetWrapperProps = {
-    valiedBadges:{ label: null; badge: string; }[];
+    valiedBadges:{ id: number, label: null; value: string; }[];
     inputName:string;
     inputBalance:string;
     inputBadge:string;
@@ -35,7 +35,6 @@ export default function BottomSheetWrapper({
     inputBadge,
     setInputName,
     setInputBalance,
-    setInputBadge,
     renderBottomSheet,
     checkTypes,
     inputNameError,

@@ -1,12 +1,16 @@
 import AddCategoryButton from '@/components/addCategoryButton';
+import OptionsDisplay from '@/components/bottomSheetOptionsDisplay';
 import BottomSheetRecurring from '@/components/bottomSheetRecurring';
+import UniversalSheetWrapper from '@/components/bottomSheetWrapper';
+import FormAccountWrapper from '@/components/recordFormAccountWrapper';
 import RecurringContentWrapper from '@/components/recurringContentWrapper';
 import { ItemContext } from '@/context/recurringContext';
 import { addNewExpenseRecurringCategory, addNewIncomeRecurringCategory } from '@/db/recurring/insert';
 import { getActiveAccounts, getExpenseRecurringBadges, getExpenseRecurringCategories, getIncomeReccuringBadges, getIncomeRecurringCategories } from '@/db/recurring/select';
 import { suspendRecurringExpenseCategory, suspendRecurringIncomeCategory, updateRecurringExpenseCategory, updateRecurringIncomeCategory } from '@/db/recurring/update';
-import { badgeSorter, checkTypes, closeBottomSheet, openBottomSheet } from '@/func/bottomSheetfunc';
+import { badgeSorter, checkTypes, closeBottomSheet, openBottomSheet, sheetNavigationDuplicationIdentify } from '@/func/bottomSheetfunc';
 import { addFourMonths, addOneDay, addOneMonth, addOneYear, addSevenDays, addSixMonths, addThreeMonths, getLocalTime } from '@/func/time';
+import { ActiveAccountsProps } from '@/types/recordsTypeItemType.schema';
 import { RecurringCategory } from '@/types/recurring.schema';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
@@ -24,7 +28,7 @@ export default function Recurring({route}:Props){
     const { screen } = route.params
 
     // States and Variabels
-    const [ badges, setBadges ] = useState<{ label: null; badge: string; }[]>([])
+    const [ badges, setBadges ] = useState<{ id: number, label: null; value: string; }[]>([])
     const [ inputName, setInputName ] = useState('')
     const [ inputAmount, setInputAmount ] = useState('')
     const [ inputBadge, setInputBadge ] = useState('')
@@ -32,100 +36,101 @@ export default function Recurring({route}:Props){
     const [ inputNameError, setInputNameError ] = useState(false)
     const [ inputAmountError , setInputAmountError ] = useState(false)
     const frequency = [
-        {label:'Yearly', value:'Yearly'},
-        {label:'06 Months', value:'6 Months'},
-        {label:'04 Months', value:'4 Months'},
-        {label:'03 Months', value:'3 Months'},
-        {label:'Monthly', value:'Monthly'},
-        {label:'Weekly', value:'Weekly'},
-        {label:'Daily', value:'Daily'}
+        {id: 1, label: 'Yearly', value:'Yearly'},
+        {id: 2, label: '06 Months', value:'6 Months'},
+        {id: 3, label: '04 Months', value:'4 Months'},
+        {id: 4, label: '03 Months', value:'3 Months'},
+        {id: 5, label: 'Monthly', value:'Monthly'},
+        {id: 6, label: 'Weekly', value:'Weekly'},
+        {id: 7, label: 'Daily', value:'Daily'}
     ]
     const frequencyMonth = [
-        {label:'January', value:0},
-        {label:'February', value:1},
-        {label:'March', value:2},
-        {label:'April', value:3},
-        {label:'May', value:4},
-        {label:'June', value:5},
-        {label:'July', value:6},
-        {label:'August', value:7},
-        {label:'September', value:8},
-        {label:'October', value:9},
-        {label:'November', value:10},
-        {label:'December', value:11},
+        {id: 0, label: 'January', value:'0'},
+        {id: 1, label: 'February', value:'1'},
+        {id: 2, label: 'March', value:'2'},
+        {id: 3, label: 'April', value:'3'},
+        {id: 4, label: 'May', value:'4'},
+        {id: 5, label: 'June', value:'5'},
+        {id: 6, label: 'July', value:'6'},
+        {id: 7, label: 'August', value:'7'},
+        {id: 8, label: 'September', value:'8'},
+        {id: 9, label: 'October', value:'9'},
+        {id: 10, label: 'November', value:'10'},
+        {id: 11, label: 'December', value:'11'},
     ]
     const frequencyDate = Array.from({ length: allowedDates }, (_, i) => ({
+        id: i+1,
         label: (i + 1).toString(),
-        value: i + 1
+        value: (i + 1).toString()
         }));
     const frequencyDay = [
-        { label: 'Monday', value: 1 },
-        { label: 'Tuesday', value: 2 },
-        { label: 'Wednesday', value: 3 },
-        { label: 'Thursday', value: 4 },
-        { label: 'Friday', value: 5 },
-        { label: 'Saturday', value: 6 },
-        { label: 'Sunday', value: 0 }
+        { id: 1, label: 'Monday', value: '1' },
+        { id: 2, label: 'Tuesday', value: '2' },
+        { id: 3, label: 'Wednesday', value: '3' },
+        { id: 4, label: 'Thursday', value: '4' },
+        { id: 5, label: 'Friday', value: '5' },
+        { id: 6, label: 'Saturday', value: '6' },
+        { id: 7, label: 'Sunday', value: '0' }
     ]
     const frequencyTime = [
-        { label: '00:00', value: '00:00' },
-        { label: '03:00', value: '03:00' },
-        { label: '06:00', value: '06:00' },
-        { label: '09:00', value: '09:00' },
-        { label: '12:00', value: '12:00' },
-        { label: '15:00', value: '15:00' },
-        { label: '18:00', value: '18:00' },
-        { label: '21:00', value: '21:00' }
+        { id: 1, label: '00:00', value: '00:00' },
+        { id: 2, label: '03:00', value: '03:00' },
+        { id: 3, label: '06:00', value: '06:00' },
+        { id: 4, label: '09:00', value: '09:00' },
+        { id: 5, label: '12:00', value: '12:00' },
+        { id: 6, label: '15:00', value: '15:00' },
+        { id: 7, label: '18:00', value: '18:00' },
+        { id: 8, label: '21:00', value: '21:00' }
     ]
     const recurringIncomeBadges = [
-        {label:null, badge:'#0F3D2E'},
-        {label:null, badge:'#145A32'},
-        {label:null, badge:'#1B6E3A'},
-        {label:null, badge:'#238844'},
-        {label:null, badge:'#2DA14E'},
-        {label:null, badge:'#1E5631'},
-        {label:null, badge:'#2F6F4E'},
-        {label:null, badge:'#3F8A63'},
-        {label:null, badge:'#4FA678'},
-        {label:null, badge:'#63C08F'},
-        {label:null, badge:'#3A6B35'},
-        {label:null, badge:'#4F8A41'},
-        {label:null, badge:'#65A94E'},
-        {label:null, badge:'#7BC85C'},
-        {label:null, badge:'#98E17A'}
+        {id:1, label:null, value:'#0F3D2E'},
+        {id:2, label:null, value:'#145A32'},
+        {id:3, label:null, value:'#1B6E3A'},
+        {id:4, label:null, value:'#238844'},
+        {id:5, label:null, value:'#2DA14E'},
+        {id:6, label:null, value:'#1E5631'},
+        {id:7, label:null, value:'#2F6F4E'},
+        {id:8, label:null, value:'#3F8A63'},
+        {id:9, label:null, value:'#4FA678'},
+        {id:10, label:null, value:'#63C08F'},
+        {id:11, label:null, value:'#3A6B35'},
+        {id:12, label:null, value:'#4F8A41'},
+        {id:13, label:null, value:'#65A94E'},
+        {id:14, label:null, value:'#7BC85C'},
+        {id:15, label:null, value:'#98E17A'}
     ]
     const recurringExpenseBadges = [
-        {label:null, badge:'#7A3E00'},
-        {label:null, badge:'#8C4600'},
-        {label:null, badge:'#9E4F00'},
-        {label:null, badge:'#B05800'},
-        {label:null, badge:'#C26100'},
-        {label:null, badge:'#D36A00'},
-        {label:null, badge:'#E47300'},
-        {label:null, badge:'#F57C00'},
-        {label:null, badge:'#FF850F'},
-        {label:null, badge:'#FF8F24'},
-        {label:null, badge:'#A84F1D'},
-        {label:null, badge:'#C45D1F'},
-        {label:null, badge:'#E06B21'},
-        {label:null, badge:'#FF7A2F'},
-        {label:null, badge:'#FF944D'}
+        {id:1, label:null, value:'#7A3E00'},
+        {id:2, label:null, value:'#8C4600'},
+        {id:3, label:null, value:'#9E4F00'},
+        {id:4, label:null, value:'#B05800'},
+        {id:5, label:null, value:'#C26100'},
+        {id:6, label:null, value:'#D36A00'},
+        {id:7, label:null, value:'#E47300'},
+        {id:8, label:null, value:'#F57C00'},
+        {id:9, label:null, value:'#FF850F'},
+        {id:10, label:null, value:'#FF8F24'},
+        {id:11, label:null, value:'#A84F1D'},
+        {id:12, label:null, value:'#C45D1F'},
+        {id:13, label:null, value:'#E06B21'},
+        {id:14, label:null, value:'#FF7A2F'},
+        {id:15, label:null, value:'#FF944D'}
     ]
-    const [ accountsArray, setAccountsArray ] = useState<{ label: string; value: number; }[]>([])
+    const [ accounts, setAccounts ] = useState<ActiveAccountsProps[]>([])
     const [ inputFrequency, setInputFrequency ] = useState(frequency[0].value)
-    const [ inputFrequencyMonth, setInputFrequencyMonth ] = useState<number>(frequencyMonth[0].value)
-    const [ inputFrequencyDate, setInputFrequencyDate ] = useState<number>(frequencyDate[0].value)
-    const [ inputFrequencyDay, setInputFrequencyDay ] = useState(frequencyDay[0].value)
+    const [ inputFrequencyMonth, setInputFrequencyMonth ] = useState<number>(Number(frequencyMonth[0].value))
+    const [ inputFrequencyDate, setInputFrequencyDate ] = useState<number>(Number(frequencyDate[0].value))
+    const [ inputFrequencyDay, setInputFrequencyDay ] = useState(Number(frequencyDay[0].value))
     const [ inputFrequencyTime, setInputFrequencyTime ] = useState(frequencyTime[0].value)
-    const [ inputAccount, setInputAccount ] = useState<number>(0)
+    const [ inputAccount, setInputAccount ] = useState<ActiveAccountsProps>(accounts[0])
     const [ categories, setCategories ] = useState<RecurringCategory[]>([]);
     const [ isCategoriesReady, setIsCategoriesReady ] = useState(false)
     const [ focusedCategory, setFocusedCategory ] = useState<RecurringCategory | null>(null)
     const [ suspendNotification, setSuspendNotification ] = useState(false)
     
-    let type:'income' | 'expense';
+    let type:'Income' | 'Expense';
     let getTypeRecurringBadges:() => Promise<{badge:string}[]>
-    let recurringTypeBadges:{label:null, badge:string}[]
+    let recurringTypeBadges:{id: number, label:null, value:string}[]
     let addNewTypeRecurringCategory:(name:string,badge:string,recurringFrequency:string,amount:number,accountId:number,nextOccurrence:string) => void;
     let getTypeRecurringCategories: () => Promise<any>;
     let suspendRecurringTypeCategory: (id: number) => Promise<number>;
@@ -138,7 +143,7 @@ export default function Recurring({route}:Props){
                                         nextOccurance:string) => void;
 
     if( screen === 'Recurring Income'){
-        type = 'income'
+        type = 'Income'
         getTypeRecurringBadges = getIncomeReccuringBadges
         recurringTypeBadges = recurringIncomeBadges
         addNewTypeRecurringCategory = addNewIncomeRecurringCategory
@@ -146,7 +151,7 @@ export default function Recurring({route}:Props){
         suspendRecurringTypeCategory = suspendRecurringIncomeCategory
         updateRecurringTypeCategory = updateRecurringIncomeCategory
     } else {
-        type = 'expense'
+        type = 'Expense'
         getTypeRecurringBadges = getExpenseRecurringBadges
         recurringTypeBadges = recurringExpenseBadges
         addNewTypeRecurringCategory = addNewExpenseRecurringCategory
@@ -164,14 +169,8 @@ export default function Recurring({route}:Props){
 
     async function fetchActiveAccounts(){
         const accounts = await getActiveAccounts()
-        if ( accounts.length !== 0 ) {
-            const array = Array.from({ length:accounts.length }, (_, i) => ({
-                label:accounts[i].accountName,
-                value:accounts[i].accountId
-            }))
-            setAccountsArray(array)
-            setInputAccount(array[0].value)
-        }
+        setAccounts(accounts)
+        setInputAccount(accounts[0])
     }
 
     async function initialDBFetch() {
@@ -228,7 +227,7 @@ export default function Recurring({route}:Props){
                 month = new Date().getMonth()  
                 addition = addSevenDays
                 const todayDay = now.getUTCDay()
-                const difference = inputFrequencyDay - todayDay
+                const difference = Number(inputFrequencyDay) - todayDay
                 date = date + difference
                 break;
             case frequency[6].value:
@@ -286,7 +285,7 @@ export default function Recurring({route}:Props){
 
         if ( !inputNameError ) {
             const nextOccurrence = createNextOccurance()
-            addNewTypeRecurringCategory(inputName,inputBadge,inputFrequency, Number(inputAmount), inputAccount, nextOccurrence)
+            addNewTypeRecurringCategory(inputName,inputBadge,inputFrequency, Number(inputAmount), inputAccount.accountId, nextOccurrence)
             await refreshBadges()
             await getCategories()
             closeSheetCaller() 
@@ -305,7 +304,7 @@ export default function Recurring({route}:Props){
                                         inputBadge,
                                         Number(inputAmount),
                                         inputFrequency,
-                                        inputAccount,
+                                        inputAccount.accountId,
                                         createNextOccurance()
             )
             closeSheetCaller()
@@ -319,6 +318,165 @@ export default function Recurring({route}:Props){
             closeSheetCaller()
             await eventDBFetch()
         }
+    }
+
+    function onFrequencyPress( label: string, value: string ) {
+        setInputFrequency(value)
+        goBack()
+    }
+    function onFrequencyMonthPress( label:string, value: string ) {
+        setInputFrequencyMonth(Number(value))
+        console.log(label)
+        if (label === 'April' || label === 'June' || label === 'September' || label === 'November'){
+            setAllowedDates(30)
+        } else if (label === 'February'){
+            setAllowedDates(28)
+        } else {
+            setAllowedDates(31)
+        }
+        goBack()
+    }
+    function onFrequencyDatePress( label:string, value: string ) {
+        setInputFrequencyDate(Number(value))
+        goBack()
+    }
+    function onFrequencyDayPress( label:string, value: string ) {
+        setInputFrequencyDay(Number(value))
+        goBack()
+    }
+    function onFrequencyTimePress( label:string, value: string ) {
+        setInputFrequencyTime(value)
+        goBack()
+    }
+    function onAccountPress( account: ActiveAccountsProps ) {
+        setInputAccount(account)
+        goBack()
+    }
+    function onBadgePress( label:string, value: string ) {
+        setInputBadge(value)
+        goBack()
+    }
+
+    // Sheets 
+    const SCREENS = {
+        Form: () => <BottomSheetRecurring
+                            badges={badges}
+                            inputAmount = {inputAmount}
+                            setInputAmount = {setInputAmount}
+                            inputBadge={inputBadge}
+                            inputName = {inputName}
+                            setInputName = {setInputName}
+                            frequency = {frequency}
+                            inputFrequency = {inputFrequency}
+                            inputFrequencyMonth = {inputFrequencyMonth}
+                            inputFrequencyDate = {inputFrequencyDate}
+                            inputFrequencyDay={Number(inputFrequencyDay)}
+                            inputFrequencyTime = {inputFrequencyTime}
+                            saveHandler = {saveHandler}
+                            checkTypes = {checkTypes}
+                            accounts = {accounts}
+                            inputAccount = {inputAccount}
+                            inputNameError = {inputNameError}
+                            setInputNameError = {setInputNameError}
+                            inputAmountError = {inputAmountError}
+                            setInputAmountError = {setInputAmountError}
+                            focusedCategory={focusedCategory}
+                            updateHandler={updateHandler}
+                            suspendHandler={suspendHandler}
+                            suspendNotification = {suspendNotification}
+                            setSuspendNotification={ setSuspendNotification }
+                            selectionScreenHandler={{
+                                openFreq: goToFrequency,
+                                openFreqMon: goToFrequencyMonth,
+                                openFreqDate: goToFrequencyDate,
+                                openFreqDay: goToFrequencyDay,
+                                openFreqTime: goToFrequencyTime,
+                                openAccount: goToAccountSelect,
+                                openBadge: goToBadgeSelect
+                            }}
+                        />,
+        Options: () => <OptionsDisplay options={currentOptions.current} itemsPerRow={currentItemsPerRow.current} isBadges={isBadges.current} onOptionPress={currentOnOptionPress.current} />,
+        Account: () => <FormAccountWrapper accounts={accounts} multiSelect={undefined} onAccountPress={onAccountPress} />
+    }
+
+    const currentOptions = useRef<any[]>([])
+    const currentItemsPerRow = useRef< number > (3)
+    const currentOnOptionPress = useRef< ( label:string, value: string ) => void >( () => {} )
+    const isBadges = useRef< boolean >(false)
+
+    const prevStates = useRef< ( () => void )[] >([])
+    const [ title, setTitle ] = useState('')
+    const [ currentSheet, setCurrentSheet ] = useState< 'Form' | 'Options' | 'Account' >('Form')
+    const Sheet = SCREENS[currentSheet]
+
+    function goToForm(){
+        setTitle(`Add Recurring ${type}`)
+        setCurrentSheet('Form')
+        prevStates.current = []
+        prevStates.current = sheetNavigationDuplicationIdentify( prevStates.current, goToForm)
+    }
+    function goToFrequency() {
+        currentOptions.current = frequency
+        currentItemsPerRow.current = 3
+        currentOnOptionPress.current = onFrequencyPress
+        isBadges.current = false
+        setTitle('Select Frequency')
+        setCurrentSheet('Options')
+        prevStates.current = sheetNavigationDuplicationIdentify( prevStates.current, goToFrequency)
+    }
+    function goToFrequencyMonth() {
+        currentOptions.current = frequencyMonth
+        currentItemsPerRow.current = 3
+        currentOnOptionPress.current = onFrequencyMonthPress
+        isBadges.current = false
+        setTitle('Select Month')
+        setCurrentSheet('Options')
+        prevStates.current = sheetNavigationDuplicationIdentify( prevStates.current, goToFrequencyMonth)
+    }
+    function goToFrequencyDate() {
+        currentOptions.current = frequencyDate
+        currentItemsPerRow.current = 3
+        currentOnOptionPress.current = onFrequencyDatePress
+        isBadges.current = false
+        setTitle('Select Date')
+        setCurrentSheet('Options')
+        prevStates.current = sheetNavigationDuplicationIdentify( prevStates.current, goToFrequencyDate)
+    }
+    function goToFrequencyDay() {
+        currentOptions.current = frequencyDay
+        currentItemsPerRow.current = 3
+        currentOnOptionPress.current = onFrequencyDayPress
+        isBadges.current = false
+        setTitle('Select Day')
+        setCurrentSheet('Options')
+        prevStates.current = sheetNavigationDuplicationIdentify( prevStates.current, goToFrequencyDay)
+    }
+    function goToFrequencyTime() {
+        currentOptions.current = frequencyTime
+        currentItemsPerRow.current = 2
+        currentOnOptionPress.current = onFrequencyTimePress
+        isBadges.current = false
+        setTitle('Select Time')
+        setCurrentSheet('Options')
+        prevStates.current = sheetNavigationDuplicationIdentify( prevStates.current, goToFrequencyTime)
+    }
+    function goToAccountSelect() {
+        setTitle('Select Account')
+        setCurrentSheet('Account')
+        prevStates.current = sheetNavigationDuplicationIdentify( prevStates.current, goToAccountSelect)
+    }
+    function goToBadgeSelect() {
+        currentOptions.current = badges
+        currentItemsPerRow.current = 3
+        currentOnOptionPress.current = onBadgePress
+        isBadges.current = true
+        setTitle('Select a Badge')
+        setCurrentSheet('Options')
+        prevStates.current = sheetNavigationDuplicationIdentify( prevStates.current, goToBadgeSelect)
+    }
+    function goBack(){
+        prevStates.current.pop()
+        prevStates.current[prevStates.current.length - 1]()
     }
 
     // BottomSheet
@@ -338,22 +496,23 @@ export default function Recurring({route}:Props){
     useEffect(() => {
         navigation.setOptions({title:screen})
         initialDBFetch()
+        goToForm()
     },[])
 
     useEffect(() => {
         if (badges.length !== 0){
-            setInputBadge(badges[0].badge)
+            setInputBadge(badges[0].value)
         }
     },[badges])
 
     useEffect(() => {
-        if ( !focusedCategory ) { setInputFrequencyDate(frequencyDate[0].value) }        
+        if ( !focusedCategory ) { setInputFrequencyDate(Number(frequencyDate[0].value)) }        
     },[inputFrequencyMonth])
 
     useEffect(() => {
         if (focusedCategory){
-            const accountObject = accountsArray.filter(account => {
-                return account.value === focusedCategory.accountId
+            const accountObject = accounts.filter(account => {
+                return account.accountId === focusedCategory.accountId
             })
 
             const frequencyObject = frequency.filter(item => {
@@ -361,7 +520,7 @@ export default function Recurring({route}:Props){
             })
 
             const badgeObject = recurringTypeBadges.filter(item => {
-                return item.badge === focusedCategory.badge
+                return item.value === focusedCategory.badge
             })
 
             const [yearMonthDate, time] = focusedCategory.nextOccurrence?.split('T')
@@ -380,21 +539,21 @@ export default function Recurring({route}:Props){
 
             setInputName(focusedCategory.name)
             setInputAmount((focusedCategory.amount / 100).toString())
-            setInputAccount(accountObject[0].value)
+            setInputAccount(accountObject)
             setInputFrequency(frequencyObject[0].value)
             setInputFrequencyMonth(month)
             setInputFrequencyDate(date)
             setInputFrequencyDay(day)
-            setInputBadge(badgeObject[0].badge)
+            setInputBadge(badgeObject[0].value)
             setInputFrequencyTime(hourMin)
         } else {
             setInputFrequency(frequency[0].value)
             setInputFrequencyTime(frequencyTime[0].value)
-            setInputFrequencyDate(frequencyDate[0].value)
-            setInputFrequencyDay(frequencyDay[0].value)
-            setInputFrequencyMonth(frequencyMonth[0].value)
-            if (accountsArray.length !==0) {setInputAccount(accountsArray[0].value)}
-            if (badges.length !==0) {setInputBadge(badges[0].badge)}
+            setInputFrequencyDate(Number(frequencyDate[0].value))
+            setInputFrequencyDay(Number(frequencyDay[0].value))
+            setInputFrequencyMonth(Number(frequencyMonth[0].value))
+            if (accounts.length !==0) {setInputAccount(accounts[0] )}
+            if (badges.length !==0) {setInputBadge(badges[0].value)}
         }
     },[focusedCategory])
 
@@ -422,45 +581,9 @@ export default function Recurring({route}:Props){
                     backdropComponent={backDrop}
                     >
                     <BottomSheetView>
-                        <BottomSheetRecurring
-                            badges={badges}
-                            inputAmount = {inputAmount}
-                            setInputAmount = {setInputAmount}
-                            inputBadge={inputBadge}
-                            inputName = {inputName}
-                            setInputBadge={setInputBadge}
-                            setInputName = {setInputName}
-                            frequency = {frequency}
-                            frequencyMonth = {frequencyMonth}
-                            frequencyDate = {frequencyDate}
-                            frequencyDay = {frequencyDay}
-                            frequencyTime = {frequencyTime}
-                            inputFrequency = {inputFrequency}
-                            setInputFrequency = {setInputFrequency}
-                            inputFrequencyMonth = {inputFrequencyMonth}
-                            setInputFrequencyMonth = {setInputFrequencyMonth}
-                            inputFrequencyDate = {inputFrequencyDate}
-                            setInputFrequencyDate = {setInputFrequencyDate}
-                            inputFrequencyDay = {inputFrequencyDay}
-                            setInputFrequencyDay = {setInputFrequencyDay}
-                            inputFrequencyTime = {inputFrequencyTime}
-                            setInputFrequencyTime = {setInputFrequencyTime}
-                            setAllowedDates= {setAllowedDates}
-                            saveHandler = {saveHandler}
-                            checkTypes = {checkTypes}
-                            accountsArray = {accountsArray}
-                            inputAccount = {inputAccount}
-                            setInputAccount = {setInputAccount}
-                            inputNameError = {inputNameError}
-                            setInputNameError = {setInputNameError}
-                            inputAmountError = {inputAmountError}
-                            setInputAmountError = {setInputAmountError}
-                            focusedCategory={focusedCategory}
-                            updateHandler={updateHandler}
-                            suspendHandler={suspendHandler}
-                            suspendNotification = {suspendNotification}
-                            setSuspendNotification={ setSuspendNotification }
-                        />
+                        <UniversalSheetWrapper onBackPress={goBack} onCrossPress={closeSheetCaller} title={title} goBackavailable={ prevStates.current.length !== 1 }>
+                            {Sheet()}
+                        </UniversalSheetWrapper>
                     </BottomSheetView>
                 </BottomSheet>
 

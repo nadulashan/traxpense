@@ -1,38 +1,36 @@
 import CommonStyles from '@/styles/commonStyles';
-import RecurringStyles from '@/styles/recurringStyles';
+import RecordStyles from '@/styles/recordsStyles';
+import { ActiveAccountsProps } from '@/types/recordsTypeItemType.schema';
 import { RecurringCategory } from '@/types/recurring.schema';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { Dropdown } from 'react-native-element-dropdown';
+
+interface SelectionScreenHandlerProps{
+    openFreq: () => void;
+    openFreqMon: () => void;
+    openFreqDate: () => void;
+    openFreqDay: () => void;
+    openFreqTime: () => void;
+    openAccount: () => void;
+    openBadge: () => void;
+}
 
 type BottomSheetRecurringProps = {
-    badges:{ label: null; badge: string; }[];
+    badges:{ id:number, label: null; value: string; }[];
     inputName:string;
     setInputName:React.Dispatch<React.SetStateAction<string>>;
     inputAmount:string;
     setInputAmount:React.Dispatch<React.SetStateAction<string>>;
     inputBadge:string;
-    setInputBadge:React.Dispatch<React.SetStateAction<string>>;
     frequency:{label:string, value:string}[];
-    frequencyMonth:{label:string, value:number}[];
-    frequencyDate:{label:string, value:number}[];
-    frequencyDay:{label:string, value:number}[];
-    frequencyTime:{label:string, value:string}[];
     inputFrequency:string;
-    setInputFrequency:React.Dispatch<React.SetStateAction<string>>;
     inputFrequencyMonth:number
-    setInputFrequencyMonth:React.Dispatch<React.SetStateAction<number>>;
     inputFrequencyDate:number | undefined;
-    setInputFrequencyDate:React.Dispatch<React.SetStateAction<number>>
     inputFrequencyDay:number;
-    setInputFrequencyDay:React.Dispatch<React.SetStateAction<number>>;
     inputFrequencyTime:string;
-    setInputFrequencyTime:React.Dispatch<React.SetStateAction<string>>;
-    setAllowedDates:React.Dispatch<React.SetStateAction<31 | 30 | 28>>;
     saveHandler : () => void;
     checkTypes:(input:string) => boolean;
-    accountsArray: {label:string, value:number}[];
-    inputAccount:number | undefined;
-    setInputAccount:React.Dispatch<React.SetStateAction<number>>
+    accounts: ActiveAccountsProps[];
+    inputAccount:ActiveAccountsProps | undefined;
     inputNameError:boolean;
     setInputNameError:React.Dispatch<React.SetStateAction<boolean>>
     inputAmountError:boolean;
@@ -42,6 +40,7 @@ type BottomSheetRecurringProps = {
     suspendHandler: () => void;
     suspendNotification: boolean;
     setSuspendNotification:React.Dispatch<React.SetStateAction<boolean>>;
+    selectionScreenHandler: SelectionScreenHandlerProps;
 }
 
 export default function BottomSheetRecurring({
@@ -51,28 +50,16 @@ export default function BottomSheetRecurring({
     inputAmount,
     setInputAmount,
     inputBadge,
-    setInputBadge,
     frequency,
-    frequencyMonth,
-    frequencyDate,
-    frequencyDay,
-    frequencyTime,
     inputFrequency,
-    setInputFrequency,
     inputFrequencyMonth,
-    setInputFrequencyMonth,
     inputFrequencyDate,
-    setInputFrequencyDate,
     inputFrequencyDay,
-    setInputFrequencyDay,
     inputFrequencyTime,
-    setInputFrequencyTime,
-    setAllowedDates,
     saveHandler,
     checkTypes,
-    accountsArray,
+    accounts,
     inputAccount,
-    setInputAccount,
     inputNameError,
     setInputNameError,
     inputAmountError,
@@ -81,8 +68,33 @@ export default function BottomSheetRecurring({
     updateHandler,
     suspendHandler,
     suspendNotification,
-    setSuspendNotification
+    setSuspendNotification,
+    selectionScreenHandler
 }:BottomSheetRecurringProps ) {
+    const days = [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saterday'
+    ]
+    
+    const month = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+    ]
     return (
         <View style={CommonStyles.BottomSheetWrapper}>
             {
@@ -90,7 +102,7 @@ export default function BottomSheetRecurring({
                 <View>
                     <Text style={CommonStyles.NoActionText}>You already have the maximum allowed Active Categories</Text>
                 </View>
-                : accountsArray.length === 0?
+                : accounts.length === 0?
                 <View>
                     <Text style={CommonStyles.NoActionText}>Unable to fetch Active Accounts to create a recurring category</Text>
                 </View>
@@ -137,44 +149,23 @@ export default function BottomSheetRecurring({
                 </View>
                 <View style={CommonStyles.BottomSheetBadgeWrapper}>
                     <Text  style={CommonStyles.BottomSheetFieldText}>Frequency: </Text>
-                    <Dropdown
-                        style={RecurringStyles.Dropdown}
-                        selectedTextStyle={RecurringStyles.DropdownSelected}
-                        itemTextStyle={RecurringStyles.DropdownList}
-                        data={frequency}
-                        value = {inputFrequency}
-                        valueField='value'
-                        labelField='label'
-                        // placeholder=''
-                        onChange={selection => setInputFrequency(selection.value)}
-                        showsVerticalScrollIndicator={false}
-                    />
+                    <Pressable
+                            style={CommonStyles.BottomSheetSelectRecurring}
+                            onPress={selectionScreenHandler.openFreq}
+                        >
+                        <Text style={CommonStyles.BottomSheetSelectTextRecurring}>{inputFrequency}</Text>
+                    </Pressable>
                 </View>
                 {
                     inputFrequency === frequency[0].value || inputFrequency === frequency[1].value|| inputFrequency === frequency[2].value|| inputFrequency === frequency[3].value ?
                     <View style={CommonStyles.BottomSheetBadgeWrapper}>
                         <Text  style={CommonStyles.BottomSheetFieldText}>Month: </Text>
-                        <Dropdown
-                            style={RecurringStyles.Dropdown}
-                            selectedTextStyle={RecurringStyles.DropdownSelected}
-                            itemTextStyle={RecurringStyles.DropdownList}
-                            data={frequencyMonth}
-                            value = {inputFrequencyMonth}
-                            valueField='value'
-                            labelField='label'
-                            // placeholder=''
-                            onChange={selection => {
-                                setInputFrequencyMonth(selection.value)
-                                if (selection.value === 'april' || selection.value === 'june' || selection.value === 'september' || selection.value === 'november'){
-                                    setAllowedDates(30)
-                                } else if (selection.value === 'february'){
-                                    setAllowedDates(28)
-                                } else {
-                                    setAllowedDates(31)
-                                }
-                            }}
-                            showsVerticalScrollIndicator={false}
-                        />
+                        <Pressable
+                            style={CommonStyles.BottomSheetSelectRecurring}
+                            onPress={selectionScreenHandler.openFreqMon}
+                        >
+                        <Text style={CommonStyles.BottomSheetSelectTextRecurring}>{month[inputFrequencyMonth]}</Text>
+                    </Pressable>
                     </View>
                     :
                     null
@@ -183,18 +174,12 @@ export default function BottomSheetRecurring({
                     inputFrequency === frequency[5].value ?
                     <View style={CommonStyles.BottomSheetBadgeWrapper}>
                         <Text  style={CommonStyles.BottomSheetFieldText}>Day: </Text>
-                        <Dropdown
-                            style={RecurringStyles.Dropdown}
-                            selectedTextStyle={RecurringStyles.DropdownSelected}
-                            itemTextStyle={RecurringStyles.DropdownList}
-                            data={frequencyDay}
-                            value = {inputFrequencyDay}
-                            valueField='value'
-                            labelField='label'
-                            // placeholder=''
-                            onChange={selection => setInputFrequencyDay(selection.value)}
-                            showsVerticalScrollIndicator={false}
-                        />
+                        <Pressable
+                            style={CommonStyles.BottomSheetSelectRecurring}
+                            onPress={selectionScreenHandler.openFreqDay}
+                        >
+                        <Text style={CommonStyles.BottomSheetSelectTextRecurring}>{days[inputFrequencyDay]}</Text>
+                    </Pressable>
                     </View>
                     :
                     null
@@ -203,67 +188,49 @@ export default function BottomSheetRecurring({
                     inputFrequency === frequency[0].value || inputFrequency === frequency[1].value|| inputFrequency === frequency[2].value|| inputFrequency === frequency[3].value  || inputFrequency === frequency[4].value ?
                     <View style={CommonStyles.BottomSheetBadgeWrapper}>
                         <Text  style={CommonStyles.BottomSheetFieldText}>Date: </Text>
-                        <Dropdown
-                            style={RecurringStyles.Dropdown}
-                            selectedTextStyle={RecurringStyles.DropdownSelected}
-                            itemTextStyle={RecurringStyles.DropdownList}
-                            data={frequencyDate}
-                            value = {inputFrequencyDate}
-                            valueField='value'
-                            labelField='label'
-                            // placeholder=''
-                            onChange={selection => setInputFrequencyDate(selection.value)}
-                            showsVerticalScrollIndicator={false}
-                        />
+                        <Pressable
+                            style={CommonStyles.BottomSheetSelectRecurring}
+                            onPress={selectionScreenHandler.openFreqDate}
+                        >
+                        <Text style={CommonStyles.BottomSheetSelectTextRecurring}>{inputFrequencyDate}</Text>
+                    </Pressable>
                     </View>
                     :
                     null
                 }
                 <View style={CommonStyles.BottomSheetBadgeWrapper}>
                         <Text  style={CommonStyles.BottomSheetFieldText}>Time: </Text>
-                        <Dropdown
-                            style={RecurringStyles.Dropdown}
-                            selectedTextStyle={RecurringStyles.DropdownSelected}
-                            itemTextStyle={RecurringStyles.DropdownList}
-                            data={frequencyTime}
-                            value = {inputFrequencyTime}
-                            valueField='value'
-                            labelField='label'
-                            // placeholder=''
-                            onChange={selection => setInputFrequencyTime(selection.value)}
-                            showsVerticalScrollIndicator={false}
-                        />
+                        <Pressable
+                            style={CommonStyles.BottomSheetSelectRecurring}
+                            onPress={selectionScreenHandler.openFreqTime}
+                        >
+                        <Text style={CommonStyles.BottomSheetSelectTextRecurring}>{inputFrequencyTime}</Text>
+                    </Pressable>
                 </View>
                 <View style={CommonStyles.BottomSheetBadgeWrapper}>
                         <Text  style={CommonStyles.BottomSheetFieldText}>Account: </Text>
-                        <Dropdown
-                            style={RecurringStyles.Dropdown}
-                            selectedTextStyle={RecurringStyles.DropdownSelected}
-                            itemTextStyle={RecurringStyles.DropdownList}
-                            data={accountsArray}
-                            value = {inputAccount}
-                            valueField='value'
-                            labelField='label'
-                            // placeholder=''
-                            onChange={selection => setInputAccount(selection.value)}
-                            showsVerticalScrollIndicator={false}
-                        />
+                        <Pressable
+                            style={CommonStyles.BottomSheetSelectRecurring}
+                            onPress={selectionScreenHandler.openAccount}
+                        >
+                        { inputAccount?
+                            <View style={RecordStyles.CategoryElement}>
+                                <View style={[CommonStyles.badge, {backgroundColor:inputAccount.accountBadge}]}></View>
+                                <Text style={RecordStyles.CategoryElementText}>{inputAccount.accountName}</Text>
+                            </View>
+                            :
+                            <Text style={CommonStyles.BottomSheetSelectTextRecurring}>Select an Account</Text>
+                        }
+                    </Pressable>
                     </View>
                 <View style={CommonStyles.BottomSheetBadgeWrapper}>
                     <Text  style={CommonStyles.BottomSheetFieldText}>Badge: </Text>
-                    <Dropdown
-                        data={badges}
-                        value = {inputBadge}
-                        valueField={'badge'}
-                        labelField={'label'}
-                        placeholder=''
-                        onChange={badge => setInputBadge(badge.badge)}
-                        showsVerticalScrollIndicator={false}
-                        renderLeftIcon={() => <View style= {{height:24, width:24,borderWidth:1, borderRadius:12, backgroundColor:inputBadge, borderColor:inputBadge}}></View>}
-                        renderItem={item => (
-                            <View style={{width:24, height:24, borderRadius:12, margin:8, backgroundColor:item.badge}}></View>
-                        )}
-                    />
+                    <Pressable
+                            style={[CommonStyles.BottomSheetSelectRecurring, {alignItems:'center'}]}
+                            onPress={selectionScreenHandler.openBadge}
+                        >
+                        <View style={[CommonStyles.badge, {backgroundColor:inputBadge}]}></View>
+                    </Pressable>
                 </View>
                 <View style={CommonStyles.BottomSheetButtonWrapper}>
                     {

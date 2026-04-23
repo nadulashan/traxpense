@@ -1,10 +1,11 @@
 import CommonStyles from "@/styles/commonStyles";
 import { Pressable, Text, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
 interface OptionsDisplayProps{
     itemsPerRow: number,
     options: any[],
-    onOptionPress: ( badge: string ) => void
+    onOptionPress: ( label: string, value:string ) => void
     isBadges: boolean;
 }
 
@@ -33,18 +34,17 @@ export default function OptionsDisplay({ itemsPerRow, options, onOptionPress, is
 
     organizeArrays()
     return (
-        <View>
+        <View style={{maxHeight: 480}}>
+        <ScrollView>
             {
-                motherArray.map( motherItem => {
-                    console.log(motherItem[0].id)
-                    return(
+                motherArray.map( motherItem => (
                     <View key={ motherItem[0].id } style={{width:'100%', alignItems:'center', justifyContent:'space-between', flexDirection:'row', marginBottom:16}} >
                         {
                             motherItem.map( item => (
-                                <Pressable key={item.id} onPress={() => onOptionPress(item.badge)} style={[CommonStyles.BottomSheetSelect, {paddingLeft:16, paddingRight:16}]}>
+                                <Pressable key={item.id} onPress={() => onOptionPress(item.label, item.value)} style={[CommonStyles.BottomSheetSelect, {paddingLeft:16, paddingRight:16, width:108,}]}>
                                     {
                                         isBadges?
-                                        <View key={item.id} style={[CommonStyles.badge, {backgroundColor:item.badge}]}></View>
+                                        <View key={item.id} style={[CommonStyles.badge, {backgroundColor:item.value}]}></View>
                                         :
                                         <Text >{item.label}</Text>
                                     }
@@ -52,8 +52,9 @@ export default function OptionsDisplay({ itemsPerRow, options, onOptionPress, is
                             ))
                         }
                     </View>
-                )})
+                ))
             }
+        </ScrollView>
         </View>
     )
 }

@@ -32,35 +32,35 @@ export default function FundCreditAccounts({route}:Props){
     const [ suspendNotification, setSuspendNotification ] = useState<boolean>(false)
     const [ areDependentsPresent, setAreDependentsPresent ] = useState(false)
     const valiedFundBadges = [
-        {id: 1, label:null, badge:'#4A6FA5'},
-        {id: 2, label:null, badge:'#5E8C61'},
-        {id: 3, label:null, badge:'#C9A227'},
-        {id: 4, label:null, badge:'#6B5C8A'},
-        {id: 5, label:null, badge:'#3F6E8C'},
-        {id: 6, label:null, badge:'#C56A2D'},
-        {id: 7, label:null, badge:'#2F3E4E'},
-        {id: 8, label:null, badge:'#8C4F5A'},
-        {id: 9, label:null, badge:'#4F7C82'},
-        {id: 10, label:null, badge:'#A05C7B'},
-        {id: 11, label:null, badge:'#7A8C3B'},
-        {id: 12, label:null, badge:'#B05E3C'},
-        {id: 13, label:null, badge:'#4C6A5A'},
-        {id: 14, label:null, badge:'#7C5A4F'},
-        {id: 15, label:null, badge:'#3E5C76'}
+        {id: 1, label:null, value:'#4A6FA5'},
+        {id: 2, label:null, value:'#5E8C61'},
+        {id: 3, label:null, value:'#C9A227'},
+        {id: 4, label:null, value:'#6B5C8A'},
+        {id: 5, label:null, value:'#3F6E8C'},
+        {id: 6, label:null, value:'#C56A2D'},
+        {id: 7, label:null, value:'#2F3E4E'},
+        {id: 8, label:null, value:'#8C4F5A'},
+        {id: 9, label:null, value:'#4F7C82'},
+        {id: 10, label:null, value:'#A05C7B'},
+        {id: 11, label:null, value:'#7A8C3B'},
+        {id: 12, label:null, value:'#B05E3C'},
+        {id: 13, label:null, value:'#4C6A5A'},
+        {id: 14, label:null, value:'#7C5A4F'},
+        {id: 15, label:null, value:'#3E5C76'}
     ];
     const valiedCreditBadges= [
-        {id: 1, label:null, badge:'#B04A4A'},
-        {id: 2, label:null, badge:'#9E3F44'},
-        {id: 3, label:null, badge:'#C2554A'},
-        {id: 4, label:null, badge:'#8F3A3A'},
-        {id: 5, label:null, badge:'#A64D4D'},
-        {id: 6, label:null, badge:'#B65C5C'},
-        {id: 7, label:null, badge:'#7E3439'},
-        {id: 8, label:null, badge:'#C06A5A'},
-        {id: 9, label:null, badge:'#9C474F'},
-        {id: 10, label:null, badge:'#B0483F'}
+        {id: 1, label:null, value:'#B04A4A'},
+        {id: 2, label:null, value:'#9E3F44'},
+        {id: 3, label:null, value:'#C2554A'},
+        {id: 4, label:null, value:'#8F3A3A'},
+        {id: 5, label:null, value:'#A64D4D'},
+        {id: 6, label:null, value:'#B65C5C'},
+        {id: 7, label:null, value:'#7E3439'},
+        {id: 8, label:null, value:'#C06A5A'},
+        {id: 9, label:null, value:'#9C474F'},
+        {id: 10, label:null, value:'#B0483F'}
     ];
-    const [ valiedBadges, setValiedBadges ] = useState<{ id: number, label: null; badge: string; }[]>([])
+    const [ valiedBadges, setValiedBadges ] = useState<{ id: number, label: null; value: string; }[]>([])
 
     // Set Screen header title and define the screen type 
     const navigation = useNavigation()
@@ -258,7 +258,7 @@ export default function FundCreditAccounts({route}:Props){
     
     useEffect(() => {
         if (!focusedAccount && renderBottomSheet && valiedBadges.length !== 0) {
-            setInputBadge(valiedBadges[0].badge)
+            setInputBadge(valiedBadges[0].value)
         }
     },[renderBottomSheet, focusedAccount])
 

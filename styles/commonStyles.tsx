@@ -81,6 +81,20 @@ const CommonStyles = StyleSheet.create({
         justifyContent:'center',
     },
 
+    BottomSheetSelectRecurring: {
+        backgroundColor:colors.light.primaryLight,
+        borderRadius:8,
+        fontSize:16,
+        height:35,
+        width:108,
+        justifyContent:'center',
+    },
+
+    BottomSheetSelectTextRecurring: {
+        marginLeft:8,
+        fontFamily:fonts.regular
+    },
+
     BottomSheetButtonText:{
         fontFamily:fonts.semiBold,
         color:colors.light.white,

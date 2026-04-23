@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 type BottomSheetCategoriesProps = {
-    valiedBadges:{ label: null; badge: string; }[];
+    valiedBadges:{ id: number, label: null; value: string; }[];
     inputBadge:string;
     inputName:string;
     setInputBadge:React.Dispatch<React.SetStateAction<string>>;
