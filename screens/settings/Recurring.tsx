@@ -267,7 +267,9 @@ export default function Recurring({route}:Props){
     }
     
     function closeSheetCaller(){
-        closeBottomSheet(sheetRef)
+        closeBottomSheet(sheetRef)}
+
+    function resetSheetStates(){
         setInputNameError(false)
         setInputAmountError(false)
         resetFields()
@@ -578,6 +580,11 @@ export default function Recurring({route}:Props){
                     enablePanDownToClose={true}
                     ref={sheetRef}
                     backdropComponent={backDrop}
+                    onChange={ index => {
+                        if ( index === -1 ) {
+                            resetSheetStates()
+                        }
+                    }}
                     >
                     <BottomSheetView>
                         <UniversalSheetWrapper onBackPress={goBack} onCrossPress={closeSheetCaller} title={title} goBackavailable={ prevStates.current.length !== 1 }>

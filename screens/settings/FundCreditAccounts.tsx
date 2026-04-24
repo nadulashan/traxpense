@@ -89,6 +89,9 @@ export default function FundCreditAccounts({route}:Props){
 
     function closeSheetCaller(){
         closeBottomSheet(sheetRef)
+    }
+
+    function resetSheetStates(){
         setSuspendNotification(false);
         setInputNameError(false)
         setInputBalanceError(false)
@@ -295,7 +298,11 @@ export default function FundCreditAccounts({route}:Props){
                     enablePanDownToClose={true}
                     ref={sheetRef}
                     backdropComponent={backDrop}
-                    // onChange={handleSuspendNotificationState}
+                    onChange={ index => {
+                        if ( index === -1 ) {
+                            resetSheetStates()
+                        }
+                    }}
                     >
                     <BottomSheetView>
                         <UniversalSheetWrapper goBackavailable={ prevScreens.current.length !== 1 } onCrossPress={ closeSheetCaller } onBackPress={goBack} title={title}>

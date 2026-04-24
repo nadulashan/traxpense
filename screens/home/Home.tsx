@@ -354,9 +354,12 @@ export default function Home(){
     }
     
     function closeSheetCaller(){
-        setShowGoBack(false)
         closeBottomSheet(sheetRef)
+    }
+
+    function resetSheetStates(){
         prevStates.current = []
+        setShowGoBack(false)
     }
 
     return (
@@ -385,6 +388,11 @@ export default function Home(){
               enablePanDownToClose={true}
               ref={sheetRef}
               backdropComponent={backDrop}
+                    onChange={ index => {
+                        if ( index === -1 ) {
+                            resetSheetStates()
+                        }
+                    }}
               >
               <BottomSheetView>
                 <UniversalSheetWrapper title={title} onBackPress={goBack} goBackavailable={prevStates.current.length > 1} onCrossPress={closeSheetCaller}  >

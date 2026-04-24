@@ -234,6 +234,9 @@ export default function Records(){
   
   function closeStateSheetCaller(){
     closeBottomSheet(stateSheetRef)
+  }
+
+  function resetSheetState(){
     focusedItem.current = undefined
     transferItem.current = undefined
     isTransfer.current = false
@@ -311,6 +314,11 @@ export default function Records(){
               enablePanDownToClose={true}
               ref={stateSheetRef}
               backdropComponent={stateBackDrop}
+              onChange={index => {
+                if ( index === -1 ){
+                  resetSheetState()
+                }
+              }}
               >
               <BottomSheetView>
                 <UniversalSheetWrapper title={title} onBackPress={onBackPress} goBackavailable={prevSheetStates.current.length !== 1} onCrossPress={closeStateSheetCaller} >

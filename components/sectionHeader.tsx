@@ -20,7 +20,9 @@ export default function SectionHeader({ header, button }:PropTypes){
             {
                 button?
                 <Pressable onPress={button.onPress} style={CommonStyles.SquareButton}>
+                    <View style={{alignSelf:'flex-end'}}>
                     {button.icon}
+                    </View>
                 </Pressable>
                 :
                 null

@@ -139,6 +139,9 @@ export default function IncomeExpenseCategory({route}:Props){
 
     function closeSheetCaller(){
         closeBottomSheet(sheetRef)
+    }
+
+    function resetSheetStates(){        
         setInputNameError(false)
         setFocusedCategory(undefined)
         setShowDangerText(false)
@@ -289,7 +292,11 @@ export default function IncomeExpenseCategory({route}:Props){
                     enablePanDownToClose={true}
                     ref={sheetRef}
                     backdropComponent={backDrop}
-                    // onChange={handleSuspendNotificationState}
+                    onChange={ index => {
+                        if ( index === -1 ) {
+                            resetSheetStates()
+                        }
+                    }}
                     >
                     <BottomSheetView>
                         <UniversalSheetWrapper onBackPress={goBack} onCrossPress={closeSheetCaller} title={title} goBackavailable={prevScreens.current.length !== 1}>
