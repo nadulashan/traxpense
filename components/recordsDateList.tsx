@@ -1,10 +1,14 @@
 import { useCheckContext } from "@/context/recordsContext";
+import { getInitialDate } from "@/db/records/select";
 import { getLocalTime } from "@/func/time";
 import RecordStyles from "@/styles/recordsStyles";
 import { FlashList } from "@shopify/flash-list";
-import { RefObject, useRef } from "react";
-import { Pressable, Text, View } from 'react-native';
+import { RefObject, useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
+interface ListPorps {
+  fetchedInitialDate: string
+}
 
 function createDates(dateString:string){
   const [ year, month, date ] = dateString.split('-')
@@ -16,9 +20,9 @@ function milliToDate(milli:number){
   return new Date (milli)
 }
 
-function MyList(){
+function MyList({fetchedInitialDate}: ListPorps){
 
-  const fetchedInitialDateString = '2026-01-04'
+  const fetchedInitialDateString = fetchedInitialDate
   const today = getLocalTime().toISOString().split('T')[0] // get today's date only
   const todayDate = createDates(today)
   const fetchedDate = createDates(fetchedInitialDateString)
@@ -75,6 +79,7 @@ function MyList(){
     nextDate.current = date
     handlePressedScroll(initialDate, nextDate) 
   }
+  
 
   function renderItem ({item}:any) {    
       const selected = focusedDate
@@ -107,7 +112,29 @@ function MyList(){
 }
 
 export default function DateList(){
+
+  
+  const [ fetchedInitialDate, setFetchedInitialDate ] = useState< string | undefined >( undefined )
+
+  async function getLaunchDate() {
+    const date = await getInitialDate()
+    if ( date ) { setFetchedInitialDate(date)
+    }
+
+  }
+  useEffect(() => {
+    getLaunchDate()
+  })
     return (
-        <MyList />
+      <>
+        {
+          fetchedInitialDate?
+          <MyList fetchedInitialDate={fetchedInitialDate}/>
+          :        
+          <View style = {{height: '100%', justifyContent:'center'}} >
+          <ActivityIndicator/>
+          </View>
+        }
+      </>
     )
 }

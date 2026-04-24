@@ -299,3 +299,18 @@ export async function getTransferDetails( id: number ) {
         handleDBError( e, 'Fetching transfer IDs failed' )
     }
 }
+export async function getInitialDate() {
+    try {
+        const db = await getDB();
+        const fetch = await db.getFirstAsync< {key:string, value:string } | null>(`
+                            SELECT  *
+                            FROM    appconfig
+                        ` )
+        if ( !fetch ) { return}
+        // const launchDate = fetch.filter()
+        // console.log(fetch.value)
+        return fetch.value
+    } catch ( e ) {
+        handleDBError( e, 'Fetching Launch Date failed')
+    }
+}
