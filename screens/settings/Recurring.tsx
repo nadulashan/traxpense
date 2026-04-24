@@ -37,9 +37,9 @@ export default function Recurring({route}:Props){
     const [ inputAmountError , setInputAmountError ] = useState(false)
     const frequency = [
         {id: 1, label: 'Yearly', value:'Yearly'},
-        {id: 2, label: '06 Months', value:'6 Months'},
-        {id: 3, label: '04 Months', value:'4 Months'},
-        {id: 4, label: '03 Months', value:'3 Months'},
+        {id: 2, label: '6 Months', value:'6 Months'},
+        {id: 3, label: '4 Months', value:'4 Months'},
+        {id: 4, label: '3 Months', value:'3 Months'},
         {id: 5, label: 'Monthly', value:'Monthly'},
         {id: 6, label: 'Weekly', value:'Weekly'},
         {id: 7, label: 'Daily', value:'Daily'}
@@ -326,7 +326,6 @@ export default function Recurring({route}:Props){
     }
     function onFrequencyMonthPress( label:string, value: string ) {
         setInputFrequencyMonth(Number(value))
-        console.log(label)
         if (label === 'April' || label === 'June' || label === 'September' || label === 'November'){
             setAllowedDates(30)
         } else if (label === 'February'){
@@ -539,7 +538,7 @@ export default function Recurring({route}:Props){
 
             setInputName(focusedCategory.name)
             setInputAmount((focusedCategory.amount / 100).toString())
-            setInputAccount(accountObject)
+            setInputAccount(accountObject[0])
             setInputFrequency(frequencyObject[0].value)
             setInputFrequencyMonth(month)
             setInputFrequencyDate(date)

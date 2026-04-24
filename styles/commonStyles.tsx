@@ -86,7 +86,7 @@ const CommonStyles = StyleSheet.create({
         borderRadius:8,
         fontSize:16,
         height:35,
-        width:108,
+        width:160,
         justifyContent:'center',
     },
 

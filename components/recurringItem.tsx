@@ -33,7 +33,9 @@ export default function RecurringItem({
 
     const handleEdit = useContext(ItemContext)
 
-    const height = useRef( new Animated.Value(60)).current;
+    const collapsedHeight = 56
+    const epxpandHeight = 260
+    const height = useRef( new Animated.Value(collapsedHeight)).current;
     const chevronDirection = useRef( new Animated.Value(0)).current;
     const isExpanded = useRef(false)
 
@@ -45,7 +47,7 @@ export default function RecurringItem({
     function handleExpand(){
         if ( !isExpanded.current ) {
             Animated.timing(height, {
-                toValue:280,
+                toValue:epxpandHeight,
                 duration:200,
                 useNativeDriver:false
             }).start()
@@ -56,7 +58,7 @@ export default function RecurringItem({
             }).start()
         } else {            
             Animated.timing(height, {
-                toValue:60,
+                toValue:collapsedHeight,
                 duration:200,
                 useNativeDriver:false
             }).start()
@@ -69,7 +71,7 @@ export default function RecurringItem({
         isExpanded.current = !isExpanded.current
     }
 
-
+    const amountObj = priceWithComma(amount)
 
     return(
         <Animated.View style={[RecurringStyles.RecurringItem, {height:height}]}>
@@ -95,7 +97,7 @@ export default function RecurringItem({
                 <Text  style={RecurringStyles.ExecutionText}>Last Execution: {lastOccurance? displayTimes(lastOccurance) : '-'}</Text>
                 <Text style={RecurringStyles.ExecutionText}>Next Execution: {nextOccurance? displayTimes(nextOccurance) : '-'}</Text>
             </View>
-            <Text style={RecurringStyles.AmountText}>{priceWithComma(amount).value}</Text>
+            <Text style={RecurringStyles.AmountText}>{`${amountObj.currency}. ${amountObj.value}.${amountObj.decimal}`}</Text>
             </Pressable>
             {
                 category.isActive === 1 ?

@@ -20,6 +20,7 @@ const RecurringStyles = StyleSheet.create({
     RecurringContentWrapper: {
         marginLeft:24,
         marginRight:24,
+        marginTop:24,
         gap:16,
         minHeight:'100%',
         paddingBottom:16
