@@ -1,26 +1,19 @@
 import CommonStyles from '@/styles/commonStyles';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text } from 'react-native';
 
 type AddAccountButtonProps = {
     openBottomSheet: () => void;
     setFocusedAccount:React.Dispatch<React.SetStateAction<{ accountId: number; accountName: string; accountBadge: string; amount: number; isActive: number; } | null>>;
-    setRenderBottomSheet:React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function AddAccountButton({openBottomSheet, setFocusedAccount,setRenderBottomSheet}:AddAccountButtonProps){
+export default function AddAccountButton({openBottomSheet, setFocusedAccount}:AddAccountButtonProps){
     return (        
 
-        <View style={CommonStyles.FloatingActionButtonWrapper}>
-            <Pressable
-                onPress={() => {
-                    setRenderBottomSheet(false)
+        <Pressable style={CommonStyles.FloatingActionButtonWrapper} onPress={() => {
                     openBottomSheet()
                     setFocusedAccount(null)
-                    setRenderBottomSheet(true)
-                }}
-            >
+                }}>
                     <Text style={CommonStyles.FloatingActionButtonText}>+ New</Text>
-            </Pressable>
-        </View>
+        </Pressable>
     )
 }

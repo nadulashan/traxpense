@@ -15,7 +15,6 @@ type ContentWrapperProps = {
     setInputName:React.Dispatch<React.SetStateAction<string>>;
     setInputBalance:React.Dispatch<React.SetStateAction<string>>;
     setInputBadge:React.Dispatch<React.SetStateAction<string>>;
-    setRenderBottomSheet:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default function FundCreditAccountsContentWrapper({
@@ -27,7 +26,6 @@ export default function FundCreditAccountsContentWrapper({
     setInputName,
     setInputBalance,
     setInputBadge,
-    setRenderBottomSheet,
     }:ContentWrapperProps) {
 
     // Update the states of the inputs when focused accout is updated
@@ -56,10 +54,8 @@ export default function FundCreditAccountsContentWrapper({
                             <Pressable 
                                 style={FundCreditAccountsStyles.ManageButtonWrapper}
                                 onPress={() => {
-                                    setRenderBottomSheet(false)
                                     setFocusedAccount(account)
                                     openBottomSheet()
-                                    setRenderBottomSheet(true)
                                 }}
                             >
                                 <Text style={FundCreditAccountsStyles.ManageButtonText}>Manage</Text>

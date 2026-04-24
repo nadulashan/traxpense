@@ -11,7 +11,6 @@ type BottomSheetWrapperProps = {
     setInputName:React.Dispatch<React.SetStateAction<string>>;
     setInputBalance:React.Dispatch<React.SetStateAction<string>>;
     setInputBadge:React.Dispatch<React.SetStateAction<string>>;
-    renderBottomSheet:boolean;
     checkTypes:(balance:string) => boolean;
     inputNameError:boolean;
     setInputNameError:React.Dispatch<React.SetStateAction<boolean>>;
@@ -35,7 +34,6 @@ export default function BottomSheetWrapper({
     inputBadge,
     setInputName,
     setInputBalance,
-    renderBottomSheet,
     checkTypes,
     inputNameError,
     setInputNameError,
@@ -60,8 +58,6 @@ export default function BottomSheetWrapper({
 
     return(
         <View style={CommonStyles.BottomSheetWrapper}>
-            {renderBottomSheet?
-            <>
                 {valiedBadges.length == 0 && !focusedAccount?
                 <View>
                     <Text style={CommonStyles.NoActionText}>You already have the maximum allowed Active Accounts</Text>
@@ -173,9 +169,6 @@ export default function BottomSheetWrapper({
                     </View>
                 </>
                 }
-            </>:
-            <Text>Loading</Text>
-            }
         </View>
     )
 }

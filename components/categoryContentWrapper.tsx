@@ -10,7 +10,7 @@ type CategoryContentWrapperProps = {
 
 export default function CategoryContentWrapper({categories,setFocusedCategory}:CategoryContentWrapperProps){
     return (
-        <View style={{marginLeft:24, marginRight:24, minHeight:'100%'}}>
+        <View style={{marginLeft:24, marginRight:24, marginTop:24, minHeight:'100%'}}>
             {categories?
                 categories.length == 0?
                 <View>

@@ -196,6 +196,13 @@ const CommonStyles = StyleSheet.create({
         backgroundColor:'black',
         borderRadius:8,
         marginBottom:16
+    },
+
+    SquareButton: {
+        height:44,
+        width:44, 
+        alignItems:'center', 
+        justifyContent:'center'
     }
 })
 

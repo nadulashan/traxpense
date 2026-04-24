@@ -26,7 +26,6 @@ export default function FundCreditAccounts({route}:Props){
     const [ inputName, setInputName ] = useState<string>('');
     const [ inputBalance, setInputBalance ] = useState<string>('');
     const [ inputBadge, setInputBadge ] = useState<string>('');
-    const [ renderBottomSheet, setRenderBottomSheet ] = useState<boolean>(false);
     const [ inputNameError, setInputNameError ] = useState<boolean>(false)
     const [ inputBalanceError, setInputBalanceError ] = useState<boolean>(false)
     const [ suspendNotification, setSuspendNotification ] = useState<boolean>(false)
@@ -103,10 +102,6 @@ export default function FundCreditAccounts({route}:Props){
         setInputBalance('')
     }
 
-    function resetRenderBottomSheet() {
-        setRenderBottomSheet(false)
-    }
-
     function resetIsAccountsReady() {
         setIsAccountsReady(true)
     }
@@ -124,7 +119,6 @@ export default function FundCreditAccounts({route}:Props){
                 await refreshAccountBadges()
                 resetInputs()
                 closeSheetCaller()
-                resetRenderBottomSheet()
                 resetIsAccountsReady()
             }
         }
@@ -142,7 +136,6 @@ export default function FundCreditAccounts({route}:Props){
             await refreshAccountBadges()
             resetInputs()
             closeSheetCaller()
-            resetRenderBottomSheet()
             resetIsAccountsReady()
         }
     }
@@ -158,7 +151,6 @@ export default function FundCreditAccounts({route}:Props){
             await addNewTypeAccount(inputName, inputBadge, Number(inputBalance))
             resetInputs()
             closeSheetCaller()
-            resetRenderBottomSheet()
             resetIsAccountsReady()
             await refreshAccountBadges() 
         }       
@@ -183,7 +175,6 @@ export default function FundCreditAccounts({route}:Props){
 
         const valiedFetchedBadges = badgeSorterAcc(correctTypeValiedBadges, fetchedBadges)
         setValiedBadges(valiedFetchedBadges)
-        setRenderBottomSheet(true)
     }
 
     async function refreshAccounts() {
@@ -207,7 +198,6 @@ export default function FundCreditAccounts({route}:Props){
                             setInputName= {setInputName}
                             setInputBalance = {setInputBalance}
                             setInputBadge = {setInputBadge}
-                            renderBottomSheet = {renderBottomSheet}
                             checkTypes={checkTypes}
                             inputNameError={inputNameError}
                             setInputNameError={setInputNameError}
@@ -257,10 +247,10 @@ export default function FundCreditAccounts({route}:Props){
 
     
     useEffect(() => {
-        if (!focusedAccount && renderBottomSheet && valiedBadges.length !== 0) {
+        if (!focusedAccount && valiedBadges.length !== 0) {
             setInputBadge(valiedBadges[0].value)
         }
-    },[renderBottomSheet, focusedAccount])
+    },[ focusedAccount])
 
     // Bottom Sheet things including backdrop
     const sheetRef = useRef<BottomSheet>(null);
@@ -293,12 +283,11 @@ export default function FundCreditAccounts({route}:Props){
                     setInputBalance={setInputBalance}
                     setInputBadge={setInputBadge}
                     focusedAccount={focusedAccount}
-                    setRenderBottomSheet={setRenderBottomSheet}
                 />
 
                 </ScrollView>
                 
-                <AddAccountButton openBottomSheet={openSheetCaller} setFocusedAccount={setFocusedAccount} setRenderBottomSheet={setRenderBottomSheet}/>
+                <AddAccountButton openBottomSheet={openSheetCaller} setFocusedAccount={setFocusedAccount}/>
 
                 <BottomSheet 
                     index={-1} 

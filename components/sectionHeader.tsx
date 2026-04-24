@@ -1,3 +1,4 @@
+import CommonStyles from '@/styles/commonStyles';
 import { ReactElement } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { default as Headerstyles, default as universal } from '../styles/universal';
@@ -18,7 +19,7 @@ export default function SectionHeader({ header, button }:PropTypes){
             <Text style={Headerstyles.sectionHeader} >{header}</Text>
             {
                 button?
-                <Pressable onPress={button.onPress}>
+                <Pressable onPress={button.onPress} style={CommonStyles.SquareButton}>
                     {button.icon}
                 </Pressable>
                 :

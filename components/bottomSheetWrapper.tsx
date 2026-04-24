@@ -24,11 +24,11 @@ export default function UniversalSheetWrapper({ title, onBackPress, goBackavaila
                     if ( goBackavailable ) {
                         onBackPress()
                     }    
-                }} style={CommonStyles.BottomSheetHeaderButton} >
+                }} style={[CommonStyles.BottomSheetHeaderButton, CommonStyles.SquareButton]} >
                     <Entypo name="chevron-left" size={24} color={ goBackavailable? buttonActiveColor : buttonInactiveColor} />
                 </Pressable>
                 <Text style={CommonStyles.BottomSheetHeaderText}>{title}</Text>
-                <Pressable onPress={onCrossPress} style={CommonStyles.BottomSheetHeaderButton} >
+                <Pressable onPress={onCrossPress} style={[CommonStyles.BottomSheetHeaderButton, CommonStyles.SquareButton]} >
                     <Entypo name="cross" size={24} color={buttonActiveColor} />
                 </Pressable>
             </View>

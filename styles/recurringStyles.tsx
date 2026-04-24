@@ -21,7 +21,7 @@ const RecurringStyles = StyleSheet.create({
         marginLeft:24,
         marginRight:24,
         marginTop:24,
-        gap:16,
+        gap:8,
         minHeight:'100%',
         paddingBottom:16
     },
