@@ -181,8 +181,8 @@ const CommonStyles = StyleSheet.create({
         // borderRadius:22,
         // borderWidth:2,
         // borderColor:colors.light.accent,
-        alignItems:'center',
-        justifyContent:'center'
+        // alignItems:'center',
+        // justifyContent:'center'
     },
 
     BottomSheetHeaderText: {
@@ -201,7 +201,7 @@ const CommonStyles = StyleSheet.create({
     SquareButton: {
         height:44,
         width:44, 
-        alignItems:'center', 
+        // alignItems:'center', 
         justifyContent:'center'
     }
 })
