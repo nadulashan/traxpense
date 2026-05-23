@@ -9,7 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nadulathanthriarachchi.traxpense",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -23,11 +27,10 @@
       "package": "com.dev_shn.TraXpense"
     },
     "web": {
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
       [
         "expo-splash-screen",
         {
@@ -52,6 +55,13 @@
       "eas": {
         "projectId": "2a4981c8-6dae-4376-a519-33870e54f2d8"
       }
+    },
+    "owner": "dev_shn",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/2a4981c8-6dae-4376-a519-33870e54f2d8"
     }
   }
 }

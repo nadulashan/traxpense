@@ -29,7 +29,7 @@ function MyList({fetchedInitialDate}: ListPorps){
   const dayLength = (todayDate.getTime() - fetchedDate.getTime()) / ( 60*60*24*1000 ) + 3 // difference between today and launch day + one day for today + 2 forward days
   const startingDate = new Date(todayDate.setDate(todayDate.getDate() + 2))
   const monthArray = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
   ]
   const dayArray = [
     'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'

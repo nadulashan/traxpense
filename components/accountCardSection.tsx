@@ -4,7 +4,7 @@ import Header from './sectionHeader';
 
 import colors from '@/constants/colors';
 import { AccountProps } from '@/types/settingsProps';
-import AddAccountCard from './addAccountCard';
+import InfoText from './infoText';
 
 interface AccountsCardSectionProps{
     accounts: AccountProps[] | undefined;
@@ -33,7 +33,7 @@ export default function AccountCardsSection({accounts}: AccountsCardSectionProps
                 </>
                 :
                 <View style={{width:'100%', alignItems:'center', justifyContent:'center'}}>
-                    <AddAccountCard / >
+                    <InfoText text='No Account Found'/>
                 </View>
             :
             <ActivityIndicator color={colors.light.primary} />

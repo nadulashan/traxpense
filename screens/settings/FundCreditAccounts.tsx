@@ -159,8 +159,8 @@ export default function FundCreditAccounts({route}:Props){
         }       
     }
 
-    function handleBadgePress( badge: string) {
-        setInputBadge(badge)
+    function handleBadgePress( label: string, value: string) {
+        setInputBadge(value)
         goBack()
     }
 
@@ -177,6 +177,7 @@ export default function FundCreditAccounts({route}:Props){
         }
 
         const valiedFetchedBadges = badgeSorterAcc(correctTypeValiedBadges, fetchedBadges)
+        setInputBadge(valiedFetchedBadges[0].value)
         setValiedBadges(valiedFetchedBadges)
     }
 
@@ -216,7 +217,7 @@ export default function FundCreditAccounts({route}:Props){
                             areDependentsPresent = { areDependentsPresent }
                             openBadgeScreen={ goToBadges }
                         />,
-        Badges: () => <OptionsDisplay itemsPerRow={5} options={valiedBadges} onOptionPress={handleBadgePress} isBadges={true} />
+        Badges: () => <OptionsDisplay itemsPerRow={3} options={valiedBadges} onOptionPress={handleBadgePress} isBadges={true} />
     }
 
     const [ currentScreen, setCurrentScreen ] = useState< 'Form' | 'Badges' >('Form')

@@ -33,6 +33,7 @@ export default function OptionsDisplay({ itemsPerRow, options, onOptionPress, is
 
 
     organizeArrays()
+
     return (
         <View style={{maxHeight: 480}}>
         <ScrollView>
