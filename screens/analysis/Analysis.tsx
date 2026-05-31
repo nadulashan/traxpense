@@ -1,9 +1,19 @@
-import { Text, View } from 'react-native';
+import Chart from '@/chartComponents/ex';
+import { Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Analysis(){
     return (
-        <View>
+        <SafeAreaView>
             <Text>Analysis</Text>
-        </View>
+            <Text>Analysis</Text>
+            <Text>Analysis</Text>
+            <Text>Analysis</Text>
+            <Text>Analysis</Text>
+            <Text>Analysis</Text>
+            <Text>Analysis</Text>
+            <Text>Analysis</Text>
+            <Chart/>
+        </SafeAreaView>
     )
 }
