@@ -11,11 +11,12 @@ interface ButtonProps{
 type PropTypes = {
     header : string;
     button: ButtonProps | undefined; 
+    wrapperAvailable:boolean
 }
 
-export default function SectionHeader({ header, button }:PropTypes){
+export default function Header({ header, button, wrapperAvailable }:PropTypes){
     return (
-        <View style={[universal.screenWrapper, universal.headerWrapper]}>
+        <View style={[ !wrapperAvailable? universal.screenWrapper : null , universal.headerWrapper]}>
             <Text style={Headerstyles.sectionHeader} >{header}</Text>
             {
                 button?

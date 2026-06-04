@@ -1,9 +1,9 @@
-import SettingsHeader from '@/components/settingsHeader';
 import SettingsItem from '@/components/settingsItem';
 import UserHero from '@/components/userHero';
 import { ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import Header from '@/components/Header';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Octicons from '@expo/vector-icons/Octicons';
@@ -16,7 +16,7 @@ export default function Home(){
              
              <UserHero />
 
-            <SettingsHeader header='Accounts' />
+            <Header header='Accounts' button={undefined} wrapperAvailable={false} />
             <SettingsItem 
                 itemIcon={<MaterialCommunityIcons name="wallet-outline" size={24} color="black" />} 
                 itemName="Fund Accounts" 
@@ -27,7 +27,7 @@ export default function Home(){
                 itemName="Credit Accounts" 
                 navigateTo='FundCreditAccounts'/>
 
-            <SettingsHeader header='Income' />
+            <Header header='Income' button={undefined} wrapperAvailable={false} />
             <SettingsItem 
                 itemIcon={<MaterialCommunityIcons name="cash" size={24} color="black" />} 
                 itemName="Income Categories"
@@ -37,7 +37,7 @@ export default function Home(){
                 itemName="Recurring Income" 
                 navigateTo='Recurring'/>
 
-            <SettingsHeader header='Expenses' />
+            <Header header='Expenses' button={undefined} wrapperAvailable={false} />
             <SettingsItem 
                 itemIcon={<MaterialCommunityIcons name="receipt-text-outline" size={24} color="black" />} 
                 itemName="Expense Categories" 
@@ -47,7 +47,7 @@ export default function Home(){
                 itemName="Recurring Expenses" 
                 navigateTo='Recurring'/>
 
-            <SettingsHeader header='General' />
+            <Header header='General' button={undefined} wrapperAvailable={false} />
             <SettingsItem 
                 itemIcon={<MaterialCommunityIcons name="theme-light-dark" size={24} color="black" />} 
                 itemName="Theme | light" 

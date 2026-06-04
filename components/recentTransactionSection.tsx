@@ -3,10 +3,10 @@ import { onPressFunctionsProps, RecordsProps } from '@/types/homeProps';
 import { FlashList } from '@shopify/flash-list';
 import { ReactElement } from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
+import SectionHeader from "./Header";
 import InfoText from './infoText';
 import RecentTransaction from './recentTransaction';
 import RecentTransactionFilter from "./recentTransactionFilter";
-import SectionHeader from "./sectionHeader";
 
 interface RecentTransactionSectionProps{
     records:RecordsProps[] | undefined;
@@ -27,7 +27,7 @@ export default function RecentTransactionSection({
 }: RecentTransactionSectionProps){
     return(
         <>
-            <SectionHeader header="Recent Transactions" button={{ icon:icon, onPress: filterButtonPress}} />
+            <SectionHeader header="Recent Transactions" button={{ icon:icon, onPress: filterButtonPress}} wrapperAvailable={false}/>
             <ScrollView
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}

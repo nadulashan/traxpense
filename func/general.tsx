@@ -3,6 +3,12 @@ import { PriceWithCommaProps } from "@/types/homeProps";
 import { CustomTypeProps, TransferTypes, TypeProps } from "@/types/recordsTypeItemType.schema";
 
 export function priceWithComma(amount:number):PriceWithCommaProps{
+    // CURRENCY
+    const currency = 'Rs'
+
+    if ( amount === 0 ) {        
+    return {currency: currency, value: '0', decimal: '00'}
+    }
     const stringNumber = amount.toString()
     const arrNumber = stringNumber.split('')
     const oneHundredth = arrNumber.pop()!;
@@ -21,7 +27,6 @@ export function priceWithComma(amount:number):PriceWithCommaProps{
     })
 
     const decimal = `${oneTenth}${oneHundredth}`
-    const currency = 'Rs'
     const commaNum = commaNumberArr.join('')
     return {currency: currency, value: commaNum, decimal: decimal}
 }
@@ -49,4 +54,20 @@ export async function checkNegativeBalance( accountId: number, amount: string, f
             return !( runningAmount - store >= ( - accountDetails.amount ) )
         }
     }
+}
+
+export function makeNamesPresentable( name: string, maxLength: number ) {
+
+    if ( name.length < maxLength ) {
+        return name
+    }
+
+    const arr = name.split('')
+    let i = 0
+    const newArr = arr.filter( item => {
+        i++
+        return ( i <= 3 || i > arr.length - 4 )
+    })
+    newArr.splice( 3, 0, '...' )
+    return(newArr.join(''))
 }

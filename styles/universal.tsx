@@ -6,6 +6,8 @@ const universal = StyleSheet.create({
     screenWrapper: {
         paddingLeft:24,
         paddingRight:24,
+        marginTop:24,
+        marginBottom:24
         // marginTop:24,
     },
 
@@ -20,8 +22,6 @@ const universal = StyleSheet.create({
         fontFamily:fonts.medium,
         fontSize:20,
         color:colors.light.primary,
-        marginTop:24,
-        marginBottom:24
     },
 
 

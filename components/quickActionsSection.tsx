@@ -1,7 +1,7 @@
 import colors from '@/constants/colors';
 import QuickActionsSectionStyles from '../styles/quickActionsSectionStyles';
+import SectionHeader from "./Header";
 import QuickAction from "./quickAction";
-import SectionHeader from "./sectionHeader";
 
 import { View } from 'react-native';
 

@@ -203,6 +203,16 @@ const CommonStyles = StyleSheet.create({
         width:44, 
         // alignItems:'center', 
         justifyContent:'center'
+    },
+
+    // Drop Shadow
+    dropShadow: {
+        padding:16,
+        backgroundColor:'white',
+        width:'90%',
+        borderRadius:8,
+        overflow:'hidden',
+        boxShadow: '0px 4px 10px 0px rgba(0, 0, 0, 0.1)', 
     }
 })
 
